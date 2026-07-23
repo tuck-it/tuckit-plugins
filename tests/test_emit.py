@@ -1,5 +1,6 @@
 import io
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -42,7 +43,8 @@ def test_allow_stop_payload_is_empty():
 def test_extract_session_id_prefers_known_keys():
     assert emit.extract_session_id({"session_id": "abc"}) == "abc"
     assert emit.extract_session_id({"conversationId": "xyz"}) == "xyz"
-    assert emit.extract_session_id({}) == "no-session"
+    fallback = emit.extract_session_id({})
+    assert fallback and fallback == str(os.getppid())
 
 def test_build_payload_rejects_unknown_agent():
     import pytest

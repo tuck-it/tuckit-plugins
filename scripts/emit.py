@@ -72,7 +72,13 @@ def extract_session_id(hook_input: dict) -> str:
         value = hook_input.get(key)
         if value:
             return str(value)
-    return "no-session"
+    # No known id key present. A shared constant here (e.g. "no-session") would
+    # make every id-less session collide on the same state-dir marker, so the
+    # 2nd+ such session would find the marker already "used" and silently lose
+    # the once-per-session write-back/primer behavior. Use the parent process
+    # id instead: it's stable for the lifetime of this agent session (one
+    # invoking process) but distinct across separate sessions/processes.
+    return str(os.getppid())
 
 
 def main(argv=None, stdin_text: str = "") -> int:

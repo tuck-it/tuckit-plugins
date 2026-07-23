@@ -8,7 +8,6 @@ script skips cleanly (a public plugin repo won't always have the sibling).
 from __future__ import annotations
 
 import re
-import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
