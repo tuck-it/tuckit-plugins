@@ -1,3 +1,5 @@
+import io
+import json
 import sys
 from pathlib import Path
 
@@ -46,3 +48,39 @@ def test_build_payload_rejects_unknown_agent():
     import pytest
     with pytest.raises(ValueError):
         emit.build_start_payload("x", "bogus")
+
+
+def _run(monkeypatch, tmp_path, argv, stdin_text=""):
+    monkeypatch.setenv("TUCKIT_PLUGIN_STATE_DIR", str(tmp_path))
+    buf = io.StringIO()
+    monkeypatch.setattr("sys.stdout", buf)
+    rc = emit.main(argv, stdin_text=stdin_text)
+    return rc, json.loads(buf.getvalue())
+
+
+def test_main_claude_start_injects_primer(monkeypatch, tmp_path):
+    rc, out = _run(monkeypatch, tmp_path,
+                   ["--agent", "claude-code", "--event", "start", "--content", "primer"])
+    assert rc == 0
+    assert "get_project_state" in out["hookSpecificOutput"]["additionalContext"]
+
+
+def test_main_antigravity_start_guarded(monkeypatch, tmp_path):
+    stdin = json.dumps({"session_id": "S1"})
+    _, first = _run(monkeypatch, tmp_path,
+                    ["--agent", "antigravity", "--event", "start", "--content", "primer"], stdin)
+    _, second = _run(monkeypatch, tmp_path,
+                     ["--agent", "antigravity", "--event", "start", "--content", "primer"], stdin)
+    assert first["injectSteps"][0]["ephemeralMessage"]  # injected first turn
+    assert second == {}                                 # suppressed after
+
+
+def test_main_stop_blocks_once_then_allows(monkeypatch, tmp_path):
+    stdin = json.dumps({"session_id": "S9"})
+    _, first = _run(monkeypatch, tmp_path,
+                    ["--agent", "claude-code", "--event", "stop", "--content", "writeback"], stdin)
+    _, second = _run(monkeypatch, tmp_path,
+                     ["--agent", "claude-code", "--event", "stop", "--content", "writeback"], stdin)
+    assert first["decision"] == "block"
+    assert "board" in first["reason"].lower()
+    assert second == {}
