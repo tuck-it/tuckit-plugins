@@ -1,0 +1,22 @@
+{
+  "session_start": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${PLUGIN_ROOT}/scripts/emit.py\" --agent codex --event start --content primer"
+        }
+      ]
+    }
+  ],
+  "stop": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python3 \"${PLUGIN_ROOT}/scripts/emit.py\" --agent codex --event stop --content writeback"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "name": "tuckit-plugins",
+  "interface": {
+    "displayName": "tuckit"
+  },
+  "plugins": [
+    {
+      "name": "tuckit",
+      "source": {
+        "source": "local",
+        "path": "./plugins/tuckit"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

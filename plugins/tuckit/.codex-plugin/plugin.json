@@ -1,0 +1,16 @@
+{
+  "name": "tuckit",
+  "version": "0.1.0",
+  "description": "Domain knowledge and board-freshness hooks for using tuckit as your project's single source of truth.",
+  "author": {
+    "name": "tuck-it"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "tuckit",
+    "shortDescription": "Keep tuckit as your project's single source of truth.",
+    "longDescription": "Orients the agent on tuckit at session start (read state via get_project_state, not git) and reminds it to write work and next-step decisions back to the board at session end.",
+    "developerName": "tuck-it",
+    "category": "Productivity"
+  }
+}
