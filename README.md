@@ -32,9 +32,9 @@ cd tuckit-plugins && pwd    # <- this absolute path is your __REPO__
 
 ### Claude Code
 
-The repo is a Claude Code plugin (its root holds `.claude-plugin/plugin.json` and
-a `.claude-plugin/marketplace.json`). Hooks reference bundled files via
-`${CLAUDE_PLUGIN_ROOT}`, so there is **no path to edit**.
+The Claude Code plugin lives in `plugins/claude/`; the repo root holds the
+`.claude-plugin/marketplace.json` that points at it. Hooks reference bundled
+files via `${CLAUDE_PLUGIN_ROOT}`, so there is **no path to edit**.
 
 In a Claude Code session:
 
@@ -72,13 +72,13 @@ Then in a Codex session open the plugin browser and install `tuckit`:
 
 Select **tuckit**, install, and enable it. This wires a `session_start` hook
 (primer) and a `stop` hook (write-back); the plugin bundles the `tuckit-domain`
-skill. Optionally paste `codex/AGENTS.snippet.md` into your `AGENTS.md` for a
-standing reinforcement.
+skill. Optionally paste `plugins/codex/AGENTS.snippet.md` into your `AGENTS.md`
+for a standing reinforcement.
 
 > The Codex plugin's hook schema and the `${PLUGIN_ROOT}` path are written to
 > Codex's documented plugin format but not yet verified against a live Codex
 > install. If the primer/write-back don't fire after install, check your Codex
-> version's plugin docs and adjust `plugins/tuckit/hooks/hooks.json`.
+> version's plugin docs and adjust `plugins/codex/hooks/hooks.json`.
 
 ### Antigravity CLI
 
@@ -86,7 +86,7 @@ standing reinforcement.
 
    ```bash
    mkdir -p .agents
-   cp __REPO__/antigravity/.agents/hooks.json .agents/hooks.json
+   cp __REPO__/plugins/antigravity/.agents/hooks.json .agents/hooks.json
    sed -i '' "s|__REPO__|$(cd __REPO__ && pwd)|g" .agents/hooks.json   # macOS; GNU sed drops the ''
    ```
 
@@ -94,7 +94,7 @@ standing reinforcement.
 
    ```bash
    mkdir -p .agents/skills
-   cp -R __REPO__/antigravity/skills/tuckit-domain .agents/skills/
+   cp -R __REPO__/plugins/antigravity/skills/tuckit-domain .agents/skills/
    ```
 
 Antigravity has no `SessionStart` event, so the primer is wired on
@@ -104,8 +104,9 @@ turn); `Stop` carries the write-back reminder.
 > The Antigravity hook schema, `Stop` semantics, and the session-id field name on
 > hook stdin here are best-effort from Antigravity's docs. Verify them against
 > your version — if the primer repeats every turn or the write-back never fires,
-> adjust `antigravity/.agents/hooks.json` (and, for the session id, the key list
-> in `scripts/emit.py`'s `extract_session_id`).
+> adjust `plugins/antigravity/.agents/hooks.json` (and, for the session id, the
+> key list in `shared/scripts/emit.py`'s `extract_session_id`, then re-run
+> `scripts/build.py`).
 
 ---
 
@@ -149,7 +150,32 @@ MCP snippet**.
 
 ## Development
 
+### Layout
+
+```
+shared/                 authored single source (edit here)
+├─ content/*.md         primer / writeback / domain text
+├─ scripts/emit.py      the hook emitter
+└─ skills/…/SKILL.md    skill body, with a {{ROOT}} path token
+plugins/<agent>/        self-contained, installable payload per agent
+├─ claude/  codex/  antigravity/
+scripts/                dev tooling (not shipped)
+├─ build.py             fan shared/ out into each plugins/<agent>/
+└─ check_drift.py       content must name only get_project_state
+```
+
+Each agent installs a self-contained copy, so `content/`, `scripts/emit.py`, and
+the skill under `plugins/<agent>/` are **generated** from `shared/` — never edit
+them by hand. The per-agent static files (manifests, hooks, commands, the AGENTS
+snippet) are authored in place.
+
+**After editing anything under `shared/`, run the build and commit the result:**
+
 ```bash
-python3 -m pytest                # emitter, manifest, and drift-guard tests
+python3 scripts/build.py         # regenerate all three plugins/<agent>/ payloads
+python3 -m pytest                # emitter, build, manifest, and drift-guard tests
 python3 scripts/check_drift.py   # verify content names only get_project_state (needs ../tuckit)
 ```
+
+The build tests fail if any generated payload has drifted from `shared/`, so a
+forgotten `build.py` run cannot slip through CI.

@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-PLUGIN = ROOT / "plugins" / "tuckit"
+PLUGIN = ROOT / "plugins" / "codex"
 
 def test_codex_plugin_manifest_valid_and_hookless():
     data = json.loads((PLUGIN / ".codex-plugin" / "plugin.json").read_text())
@@ -26,7 +26,7 @@ def test_codex_plugin_hooks_snake_case_events_invoke_emit():
 def test_marketplace_lists_codex_plugin():
     data = json.loads((ROOT / ".agents" / "plugins" / "marketplace.json").read_text())
     entry = next(p for p in data["plugins"] if p["name"] == "tuckit")
-    assert entry["source"]["path"] == "./plugins/tuckit"
+    assert entry["source"]["path"] == "./plugins/codex"
     assert entry["policy"]["installation"] == "AVAILABLE"
     assert entry["policy"]["authentication"] in ("ON_INSTALL", "ON_USE")
     assert entry["category"]

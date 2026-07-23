@@ -13,8 +13,11 @@ import sys
 import tempfile
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
-CONTENT_DIR = REPO_ROOT / "content"
+# emit.py lives at <payload>/scripts/emit.py and reads <payload>/content/.
+# This holds both in the authored `shared/` source and in every generated
+# per-agent copy under plugins/<agent>/, so the resolution never changes.
+PAYLOAD_ROOT = Path(__file__).resolve().parent.parent
+CONTENT_DIR = PAYLOAD_ROOT / "content"
 
 
 def load_content(name: str) -> str:

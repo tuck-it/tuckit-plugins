@@ -6,7 +6,7 @@
   "plugins": [
     {
       "name": "tuckit",
-      "source": "./",
+      "source": "./plugins/claude",
       "description": "Domain knowledge and board-freshness hooks for using tuckit as your project's single source of truth."
     }
   ]

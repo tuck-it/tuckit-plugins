@@ -1,0 +1,12 @@
+{
+  "PreInvocation": [
+    {
+      "command": ["python3", "__REPO__/plugins/antigravity/scripts/emit.py", "--agent", "antigravity", "--event", "start", "--content", "primer"]
+    }
+  ],
+  "Stop": [
+    {
+      "command": ["python3", "__REPO__/plugins/antigravity/scripts/emit.py", "--agent", "antigravity", "--event", "stop", "--content", "writeback"]
+    }
+  ]
+}

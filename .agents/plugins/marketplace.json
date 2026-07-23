@@ -8,7 +8,7 @@
       "name": "tuckit",
       "source": {
         "source": "local",
-        "path": "./plugins/tuckit"
+        "path": "./plugins/codex"
       },
       "policy": {
         "installation": "AVAILABLE",
