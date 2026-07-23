@@ -23,3 +23,11 @@ def test_codex_hooks_invoke_emit():
     assert "scripts/emit.py" in blob
     assert "--agent" in blob and "codex" in blob
     assert "__REPO__" in blob  # install-time placeholder documented in README
+
+def test_antigravity_hooks_use_preinvocation_and_stop():
+    hooks = json.loads((ROOT / "antigravity" / ".agents" / "hooks.json").read_text())
+    blob = json.dumps(hooks)
+    assert "PreInvocation" in hooks and "Stop" in hooks
+    assert "scripts/emit.py" in blob
+    assert "antigravity" in blob
+    assert "__REPO__" in blob
