@@ -1,0 +1,12 @@
+{
+  "SessionStart": [
+    {
+      "command": ["python3", "__REPO__/scripts/emit.py", "--agent", "codex", "--event", "start", "--content", "primer"]
+    }
+  ],
+  "Stop": [
+    {
+      "command": ["python3", "__REPO__/scripts/emit.py", "--agent", "codex", "--event", "stop", "--content", "writeback"]
+    }
+  ]
+}
