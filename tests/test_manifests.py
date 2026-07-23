@@ -7,6 +7,13 @@ def test_plugin_json_valid():
     data = json.loads((ROOT / ".claude-plugin" / "plugin.json").read_text())
     assert data["name"] == "tuckit"
 
+def test_marketplace_json_lists_root_plugin():
+    data = json.loads((ROOT / ".claude-plugin" / "marketplace.json").read_text())
+    names = [p["name"] for p in data["plugins"]]
+    assert "tuckit" in names
+    entry = next(p for p in data["plugins"] if p["name"] == "tuckit")
+    assert entry["source"] == "./"  # plugin lives at the repo root
+
 def test_cc_hooks_invoke_emit_for_both_events():
     hooks = json.loads((ROOT / "hooks" / "hooks.json").read_text())["hooks"]
     assert "SessionStart" in hooks and "Stop" in hooks

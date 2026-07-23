@@ -1,0 +1,13 @@
+{
+  "name": "tuckit-plugins",
+  "owner": {
+    "name": "tuck-it"
+  },
+  "plugins": [
+    {
+      "name": "tuckit",
+      "source": "./",
+      "description": "Domain knowledge and board-freshness hooks for using tuckit as your project's single source of truth."
+    }
+  ]
+}
