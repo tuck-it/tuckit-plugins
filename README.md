@@ -16,10 +16,10 @@ Supported agents: **Claude Code**, **Codex CLI**, **Antigravity CLI**.
 
 ## Get the repo
 
-Codex and Antigravity reference the plugin's script by absolute path, so clone it
+Antigravity references the plugin's script by absolute path, so clone it
 somewhere stable. Below, `__REPO__` means that clone's absolute path (e.g.
-`/Users/you/code/tuckit-plugins`). Claude Code manages its own copy and does not
-need `__REPO__`.
+`/Users/you/code/tuckit-plugins`). Claude Code and Codex install from their own
+marketplaces and manage their own copy — neither needs `__REPO__`.
 
 ```bash
 git clone https://github.com/tuck-it/tuckit-plugins.git
@@ -58,30 +58,27 @@ You get: the session-start primer, the session-end write-back reminder, the
 
 ### Codex CLI
 
-1. Copy the hook config into your project (or merge it into `~/.codex/config.toml`
-   under a `[hooks]` table for all projects):
+Install from the marketplace — no path editing:
 
-   ```bash
-   mkdir -p .codex
-   cp __REPO__/codex/hooks.json .codex/hooks.json
-   ```
+```
+codex plugin marketplace add tuck-it/tuckit-plugins
+```
 
-2. Replace the `__REPO__` placeholder inside it with your clone's absolute path:
+Then in a Codex session open the plugin browser and install `tuckit`:
 
-   ```bash
-   sed -i '' "s|__REPO__|$(cd __REPO__ && pwd)|g" .codex/hooks.json   # macOS
-   # GNU sed: sed -i "s|__REPO__|/abs/path/tuckit-plugins|g" .codex/hooks.json
-   ```
+```
+/plugins
+```
 
-3. (Optional) Paste `__REPO__/codex/AGENTS.snippet.md` into your project's
-   `AGENTS.md` for a standing reinforcement of the same guidance.
+Select **tuckit**, install, and enable it. This wires a `session_start` hook
+(primer) and a `stop` hook (write-back); the plugin bundles the `tuckit-domain`
+skill. Optionally paste `codex/AGENTS.snippet.md` into your `AGENTS.md` for a
+standing reinforcement.
 
-This wires a `SessionStart` hook (primer) and a `Stop` hook (write-back).
-
-> The Codex hook-config schema and `Stop` payload fields here are written to
-> Codex's documented format. If your Codex version ignores the file or the
-> write-back doesn't surface, check its hooks docs and adjust `codex/hooks.json`
-> accordingly.
+> The Codex plugin's hook schema and the `${PLUGIN_ROOT}` path are written to
+> Codex's documented plugin format but not yet verified against a live Codex
+> install. If the primer/write-back don't fire after install, check your Codex
+> version's plugin docs and adjust `plugins/tuckit/hooks/hooks.json`.
 
 ### Antigravity CLI
 
