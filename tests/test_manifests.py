@@ -10,6 +10,32 @@ def test_plugin_json_valid():
     assert data["name"] == "tuckit"
 
 
+def test_cc_plugin_bundles_mcp_via_user_config():
+    """The MCP server is wired from userConfig so installing the plugin also
+    connects tuckit's MCP — with no credentials or URL committed to the repo."""
+    data = json.loads((CLAUDE / ".claude-plugin" / "plugin.json").read_text())
+
+    uc = data["userConfig"]
+    assert uc["mcp_url"]["required"] is True
+    assert uc["mcp_token"]["required"] is True
+    assert uc["mcp_token"]["sensitive"] is True  # token goes to the OS keychain
+
+    server = data["mcpServers"]["tuckit"]
+    assert server["type"] == "http"
+    assert server["url"] == "${user_config.mcp_url}"
+    assert server["headers"]["Authorization"] == "Bearer ${user_config.mcp_token}"
+
+
+def test_cc_plugin_hardcodes_no_secret_or_endpoint():
+    """Guard: the public manifest must never carry a real URL or token."""
+    blob = (CLAUDE / ".claude-plugin" / "plugin.json").read_text()
+    server = json.loads(blob)["mcpServers"]["tuckit"]
+    # Every credential-bearing value must be a userConfig placeholder, not a literal.
+    assert "://" not in server["url"], "MCP url must be a placeholder, not a real endpoint"
+    for value in server["headers"].values():
+        assert "${user_config." in value, "auth headers must come from userConfig"
+
+
 def test_marketplace_json_points_at_claude_plugin():
     data = json.loads((ROOT / ".claude-plugin" / "marketplace.json").read_text())
     names = [p["name"] for p in data["plugins"]]

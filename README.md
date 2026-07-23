@@ -44,17 +44,29 @@ In a Claude Code session:
 /reload-plugins
 ```
 
+On enable, the plugin **prompts you for your tuckit MCP URL and API token** and
+wires the MCP connection for you — so there is **no separate `claude mcp add`
+step**. The token is stored in your OS keychain, never in this repo. (Find the
+URL and token in tuckit under **Settings → API tokens / MCP snippet**.)
+
 - `/plugin marketplace add` also accepts a full git URL or a local path
   (`/plugin marketplace add ./tuckit-plugins`) if you cloned it or it isn't on
   GitHub yet.
-- Non-interactive equivalent: `claude plugin install tuckit@tuckit-plugins --scope user`
+- Non-interactive (skips the prompt):
+  ```bash
+  claude plugin install tuckit@tuckit-plugins --scope user \
+    --config mcp_url="<YOUR_MCP_URL>" --config mcp_token="<YOUR_TOKEN>"
+  ```
   (`--scope project` writes it into the repo's `.claude/settings.json` for the
-  whole team; `--scope local` is just you in this repo).
-- Confirm with `/plugin list`. The plugin's hooks activate automatically for the
-  scope you installed — there is no separate trust step.
+  whole team; `--scope local` is just you in this repo.)
+- Confirm with `/plugin list`. Hooks activate automatically for the scope you
+  installed — there is no separate trust step.
+- Already ran `claude mcp add tuckit …` yourself? That keeps working — a manually
+  added server takes precedence over the plugin's, so the two never conflict.
 
 You get: the session-start primer, the session-end write-back reminder, the
-`tuckit-domain` skill, and the `/tuckit-sync` command.
+`tuckit-domain` skill, the `/tuckit-sync` command, **and the tuckit MCP
+connection** — all from one install.
 
 ### Codex CLI
 
@@ -112,10 +124,12 @@ turn); `Stop` carries the write-back reminder.
 
 ## Connect tuckit (MCP)
 
-tuckit's MCP endpoint is authenticated per user — register it yourself with your
-own workspace URL and API token. This plugin never bundles credentials.
+tuckit's MCP endpoint is authenticated per user, so no credentials are ever
+committed here — you supply your own workspace URL and API token.
 
-- **Claude Code:**
+- **Claude Code:** already handled — the plugin prompts for the URL and token on
+  enable and wires the MCP for you (see [Claude Code](#claude-code) above). Only
+  register it manually if you want a different scope or skipped the prompt:
   ```bash
   claude mcp add --transport http tuckit <YOUR_MCP_URL> \
     --header "Authorization: Bearer <YOUR_TOKEN>"
