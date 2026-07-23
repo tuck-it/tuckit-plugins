@@ -83,14 +83,29 @@ Then in a Codex session open the plugin browser and install `tuckit`:
 ```
 
 Select **tuckit**, install, and enable it. This wires a `session_start` hook
-(primer) and a `stop` hook (write-back); the plugin bundles the `tuckit-domain`
-skill. Optionally paste `plugins/codex/AGENTS.snippet.md` into your `AGENTS.md`
-for a standing reinforcement.
+(primer), a `stop` hook (write-back), the `tuckit-domain` skill, **and the tuckit
+MCP server** — so there is **no separate `~/.codex/config.toml` edit**.
 
-> The Codex plugin's hook schema and the `${PLUGIN_ROOT}` path are written to
-> Codex's documented plugin format but not yet verified against a live Codex
-> install. If the primer/write-back don't fire after install, check your Codex
-> version's plugin docs and adjust `plugins/codex/hooks/hooks.json`.
+Codex has no install-time prompt like Claude Code, so supply your API token
+through the environment variable the bundled server reads:
+
+```bash
+export TUCKIT_MCP_TOKEN="<YOUR_TOKEN>"     # add to your shell profile to persist
+```
+
+- The MCP URL defaults to the hosted app (`https://app.tuckit.dev/mcp`). **Self-
+  hosting?** Edit `url` in `plugins/codex/.mcp.json`, or add tuckit to
+  `~/.codex/config.toml` manually (see [Connect tuckit (MCP)](#connect-tuckit-mcp)).
+- The token is never committed — Codex reads it from `TUCKIT_MCP_TOKEN` at
+  connect time.
+- Optionally paste `plugins/codex/AGENTS.snippet.md` into your `AGENTS.md` for a
+  standing reinforcement.
+
+> The Codex plugin's hook schema, the `${PLUGIN_ROOT}` path, and the bundled
+> `.mcp.json` follow Codex's documented plugin/MCP format but are **not yet
+> verified against a live Codex install**. If the primer/write-back or MCP don't
+> come up, check your Codex version's docs and adjust `plugins/codex/hooks/hooks.json`
+> or `plugins/codex/.mcp.json`.
 
 ### Antigravity CLI
 
@@ -134,11 +149,14 @@ committed here — you supply your own workspace URL and API token.
   claude mcp add --transport http tuckit <YOUR_MCP_URL> \
     --header "Authorization: Bearer <YOUR_TOKEN>"
   ```
-- **Codex:** add tuckit under `[mcp_servers]` in `~/.codex/config.toml`:
+- **Codex:** already handled — the plugin bundles the MCP server; just
+  `export TUCKIT_MCP_TOKEN=<YOUR_TOKEN>` (see [Codex CLI](#codex-cli) above).
+  Register it manually only to override the URL (self-hosting) or without the
+  plugin — add tuckit under `[mcp_servers]` in `~/.codex/config.toml`:
   ```toml
   [mcp_servers.tuckit]
   url = "<YOUR_MCP_URL>"
-  headers = { Authorization = "Bearer <YOUR_TOKEN>" }
+  bearer_token_env_var = "TUCKIT_MCP_TOKEN"
   ```
 - **Antigravity:** add tuckit to your `mcp_config.json`:
   ```json

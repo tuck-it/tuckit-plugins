@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "tuckit": {
+      "type": "streamable_http",
+      "url": "https://app.tuckit.dev/mcp",
+      "bearer_token_env_var": "TUCKIT_MCP_TOKEN"
+    }
+  }
+}

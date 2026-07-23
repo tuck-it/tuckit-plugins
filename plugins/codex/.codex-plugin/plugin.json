@@ -6,6 +6,7 @@
     "name": "tuck-it"
   },
   "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "tuckit",
     "shortDescription": "Keep tuckit as your project's single source of truth.",
