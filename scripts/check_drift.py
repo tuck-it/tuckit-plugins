@@ -29,8 +29,10 @@ def find_leaked_tool_names(content_text: str, known_tools: set) -> list:
 
 def known_tools_from_server() -> set:
     text = SERVER_PY.read_text(encoding="utf-8")
-    # tools are `async def <name>(ctx: Context ...)` decorated with @mcp.tool()
-    return set(re.findall(r"async def (\w+)\(ctx", text))
+    # tools are decorated with @mcp.tool() immediately followed by `async def <name>(`;
+    # the signature itself may continue on the next line (e.g. `ctx: Context,` below it),
+    # so we anchor on the decorator rather than trying to match the full parameter list.
+    return set(re.findall(r"@mcp\.tool\(\)\s+async def (\w+)\(", text))
 
 
 def main() -> int:
