@@ -20,7 +20,7 @@ Works with **Claude Code**, **Codex CLI**, and **Antigravity CLI**.
 
 | Agent | How you install | MCP connection |
 |---|---|---|
-| **Claude Code** | 2 slash commands | ✅ **Automatic** — prompts for your URL + token, stores the token in your OS keychain |
+| **Claude Code** | 2 slash commands | ✅ **Automatic** — URL is prefilled; you authorize once in your browser (OAuth), no token to paste |
 | **Codex CLI** | Marketplace add + `/plugins` | ✅ **Automatic** — bundled; you just set one env var |
 | **Antigravity CLI** | Copy 2 files | ⚙️ **Manual** — add tuckit to your MCP config (auto-bundling is coming) |
 
@@ -34,9 +34,12 @@ reminder**, and the **`tuckit-domain` skill**. Claude Code also gets a
 
 1. **Python 3** on your `PATH`. The hooks run a tiny, dependency-free script —
    nothing to `pip install`.
-2. **Your tuckit MCP URL and API token.** Find both in tuckit under
-   **Settings → API tokens / MCP snippet**. You'll paste them in during install
-   (Claude Code) or set them as an env var (Codex).
+2. **Your tuckit MCP URL** — only if you self-host. On tuckit Cloud the URL is
+   already the default (`https://app.tuckit.dev/mcp`), so you need nothing here.
+   - **Claude Code** authorizes in your browser (OAuth) on first use — no token
+     to prepare or paste.
+   - **Codex** still reads a token from an env var; grab it in tuckit under
+     **Settings → API tokens / MCP snippet**.
 
 ---
 
@@ -51,9 +54,11 @@ In a Claude Code session:
 /plugin install tuckit@tuckit-plugins
 ```
 
-When the plugin enables, it **asks you for your tuckit MCP URL and API token**,
-then wires up the MCP connection for you — **no separate `claude mcp add`
-needed**. Your token goes straight into your OS keychain, never into this repo.
+When the plugin enables, it **wires up the MCP connection for you** — **no
+separate `claude mcp add` needed**. The URL is prefilled to tuckit Cloud (just
+press Enter; self-hosters type their own). On first tool use, Claude Code opens
+your browser to **authorize once via OAuth** — there's no token to paste, and
+the credential is stored in your OS keychain and auto-refreshed.
 
 That's it. From this one install you get the primer, the write-back reminder,
 the `tuckit-domain` skill, the `/tuckit-sync` command, **and a live tuckit MCP
@@ -64,10 +69,11 @@ connection**.
 
 - **Not on GitHub / working from a clone?** `/plugin marketplace add` also takes
   a git URL or a local path, e.g. `/plugin marketplace add ./tuckit-plugins`.
-- **Scripted / no prompt?** Pass the values on the command line:
+- **Scripted / no prompt?** On tuckit Cloud you need nothing extra — the URL
+  defaults in and OAuth runs on first use. Self-hosters pass their URL:
   ```bash
   claude plugin install tuckit@tuckit-plugins --scope user \
-    --config mcp_url="<YOUR_MCP_URL>" --config mcp_token="<YOUR_TOKEN>"
+    --config mcp_url="<YOUR_MCP_URL>"
   ```
   (`--scope project` shares it with your team via `.claude/settings.json`;
   `--scope local` keeps it to just you in this repo.)
@@ -165,14 +171,14 @@ Antigravity auto-registers a plugin's MCP config.)
 ## Connecting the MCP by hand
 
 Claude Code and Codex wire the MCP for you (above). Use these only for
-Antigravity, for self-hosting, or if you'd rather set it up yourself. Your
-workspace URL and token live in tuckit under **Settings → API tokens / MCP
-snippet** — no credentials are ever committed to this repo.
+Antigravity, for self-hosting, or if you'd rather set it up yourself. Claude
+Code authorizes via browser OAuth (no token); for Codex and Antigravity your
+workspace token lives in tuckit under **Settings → API tokens / MCP snippet** —
+no credentials are ever committed to this repo.
 
-- **Claude Code**
+- **Claude Code** — OAuth is auto-detected; no token needed:
   ```bash
-  claude mcp add --transport http tuckit <YOUR_MCP_URL> \
-    --header "Authorization: Bearer <YOUR_TOKEN>"
+  claude mcp add --transport http tuckit <YOUR_MCP_URL>
   ```
 - **Codex** — add to `~/.codex/config.toml`, keeping the token in an env var:
   ```toml

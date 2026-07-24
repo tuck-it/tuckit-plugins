@@ -1,29 +1,20 @@
 {
   "name": "tuckit",
   "description": "Domain knowledge and board-freshness hooks for using tuckit as your project's single source of truth.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "userConfig": {
     "mcp_url": {
       "type": "string",
       "title": "tuckit MCP URL",
-      "description": "Your workspace's MCP endpoint. Find it in tuckit under Settings -> API tokens / MCP snippet.",
-      "required": true
-    },
-    "mcp_token": {
-      "type": "string",
-      "title": "tuckit API token",
-      "description": "Bearer token for your workspace's MCP endpoint. Stored in your OS keychain, never in this repo.",
-      "sensitive": true,
-      "required": true
+      "description": "Your workspace's MCP endpoint. Leave the default for tuckit Cloud; set your own only if self-hosting. Authorization happens in your browser on first use — no token to paste.",
+      "required": false,
+      "default": "https://app.tuckit.dev/mcp"
     }
   },
   "mcpServers": {
     "tuckit": {
       "type": "http",
-      "url": "${user_config.mcp_url}",
-      "headers": {
-        "Authorization": "Bearer ${user_config.mcp_token}"
-      }
+      "url": "${user_config.mcp_url}"
     }
   }
 }
