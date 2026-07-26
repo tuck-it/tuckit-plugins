@@ -32,7 +32,8 @@ def test_build_start_payload_per_agent():
     }
 
 def test_build_stop_payload_per_agent():
-    assert emit.build_stop_payload("WB", "claude-code") == {"decision": "block", "reason": "WB"}
+    assert emit.build_stop_payload("WB", "claude-code") == {
+        "hookSpecificOutput": {"hookEventName": "Stop", "additionalContext": "WB"}}
     assert emit.build_stop_payload("WB", "codex") == {"continue": True, "systemMessage": "WB"}
     assert emit.build_stop_payload("WB", "antigravity") == {"decision": "continue", "reason": "WB"}
 
@@ -77,12 +78,21 @@ def test_main_antigravity_start_guarded(monkeypatch, tmp_path):
     assert second == {}                                 # suppressed after
 
 
-def test_main_stop_blocks_once_then_allows(monkeypatch, tmp_path):
+def test_main_stop_reminds_once_then_allows(monkeypatch, tmp_path):
     stdin = json.dumps({"session_id": "S9"})
     _, first = _run(monkeypatch, tmp_path,
                     ["--agent", "claude-code", "--event", "stop", "--content", "writeback"], stdin)
     _, second = _run(monkeypatch, tmp_path,
                      ["--agent", "claude-code", "--event", "stop", "--content", "writeback"], stdin)
-    assert first["decision"] == "block"
-    assert "board" in first["reason"].lower()
+    assert first["hookSpecificOutput"]["hookEventName"] == "Stop"
+    assert "board" in first["hookSpecificOutput"]["additionalContext"].lower()
     assert second == {}
+
+
+def test_claude_stop_payload_avoids_the_blocking_error_path(monkeypatch, tmp_path):
+    """The reminder must not surface as a "Stop hook error:" — see build_stop_payload."""
+    stdin = json.dumps({"session_id": "S10"})
+    _, payload = _run(monkeypatch, tmp_path,
+                      ["--agent", "claude-code", "--event", "stop", "--content", "writeback"], stdin)
+    assert "decision" not in payload
+    assert "reason" not in payload

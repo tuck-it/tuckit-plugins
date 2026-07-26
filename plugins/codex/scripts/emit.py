@@ -58,7 +58,13 @@ def build_start_payload(text: str, agent: str) -> dict:
 
 def build_stop_payload(text: str, agent: str) -> dict:
     if agent == "claude-code":
-        return {"decision": "block", "reason": text}
+        # `decision: "block"` would also keep the turn going, but Claude Code
+        # routes it through its blocking-error path and renders the reminder
+        # under a red "Stop hook error:" label — it reads like the hook failed.
+        # A Stop hook's additionalContext injects the text AND sets the
+        # continue-the-conversation flag on its own, with no error framing.
+        return {"hookSpecificOutput": {"hookEventName": "Stop",
+                                       "additionalContext": text}}
     if agent == "codex":
         return {"continue": True, "systemMessage": text}
     if agent == "antigravity":
