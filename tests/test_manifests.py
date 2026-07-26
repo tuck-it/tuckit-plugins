@@ -1,8 +1,13 @@
 import json
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 CLAUDE = ROOT / "plugins" / "claude"
+
+# The one endpoint we deliberately commit: tuckit Cloud, the default for
+# everyone who isn't self-hosting. It is public and carries no credential.
+PUBLIC_MCP_URL = "https://app.tuckit.dev/mcp"
 
 
 def test_plugin_json_valid():
@@ -12,28 +17,46 @@ def test_plugin_json_valid():
 
 def test_cc_plugin_bundles_mcp_via_user_config():
     """The MCP server is wired from userConfig so installing the plugin also
-    connects tuckit's MCP — with no credentials or URL committed to the repo."""
+    connects tuckit's MCP. Auth is OAuth in the browser, so the manifest needs
+    a URL knob and no credential of any kind."""
     data = json.loads((CLAUDE / ".claude-plugin" / "plugin.json").read_text())
 
     uc = data["userConfig"]
-    assert uc["mcp_url"]["required"] is True
-    assert uc["mcp_token"]["required"] is True
-    assert uc["mcp_token"]["sensitive"] is True  # token goes to the OS keychain
+    # Optional, because the default already points at tuckit Cloud — only a
+    # self-hoster has to touch it.
+    assert uc["mcp_url"]["required"] is False
+    assert uc["mcp_url"]["default"] == PUBLIC_MCP_URL
+    # OAuth replaced the pasted token; a token knob must not come back.
+    assert "mcp_token" not in uc
 
     server = data["mcpServers"]["tuckit"]
     assert server["type"] == "http"
     assert server["url"] == "${user_config.mcp_url}"
-    assert server["headers"]["Authorization"] == "Bearer ${user_config.mcp_token}"
+    assert "headers" not in server, "OAuth carries auth; no header to send"
 
 
-def test_cc_plugin_hardcodes_no_secret_or_endpoint():
-    """Guard: the public manifest must never carry a real URL or token."""
+def test_cc_plugin_hardcodes_no_secret_or_private_endpoint():
+    """Guard: the public manifest must never carry a credential, and the only
+    URL it commits is the public tuckit Cloud endpoint."""
     blob = (CLAUDE / ".claude-plugin" / "plugin.json").read_text()
-    server = json.loads(blob)["mcpServers"]["tuckit"]
-    # Every credential-bearing value must be a userConfig placeholder, not a literal.
-    assert "://" not in server["url"], "MCP url must be a placeholder, not a real endpoint"
-    for value in server["headers"].values():
-        assert "${user_config." in value, "auth headers must come from userConfig"
+    data = json.loads(blob)
+
+    server = data["mcpServers"]["tuckit"]
+    assert "://" not in server["url"], "MCP url must be a placeholder, not a literal endpoint"
+    # No headers today. If any return, each must resolve from userConfig.
+    for name, value in server.get("headers", {}).items():
+        assert "${user_config." in value, f"{name} header must come from userConfig"
+
+    # Scan the server block, not the whole file: the prose descriptions talk
+    # about tokens and authorization on purpose, and must stay free to do so.
+    servers_blob = json.dumps(data["mcpServers"]).lower()
+    for marker in ("bearer ", "authorization", "secret", "password", "token", "api_key"):
+        assert marker not in servers_blob, f"mcpServers must not carry {marker!r}"
+
+    # Every committed URL is the public endpoint, with no user:pass@ embedded.
+    urls = re.findall(r"https?://[^\"\s]+", blob)
+    assert set(urls) == {PUBLIC_MCP_URL}, f"unexpected URL committed: {urls}"
+    assert "@" not in PUBLIC_MCP_URL
 
 
 def test_marketplace_json_points_at_claude_plugin():
