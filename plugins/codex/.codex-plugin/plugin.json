@@ -1,6 +1,6 @@
 {
   "name": "tuckit",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Domain knowledge and board-freshness hooks for using tuckit as your project's single source of truth.",
   "author": {
     "name": "tuck-it"
