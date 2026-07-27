@@ -11,7 +11,13 @@ honest.
 - **Area** — a long-lived responsibility domain (backend, frontend, infra…).
   Areas rarely change; they hold slices.
 - **Slice** — one deliverable unit of work inside an Area. A slice carries a
-  *spec* (the design — what and why) and a checklist of *bites* (the how).
+  *spec* (the design — what and why) and a checklist of *bites* (the how). It
+  has two axes that answer different questions, and conflating them is a bug:
+  - `status` — the decision a human made: `open`, `shipped`, `dropped`.
+    Nothing derives it; nothing else should set it.
+  - `stage` — what the slice needs next, derived from its own content (see
+    "Reading state" below). You never set this — write the spec, add the
+    plan, check off bites, and it follows.
 - **Plan** — an implementation plan under a slice: a title, an overview, and
   constraints. A slice can hold more than one plan.
 - **Bite** — a single implementation step under a plan, with a status.
@@ -20,8 +26,8 @@ honest.
 
 ## Reading state (don't scan git)
 
-Start every "where are we" question with `get_project_state` — it returns the
-shipped / building / roadmap / ideas / someday breakdown plus your identity,
+Start every "where are we" question with `get_project_state` — it returns each
+Area's shipped / roadmap breakdown, the Inbox count, and your identity,
 instead of you scanning markdown or git history.
 
 For a single slice, read its **derived stage** to know what it needs next
@@ -32,7 +38,10 @@ without opening every child:
 - `needs_bites` — has a plan but no steps.
 - `executing` — has steps, some unfinished.
 - `ready_to_ship` — all steps done.
-- `shipped` / `dropped` — terminal.
+- `shipped` / `dropped` — terminal, mirrors `status` once a human has decided.
+
+To learn where work stands, read `stage`. Do not infer progress from
+`status` — `status` only ever records the open/shipped/dropped decision.
 
 ## The workflow (how work moves)
 
@@ -46,8 +55,7 @@ without opening every child:
 6. Ship it → advance the slice to shipped.
 
 Anything decided for "later" belongs on the board too — a committed next step as
-a planned Slice, a vaguer idea as a Ticket. If it's only in the chat, it will be
-lost.
+a Slice, a vaguer idea as a Ticket. If it's only in the chat, it will be lost.
 
 ## Tools
 
