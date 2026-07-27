@@ -9,7 +9,7 @@ Once installed, the plugin quietly does two things every session:
   state with `get_project_state`, not git, and reconcile with the board before
   you begin."
 - **At the end**, it nudges the agent to *write back*: turn "let's do X next"
-  decisions into planned Slices or Tickets, check off finished work, and leave
+  decisions into Slices or Tickets, check off finished work, and leave
   notes — so nothing important lives only in a chat log.
 
 Works with **Claude Code**, **Codex CLI**, and **Antigravity CLI**.
