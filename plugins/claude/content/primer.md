@@ -14,16 +14,17 @@ state.
 ## The shape of the board
 
 - **Area** — a long-lived responsibility domain (e.g. backend, frontend).
-- **Slice** — one deliverable unit of work in an Area (a spec plus a checklist
-  of bites).
-- **Plan** / **Bite** — a Slice's implementation plan and its steps.
-- **Ticket** — a quick capture in the Inbox for triage.
+- **Slice** — the one unit of work: a spec, constraints, and a checklist of
+  Bites. **Empty area means it's still in the Inbox** — filing it into an
+  Area (and clearing the area again) is fully reversible. There is no Ticket
+  and no Plan.
 
 ## Before you start: reconcile with the board
 
-Before doing work, check whether a Slice or Ticket already covers it. If one
-does, continue that one. If none does, create it first. Doing work the board
-doesn't know about is exactly what makes the board go stale.
+Before doing work, check whether a Slice already covers it (in an Area, or
+still in the Inbox with no area). If one does, continue that one. If none
+does, create it first. Doing work the board doesn't know about is exactly
+what makes the board go stale.
 
 ## When you finish: reconcile again
 

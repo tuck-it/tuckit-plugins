@@ -6,10 +6,11 @@ A stale board makes the SSOT lie. Reconcile now.
    — this matters most.** A committed next step (e.g. "backend this slice,
    frontend NEXT slice") → create a Slice now in the right Area (leave its spec
    empty; tuckit will show it as "needs design") so it shows up as what's next.
-   A vaguer follow-up or "someday" → capture a Ticket in the Inbox. An
-   agreement that isn't in tuckit does not exist — the chat log is not the
-   SSOT.
-2. New follow-ups or bugs that surfaced this session → capture as Tickets.
+   A vaguer follow-up or "someday" → create a Slice with no area (it lands in
+   the Inbox; file it into an Area later — that's reversible). An agreement
+   that isn't in tuckit does not exist — the chat log is not the SSOT.
+2. New follow-ups or bugs that surfaced this session → capture as Slices with
+   no area (the Inbox).
 3. What you actually did → check off completed Bites and leave a note on the
    Slice (what you did, blockers, PR links). Checking off the last Bite already
    moves its stage to `ready_to_ship` on its own — nothing else to set there.

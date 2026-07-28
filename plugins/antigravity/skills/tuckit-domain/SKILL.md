@@ -1,6 +1,6 @@
 ---
 name: tuckit-domain
-description: Use when working in a tuckit-tracked workspace and you need tuckit's model (Area/Slice/Plan/Bite/Ticket), how to read project state, or the idea→slice→plan→execute→ship workflow.
+description: Use when working in a tuckit-tracked workspace and you need tuckit's model (Area/Slice/Bite), how to read project state, or the idea→slice→execute→ship workflow.
 ---
 
 Read `__REPO__/plugins/antigravity/content/domain.md` for the full tuckit domain reference, then
