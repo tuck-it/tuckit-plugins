@@ -45,5 +45,17 @@ def test_skill_has_agent_token_and_no_placeholder(agent):
     assert "get_project_state" in text
 
 
+@pytest.mark.parametrize("agent", AGENTS)
+def test_every_authored_skill_is_fanned_out(agent):
+    """Guard: build.py must fan out ALL skills, not one hardcoded name."""
+    authored = {p.name for p in (SHARED / "skills").iterdir() if p.is_dir()}
+    assert len(authored) > 1, "this guard is vacuous with a single authored skill"
+    built = {p.name for p in (ROOT / "plugins" / agent / "skills").iterdir() if p.is_dir()}
+    assert built == authored, f"plugins/{agent}/skills out of sync — run build"
+    for name in authored:
+        text = (ROOT / "plugins" / agent / "skills" / name / "SKILL.md").read_text()
+        assert "{{ROOT}}" not in text, f"unrendered placeholder in {name} — run build"
+
+
 def test_build_is_idempotent():
     assert build.build() == build.build()

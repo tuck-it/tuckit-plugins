@@ -57,14 +57,21 @@ def build_agent(agent: str) -> list:
     shutil.copyfile(SHARED / "scripts" / "emit.py", emit_dst)
     written.append(emit_dst)
 
-    skill_src = SHARED / "skills" / "tuckit-domain" / "SKILL.md"
-    skill_dst = dst / "skills" / "tuckit-domain" / "SKILL.md"
-    skill_dst.parent.mkdir(parents=True, exist_ok=True)
-    skill_dst.write_text(
-        skill_src.read_text(encoding="utf-8").replace("{{ROOT}}", token),
-        encoding="utf-8",
-    )
-    written.append(skill_dst)
+    skills_src = SHARED / "skills"
+    skills_dst = dst / "skills"
+    skills_dst.mkdir(parents=True, exist_ok=True)
+    authored = {p.name for p in skills_src.iterdir() if p.is_dir()}
+    for stale in skills_dst.iterdir():
+        if stale.is_dir() and stale.name not in authored:
+            shutil.rmtree(stale)
+    for skill_src in sorted(p for p in skills_src.iterdir() if p.is_dir()):
+        skill_dst = skills_dst / skill_src.name / "SKILL.md"
+        skill_dst.parent.mkdir(parents=True, exist_ok=True)
+        skill_dst.write_text(
+            (skill_src / "SKILL.md").read_text(encoding="utf-8").replace("{{ROOT}}", token),
+            encoding="utf-8",
+        )
+        written.append(skill_dst)
 
     return [str(p.relative_to(REPO_ROOT)) for p in written]
 
