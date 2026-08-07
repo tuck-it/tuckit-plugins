@@ -153,6 +153,16 @@ it.
 
 ## 5. Sections
 
+**Every causal claim needs a line you can point at, in every section — not just
+the ones that quote code.** Sections built on citations tend to come out right;
+the ones that explain *why* are where invention happens, because prose has no
+empty citation slot to embarrass you. Before writing "this was hard, so they did
+that", find the guard, the comment, the commit message or the spec that says so.
+If there is none, write what you did find. *"The code simply refuses this path"*
+with the `raise` quoted underneath beats a tidier mechanism you reasoned your
+way to and cannot source — and the tidier one will be repeated back to you later
+by a reader who trusted it.
+
 - **Provenance** — a short header block, first thing on the page: every
   `(repo, base_sha..head_sha)` covered, why the range starts and ends there, the
   slices linked, the generation date, and how far the branch has moved since. It
@@ -218,12 +228,25 @@ decoration.
   it.
 - **Build a manipulable model when the mechanism has a knob** — an ordering, an
   inherited value, a threshold, a predicate, a state machine. A diagram shows a
-  mechanism; a widget lets the reader falsify their own model of it. Two rules
-  make it worth its space: **derive the output live from the same rule the code
-  follows** — a hardcoded before/after is an animation, and cannot answer a
-  question you did not anticipate — and **let it be driven into both the broken
-  state and the fixed one**, so the reader can reproduce the bug and check that
-  the fix preserves what it should.
+  mechanism; a widget lets the reader falsify their own model of it. Four rules
+  make it worth its space:
+  - **Model the thing the page itself calls the point**, not the thing that was
+    easiest to transcribe. A pure function you copied over in five minutes is a
+    smell: nobody holds a wrong model of a five-branch `if`, so operating it
+    confirms instead of falsifying. Aim at whatever you were least sure of —
+    building it forces you to go find the line that settles the question, which
+    is also how the widget keeps the surrounding prose honest.
+  - **Controls are the reader's verbs, not the schema's fields.** *"File it"*,
+    *"change your mind"* — never `bites_total`. Knobs named after columns make
+    the reader translate their own experience into your tables, which is the
+    glossary failure of §3 committed in the interaction layer instead of the
+    prose.
+  - **Derive the output live from the same rule the code follows** — a
+    hardcoded before/after is an animation, and cannot answer a question you did
+    not anticipate.
+  - **Let it be driven into both the broken state and the fixed one**, so the
+    reader can reproduce the bug and check that the fix preserves what it
+    should.
 
 Keyboard-operable controls, never drag-only. Interactivity as decoration is
 worse than none: if operating it teaches nothing the caption already says, cut
