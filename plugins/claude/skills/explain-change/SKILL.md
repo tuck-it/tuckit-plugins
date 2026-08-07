@@ -49,6 +49,15 @@ Take whatever names a range, in this order of preference:
    repos merge local branches and never open one; check before relying on it.
 4. Nothing — then default to the most recent merge on the current branch.
 
+**Uncommitted work has no range, and cannot have a page.** A working tree or a
+staged diff gives Provenance no shas to name and nothing to check for being
+pushed, and the page would claim to describe a moment that changes on the next
+save — a cache with no validity key. Say so plainly and answer in chat instead
+(§1), or offer to build one once the work is committed; a throwaway commit
+message is enough, since a sha is all the identity this needs. Note that
+**committed-but-unpushed is fully supported** — that is a linking question
+(§7), not a range one, and everything except the permalinks still works.
+
 Then gather the facts with commands, not impressions. Run these before writing
 anything; every later section depends on what they return.
 
