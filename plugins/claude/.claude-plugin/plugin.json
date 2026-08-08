@@ -2,6 +2,7 @@
   "name": "tuckit",
   "description": "Domain knowledge and board-freshness hooks for using tuckit as your project's single source of truth.",
   "version": "0.7.0",
+  "license": "MIT",
   "userConfig": {
     "mcp_url": {
       "type": "string",

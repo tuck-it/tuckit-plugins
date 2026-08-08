@@ -227,3 +227,9 @@ python3 scripts/check_drift.py   # content must name only get_project_state (nee
 
 The build tests fail if any generated payload drifts from `shared/`, so a
 forgotten `build.py` run can't slip through.
+
+## License
+
+MIT — see [LICENSE](LICENSE). The plugins are deliberately permissive so they
+can be vendored into any agent toolchain. The tuckit server they talk to is a
+separate project under [AGPL-3.0](https://github.com/tuck-it/tuckit/blob/main/LICENSE).
