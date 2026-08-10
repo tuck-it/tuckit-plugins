@@ -27,6 +27,10 @@ AGENT_ROOT_TOKENS = {
     "antigravity": "__REPO__/plugins/antigravity",
 }
 
+# Formats the `{{ROOT}}` substitution may touch. Anything else is copied as
+# bytes — a skill is free to ship images or fonts without them being decoded.
+TEXT_SUFFIXES = {".md", ".html", ".css", ".js", ".json", ".py", ".txt", ".toml"}
+
 
 def _mirror_files(src: Path, dst: Path) -> list:
     """Mirror files under src into dst, deleting stale files. Returns writes."""
@@ -44,6 +48,45 @@ def _mirror_files(src: Path, dst: Path) -> list:
     return written
 
 
+def _mirror_skills(dst_root: Path, token: str) -> list:
+    """Render every shared/skills/<name>/ tree into dst_root, whole directory.
+
+    A skill is more than its SKILL.md — it may carry a reference doc, a page
+    template, or scripts — so the whole tree is mirrored rather than one known
+    file. Each skill directory is rebuilt from scratch so a file deleted from
+    the source cannot survive in a generated payload.
+
+    `{{ROOT}}` is substituted only in text formats; binary assets are copied
+    byte-for-byte so an image or font is never corrupted by a decode.
+    """
+    written = []
+    src_root = SHARED / "skills"
+    keep = {p.name for p in src_root.iterdir() if p.is_dir()}
+    if dst_root.exists():
+        for stale in dst_root.iterdir():
+            if stale.is_dir() and stale.name not in keep:
+                shutil.rmtree(stale)
+
+    for skill_dir in sorted(p for p in src_root.iterdir() if p.is_dir()):
+        dst = dst_root / skill_dir.name
+        if dst.exists():
+            shutil.rmtree(dst)
+        for src in sorted(skill_dir.rglob("*")):
+            if not src.is_file():
+                continue
+            target = dst / src.relative_to(skill_dir)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            if src.suffix in TEXT_SUFFIXES:
+                target.write_text(
+                    src.read_text(encoding="utf-8").replace("{{ROOT}}", token),
+                    encoding="utf-8",
+                )
+            else:
+                shutil.copyfile(src, target)
+            written.append(target)
+    return written
+
+
 def build_agent(agent: str) -> list:
     """Generate plugins/<agent>/{content,scripts,skills}. Returns repo-rel paths."""
     token = AGENT_ROOT_TOKENS[agent]
@@ -57,21 +100,7 @@ def build_agent(agent: str) -> list:
     shutil.copyfile(SHARED / "scripts" / "emit.py", emit_dst)
     written.append(emit_dst)
 
-    skills_src = SHARED / "skills"
-    skills_dst = dst / "skills"
-    skills_dst.mkdir(parents=True, exist_ok=True)
-    authored = {p.name for p in skills_src.iterdir() if p.is_dir()}
-    for stale in skills_dst.iterdir():
-        if stale.is_dir() and stale.name not in authored:
-            shutil.rmtree(stale)
-    for skill_src in sorted(p for p in skills_src.iterdir() if p.is_dir()):
-        skill_dst = skills_dst / skill_src.name / "SKILL.md"
-        skill_dst.parent.mkdir(parents=True, exist_ok=True)
-        skill_dst.write_text(
-            (skill_src / "SKILL.md").read_text(encoding="utf-8").replace("{{ROOT}}", token),
-            encoding="utf-8",
-        )
-        written.append(skill_dst)
+    written += _mirror_skills(dst / "skills", token)
 
     return [str(p.relative_to(REPO_ROOT)) for p in written]
 
