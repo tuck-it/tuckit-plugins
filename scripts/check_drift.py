@@ -13,7 +13,26 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 CONTENT_DIR = REPO_ROOT / "shared" / "content"
 ENTRY_POINT = "get_project_state"
-SERVER_PY = REPO_ROOT.parent / "tuckit" / "tuckit" / "core" / "mcp" / "server.py"
+SERVER_REL = Path("tuckit") / "tuckit" / "core" / "mcp" / "server.py"
+
+
+def _find_server_py() -> Path:
+    """Locate the sibling tuckit checkout's MCP server.
+
+    Normally it sits next to this repo. Development happens in worktrees
+    (`<workspace>/.worktrees/<name>/`), which pushes the sibling one level
+    further up — and a guard that silently skips in the layout people actually
+    work in is a guard that never runs. Returns the plain sibling path when
+    neither exists, so the skip message names the expected location.
+    """
+    for base in (REPO_ROOT.parent, REPO_ROOT.parent.parent):
+        candidate = base / SERVER_REL
+        if candidate.exists():
+            return candidate
+    return REPO_ROOT.parent / SERVER_REL
+
+
+SERVER_PY = _find_server_py()
 
 
 def find_leaked_tool_names(content_text: str, known_tools: set) -> list:

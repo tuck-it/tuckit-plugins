@@ -1,0 +1,19 @@
+tuckit-plugins
+Copyright (c) 2026 tuckit
+
+This product includes work derived from Superpowers
+(https://github.com/obra/superpowers), Copyright (c) 2025 Jesse Vincent,
+licensed under the MIT License.
+
+The following skills are forks of Superpowers skills, rewritten so their
+artifacts land on a tuckit board instead of in markdown files:
+
+  shared/skills/designing-a-slice/      <- skills/brainstorming
+  shared/skills/breaking-down-a-slice/  <- skills/writing-plans
+  shared/skills/executing-a-slice/      <- skills/executing-plans
+  shared/skills/shipping-a-slice/       <- skills/finishing-a-development-branch
+
+Superpowers' other skills (test-driven-development, systematic-debugging,
+subagent-driven-development, using-git-worktrees, the code-review pair) are not
+forked here. They produce nothing a board needs to hold, and the forked skills
+above defer to them by name when they are installed.

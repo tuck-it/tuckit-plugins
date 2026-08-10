@@ -26,8 +26,9 @@ Works with **Claude Code**, **Codex CLI**, and **Antigravity CLI**.
 | **Antigravity CLI** | Copy 2 files | ⚙️ **Manual** — add tuckit to your MCP config (auto-bundling is coming) |
 
 Everyone gets: the **session-start primer**, the **session-end write-back
-reminder**, and the **`tuckit-domain` skill**. Claude Code also gets a
-**`/tuckit-sync`** command to reconcile the board mid-session.
+reminder**, the **`tuckit-domain` skill**, and the **four workflow skills**
+below. Claude Code also gets a **`/tuckit-sync`** command to reconcile the board
+mid-session.
 
 ---
 
@@ -169,6 +170,35 @@ Antigravity auto-registers a plugin's MCP config.)
 
 ---
 
+## The workflow skills
+
+The hooks are ambient — they orient the agent and nudge it to write back. The
+four workflow skills are the other half: they make one unit of work move through
+tuckit end to end, so nothing about it ever lives only in a chat log.
+
+| Skill | Use it when | What it writes to the board |
+|---|---|---|
+| **`designing-a-slice`** | An idea, before any code | Resolves or creates the slice, then writes the approved design into its **spec** |
+| **`breaking-down-a-slice`** | The spec is approved (`needs_steps`) | The **constraints**, then an ordered **bite** checklist |
+| **`executing-a-slice`** | There are bites to do (`executing`) | Each bite's status as it happens; deferrals become new slices |
+| **`shipping-a-slice`** | The checklist is empty (`ready_to_ship`) | A note with what shipped, and — after asking — `status: shipped` |
+
+Each one ends by naming the next, so the chain runs itself. The payoff is
+**resumption**: a new session reads the slice's stage and knows where the work
+is, instead of hunting for the markdown file the last session left behind.
+
+These are forks of four [Superpowers](https://github.com/obra/superpowers)
+skills (MIT — see [NOTICE](NOTICE)), rewritten so the artifacts land on the
+board instead of in `docs/`. If you run Superpowers too, these supersede
+`brainstorming`, `writing-plans`, `executing-plans` and
+`finishing-a-development-branch` **in a tuckit-tracked workspace** — their
+descriptions say so. The rest of Superpowers is untouched and still worth
+having: the forks defer to `test-driven-development`,
+`subagent-driven-development` and `using-git-worktrees` by name when they are
+installed.
+
+---
+
 ## Connecting the MCP by hand
 
 Claude Code and Codex wire the MCP for you (above). Use these only for
@@ -215,7 +245,14 @@ scripts/                dev tooling (not shipped in any plugin)
 
 The manifests, hooks, commands, and the AGENTS snippet under each
 `plugins/<agent>/` are authored in place; only `content/`, `scripts/emit.py`,
-and the skill are generated.
+and the skills are generated.
+
+Two guards pull in opposite directions on purpose: `content/` may name **only**
+`get_project_state`, because that prose has to survive the tool catalog
+changing, while the skills name tools outright — a skill that says "discover the
+tools yourself" cannot drive a pipeline. `tests/test_skill_tools.py` is the
+trade: every tool a skill names is checked against the live catalog in
+`../tuckit`, and adding a new one means listing it there first.
 
 **After editing anything in `shared/`, rebuild and verify:**
 
