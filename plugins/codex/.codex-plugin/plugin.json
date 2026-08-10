@@ -1,7 +1,7 @@
 {
   "name": "tuckit",
-  "version": "0.6.0",
-  "description": "Domain knowledge and board-freshness hooks for using tuckit as your project's single source of truth.",
+  "version": "0.7.0",
+  "description": "Use tuckit as your project's single source of truth: domain knowledge, board-freshness hooks, and a design-to-ship workflow that writes every artifact to the board.",
   "author": {
     "name": "tuck-it"
   },
