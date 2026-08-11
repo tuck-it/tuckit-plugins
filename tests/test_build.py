@@ -67,7 +67,13 @@ SKILLS = sorted(p.name for p in (SHARED / "skills").iterdir() if p.is_dir())
 def test_every_shared_skill_file_is_generated(agent, skill):
     """Whole skill trees ship, not just SKILL.md — a skill may carry a reference
     doc or a page template, and one left behind fails at runtime with no
-    build-time signal."""
+    build-time signal.
+
+    The executable-bit comparison below cannot fail today: no file under
+    `shared/` is executable. It is a regression guard on real payloads, not
+    evidence that modes are carried — that is
+    `test_mirror_skills_preserves_the_executable_bit`, which builds an
+    executable source of its own."""
     src_dir = SHARED / "skills" / skill
     dst_dir = ROOT / "plugins" / agent / "skills" / skill
     src_files = sorted(p.relative_to(src_dir) for p in src_dir.rglob("*") if p.is_file())
@@ -75,6 +81,12 @@ def test_every_shared_skill_file_is_generated(agent, skill):
     assert dst_files == src_files, f"plugins/{agent}/skills/{skill} drifted — run build"
 
     for rel in src_files:
+        # only the executable bit: git tracks nothing else, so a contributor's
+        # umask must not turn this red
+        assert (dst_dir / rel).stat().st_mode & 0o111 == (
+            src_dir / rel
+        ).stat().st_mode & 0o111, f"{rel} executable bit drifted — run build"
+
         rendered = (dst_dir / rel).read_bytes()
         if rel.suffix in build.TEXT_SUFFIXES:
             expected = (src_dir / rel).read_text(encoding="utf-8").replace(
