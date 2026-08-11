@@ -173,7 +173,7 @@ Antigravity auto-registers a plugin's MCP config.)
 ## The workflow skills
 
 The hooks are ambient — they orient the agent and nudge it to write back. The
-four workflow skills are the other half: they make one unit of work move through
+workflow skills are the other half: they make one unit of work move through
 tuckit end to end, so nothing about it ever lives only in a chat log.
 
 | Skill | Use it when | What it writes to the board |
@@ -181,21 +181,40 @@ tuckit end to end, so nothing about it ever lives only in a chat log.
 | **`designing-a-slice`** | An idea, before any code | Resolves or creates the slice, then writes the approved design into its **spec** |
 | **`breaking-down-a-slice`** | The spec is approved (`needs_steps`) | The **constraints**, then an ordered **bite** checklist |
 | **`executing-a-slice`** | There are bites to do (`executing`) | Each bite's status as it happens; deferrals become new slices |
+| **`delegating-a-slice`** | Same, but the bites are mostly independent and you have subagents | Same, driven by a fresh implementer and reviewer per bite |
 | **`shipping-a-slice`** | The checklist is empty (`ready_to_ship`) | A note with what shipped, and — after asking — `status: shipped` |
+
+`delegating-a-slice` is where the board pays off twice: a dispatched subagent
+gets a slice ref and a bite id and reads its own requirements, so there is no
+brief file to drift from the board — and bite status *is* the progress ledger,
+so a controller that lost its place after a compaction reads the board instead
+of re-dispatching work that is already done.
 
 Each one ends by naming the next, so the chain runs itself. The payoff is
 **resumption**: a new session reads the slice's stage and knows where the work
 is, instead of hunting for the markdown file the last session left behind.
 
-These are forks of four [Superpowers](https://github.com/obra/superpowers)
-skills (MIT — see [NOTICE](NOTICE)), rewritten so the artifacts land on the
-board instead of in `docs/`. If you run Superpowers too, these supersede
-`brainstorming`, `writing-plans`, `executing-plans` and
-`finishing-a-development-branch` **in a tuckit-tracked workspace** — their
-descriptions say so. The rest of Superpowers is untouched and still worth
-having: the forks defer to `test-driven-development`,
-`subagent-driven-development` and `using-git-worktrees` by name when they are
-installed.
+### Relationship to Superpowers
+
+These are forks of five [Superpowers](https://github.com/obra/superpowers)
+skills (MIT — see [NOTICE](NOTICE)): `brainstorming`, `writing-plans`,
+`executing-plans`, `subagent-driven-development` and
+`finishing-a-development-branch`. They keep upstream's form — the checklists you
+must materialise as tasks, the task template, the placeholder ban, the
+self-reviews, the fix loop and its breaker, the rationalization tables — and
+change one thing: **every artifact lands on the board instead of in `docs/`.**
+No design file, no plan file, no task briefs, no progress ledger.
+
+**They are a replacement, not a supplement.** Run this plugin *instead of*
+Superpowers, not alongside it: with both enabled, `designing-a-slice` and
+`brainstorming` compete for the same trigger, and whichever wins decides
+whether your design ends up somewhere the next session can find it.
+
+The trade is honest, so here it is plainly: Superpowers ships layers this
+plugin does not yet have — TDD, systematic debugging,
+verification-before-completion, code review, worktrees. Those are
+being forked next. Until they land, this plugin covers design → steps →
+execution → shipping, and nothing below that line.
 
 ---
 

@@ -1,3 +1,4 @@
+import os
 import shutil
 import sys
 from pathlib import Path
@@ -66,7 +67,13 @@ SKILLS = sorted(p.name for p in (SHARED / "skills").iterdir() if p.is_dir())
 def test_every_shared_skill_file_is_generated(agent, skill):
     """Whole skill trees ship, not just SKILL.md — a skill may carry a reference
     doc or a page template, and one left behind fails at runtime with no
-    build-time signal."""
+    build-time signal.
+
+    The executable-bit comparison below cannot fail today: no file under
+    `shared/` is executable. It is a regression guard on real payloads, not
+    evidence that modes are carried — that is
+    `test_mirror_skills_preserves_the_executable_bit`, which builds an
+    executable source of its own."""
     src_dir = SHARED / "skills" / skill
     dst_dir = ROOT / "plugins" / agent / "skills" / skill
     src_files = sorted(p.relative_to(src_dir) for p in src_dir.rglob("*") if p.is_file())
@@ -74,6 +81,12 @@ def test_every_shared_skill_file_is_generated(agent, skill):
     assert dst_files == src_files, f"plugins/{agent}/skills/{skill} drifted — run build"
 
     for rel in src_files:
+        # only the executable bit: git tracks nothing else, so a contributor's
+        # umask must not turn this red
+        assert (dst_dir / rel).stat().st_mode & 0o111 == (
+            src_dir / rel
+        ).stat().st_mode & 0o111, f"{rel} executable bit drifted — run build"
+
         rendered = (dst_dir / rel).read_bytes()
         if rel.suffix in build.TEXT_SUFFIXES:
             expected = (src_dir / rel).read_text(encoding="utf-8").replace(
@@ -108,6 +121,33 @@ def test_mirror_skills_ships_the_whole_tree(tmp_path, monkeypatch):
     assert (dst / "demo" / "refs" / "guide.md").read_text() == "see TOKEN/content\n"
     # binary is copied, never decoded
     assert (dst / "demo" / "logo.png").read_bytes() == b"\x89PNG\x00\xff\xfe"
+
+
+def test_mirror_skills_preserves_the_executable_bit(tmp_path, monkeypatch):
+    """A skill may ship a helper script. Neither write_text nor copyfile carries
+    the source's mode, so a payload that silently lost +x fails at the user's
+    install rather than at build time — and a byte-comparison guard stays green
+    through it."""
+    src = _authored_skill(tmp_path)
+    # .sh takes the copyfile branch; .py takes the write_text branch. Both drop
+    # the mode, so both need covering — a single .sh would leave half the bug.
+    (src / "run.sh").write_text("#!/usr/bin/env bash\necho hi\n", encoding="utf-8")
+    (src / "run.sh").chmod(0o755)
+    (src / "run.py").write_text("#!/usr/bin/env python3\nprint('{{ROOT}}')\n", encoding="utf-8")
+    (src / "run.py").chmod(0o755)
+    monkeypatch.setattr(build, "SHARED", tmp_path)
+    dst = tmp_path / "out"
+
+    build._mirror_skills(dst, "TOKEN")
+
+    assert os.access(dst / "demo" / "run.sh", os.X_OK), "executable helper shipped without +x"
+    assert os.access(dst / "demo" / "run.py", os.X_OK), "executable helper shipped without +x"
+    # the token still gets substituted in the branch that also carries the mode
+    assert (dst / "demo" / "run.py").read_text() == "#!/usr/bin/env python3\nprint('TOKEN')\n"
+    # the other half: mode is copied, not forced — otherwise "chmod +x everything"
+    # would satisfy the assertion above while corrupting every other file
+    assert not os.access(dst / "demo" / "SKILL.md", os.X_OK), "non-executable file made executable"
+    assert not os.access(dst / "demo" / "logo.png", os.X_OK), "non-executable file made executable"
 
 
 def test_mirror_skills_removes_what_the_source_deleted(tmp_path, monkeypatch):

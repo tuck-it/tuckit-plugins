@@ -11,9 +11,15 @@ artifacts land on a tuckit board instead of in markdown files:
   shared/skills/designing-a-slice/      <- skills/brainstorming
   shared/skills/breaking-down-a-slice/  <- skills/writing-plans
   shared/skills/executing-a-slice/      <- skills/executing-plans
+  shared/skills/delegating-a-slice/     <- skills/subagent-driven-development
   shared/skills/shipping-a-slice/       <- skills/finishing-a-development-branch
 
-Superpowers' other skills (test-driven-development, systematic-debugging,
-subagent-driven-development, using-git-worktrees, the code-review pair) are not
-forked here. They produce nothing a board needs to hold, and the forked skills
-above defer to them by name when they are installed.
+delegating-a-slice also carries forks of that skill's prompt templates
+(implementer-prompt.md, task-reviewer-prompt.md -> reviewer-prompt.md, and
+re-review-prompt.md).
+
+Superpowers' remaining skills (test-driven-development, systematic-debugging,
+verification-before-completion, using-git-worktrees, dispatching-parallel-agents
+and the code-review pair) are not forked here. This plugin is meant to replace
+Superpowers rather than run alongside it, so it does not defer to them by name;
+until they are forked too, the layers they cover are simply absent.
