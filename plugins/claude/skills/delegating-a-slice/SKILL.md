@@ -193,10 +193,8 @@ debugging): use a standard model.
 final whole-branch review is one of these — dispatch it on the most capable
 available model, not the session default.
 
-**Review tasks**: choose the model with the same judgment, scaled to the diff's
-size, complexity, and risk. A small mechanical diff does not need the most
-capable model; a subtle concurrency change does. Scoped re-reviews of small fix
-diffs take a cheap-to-mid tier.
+**Review tasks**: `requesting-a-review` owns this choice — follow its model
+selection section.
 
 **Fix-loop escalation (rounds 4-5)**: use a model at least one tier above the
 implementer that got stuck.
@@ -294,21 +292,9 @@ end. Never skip the bite review, and never accept a report missing either
 verdict — spec compliance AND quality are both required. Implementer
 self-review never replaces the bite review; both are needed.
 
-Hand the reviewer its diff as a file:
-
-```bash
-OUT="$WORK/review-$(git rev-parse --short "$BASE")..$(git rev-parse --short HEAD).diff"
-{ echo "## Commits";       git log --oneline "$BASE"..HEAD
-  echo; echo "## Files changed"; git diff --stat "$BASE"..HEAD
-  echo; echo "## Diff";     git diff -U10 "$BASE"..HEAD
-} > "$OUT"
-```
-
-The output never enters your own context, and the reviewer sees the commit list,
-stat summary, and full diff with context in one Read call. Use the BASE you
-recorded before dispatching — **never `HEAD~1`**, which silently drops all but
-the last commit of a multi-commit bite. Never dispatch a reviewer without a diff
-file.
+Write the review package as `requesting-a-review` describes, using the BASE you
+recorded before dispatching this bite — **never `HEAD~1`**, which silently drops
+all but the last commit of a multi-commit bite.
 
 - **Reviewer inputs:** the slice ref and bite id, the report file path, the diff
   file path, and the slice's `constraints` copied verbatim.
@@ -335,9 +321,14 @@ the slice and the cross-bite context the reviewer lacks. If you confirm an item
 is a real gap, treat it as a failed spec review — it enters the fix loop with
 the other findings.
 
-Template: [reviewer-prompt.md](reviewer-prompt.md)
+Template: [reviewer-prompt.md](../requesting-a-review/reviewer-prompt.md) at
+scope `bite` — `requesting-a-review` holds how to fill it.
 
 ### 4. The fix loop
+
+Findings are routed by `receiving-a-review` — every one of them lands
+somewhere. The rounds, the cap and the breaker below are this skill's: they
+say *when* to use those routes inside the loop, not what the routes are.
 
 The loop triggers when the review reports spec ❌, any Critical or Important
 finding, or a ⚠️ item you confirmed as a real gap.
@@ -380,9 +371,11 @@ message — a one-line fix does not need the whole suite.
 
 **The re-review is scoped.** Write a fresh review package over the fix range
 (FIX_BASE = the head the previous review saw) and dispatch
-[re-review-prompt.md](re-review-prompt.md) with the findings list, the slice ref
-and bite id, the report file, and the diff path. The re-reviewer verdicts each
-finding ADDRESSED or NOT ADDRESSED and flags new breakage in the fix diff only.
+[re-review-prompt.md](../requesting-a-review/re-review-prompt.md) at scope
+`bite` — `requesting-a-review` holds how to fill it — with the findings list,
+the slice ref and bite id, the report file, and the diff path. The re-reviewer
+verdicts each finding ADDRESSED or NOT ADDRESSED and flags new breakage in the
+fix diff only.
 New Critical/Important breakage in the fix diff joins the open findings list.
 Out-of-scope observations go to the deferred-minors list — they never extend the
 loop.
@@ -430,22 +423,9 @@ Inbox. Not a `TODO` comment, not a line in your closing message.
 
 ## Final Review
 
-The final whole-branch review gets a package too: write one over the whole
-branch (MERGE_BASE = the commit the branch started from, e.g.
-`git merge-base main HEAD`) and include the path in the dispatch, so the final
-reviewer reads one file instead of re-deriving the branch diff. Dispatch on the
-most capable available model (see Model Selection).
-
-Give it: the slice ref (so it can read the spec and constraints itself), the
-package path, and the deferred-minors list so it can triage which must be fixed
-before merge.
-
-Until a dedicated code-review skill lands (TP-129), brief the final reviewer
-with the same rubric the bite reviewer uses — spec compliance against the
-slice's spec, then quality — but scoped to the whole branch rather than one
-bite, and told to look for what no single bite review could see: integration
-between bites, duplication across them, and requirements that fell between two
-bites.
+Use `requesting-a-review` with scope `branch`, and pass the deferred-minors
+list as that scope's optional input so the reviewer can triage which of them
+must be fixed before merge. Dispatch it on the most capable available model.
 
 If the final review returns findings, dispatch **ONE** fix subagent with the
 complete findings list — not one fixer per finding. Per-finding fixers each
