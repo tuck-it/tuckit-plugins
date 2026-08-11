@@ -67,6 +67,22 @@ packages are files; none of this belongs on the board.
 review, `git merge-base <base-branch> HEAD`. **Never `HEAD~1`**: it silently
 drops all but the last commit whenever the work took more than one.
 
+For an `ad-hoc` review, `BASE` is whatever range the requester named. When what
+they want reviewed is not committed yet there is no range at all, so build the
+package from the working tree instead — there are no commits to list, and the
+prompt's **Head:** line stays blank:
+
+```bash
+OUT="$WORK/review-worktree.diff"
+{ echo "## Files changed"; git diff --stat HEAD
+  echo; echo "## Diff";    git diff -U10 HEAD
+} > "$OUT"
+```
+
+`git diff HEAD` covers everything uncommitted, staged or not; plain `git diff`
+narrows it to unstaged work when that is what was asked about. Either way the
+reviewer still reads one file, and the rules below are unchanged.
+
 **Never dispatch a reviewer without a diff file.**
 
 Hand it, alongside the diff path: the slice ref (so it reads the requirements
