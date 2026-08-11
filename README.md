@@ -187,15 +187,26 @@ Each one ends by naming the next, so the chain runs itself. The payoff is
 **resumption**: a new session reads the slice's stage and knows where the work
 is, instead of hunting for the markdown file the last session left behind.
 
+### Relationship to Superpowers
+
 These are forks of four [Superpowers](https://github.com/obra/superpowers)
-skills (MIT — see [NOTICE](NOTICE)), rewritten so the artifacts land on the
-board instead of in `docs/`. If you run Superpowers too, these supersede
-`brainstorming`, `writing-plans`, `executing-plans` and
-`finishing-a-development-branch` **in a tuckit-tracked workspace** — their
-descriptions say so. The rest of Superpowers is untouched and still worth
-having: the forks defer to `test-driven-development`,
-`subagent-driven-development` and `using-git-worktrees` by name when they are
-installed.
+skills (MIT — see [NOTICE](NOTICE)): `brainstorming`, `writing-plans`,
+`executing-plans` and `finishing-a-development-branch`. They keep upstream's
+form — the checklists you must materialise as tasks, the task template, the
+placeholder ban, the self-reviews, the rationalization tables — and change one
+thing: **every artifact lands on the board instead of in `docs/`.** No design
+file, no plan file, no progress ledger.
+
+**They are a replacement, not a supplement.** Run this plugin *instead of*
+Superpowers, not alongside it: with both enabled, `designing-a-slice` and
+`brainstorming` compete for the same trigger, and whichever wins decides
+whether your design ends up somewhere the next session can find it.
+
+The trade is honest, so here it is plainly: Superpowers ships layers this
+plugin does not yet have — subagent-driven execution, TDD, systematic
+debugging, verification-before-completion, code review, worktrees. Those are
+being forked next. Until they land, this plugin covers design → steps →
+execution → shipping, and nothing below that line.
 
 ---
 

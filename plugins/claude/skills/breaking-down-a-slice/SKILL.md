@@ -1,6 +1,6 @@
 ---
 name: breaking-down-a-slice
-description: "Use when a tuckit slice has an approved spec and needs implementation steps — stage reads needs_steps — before touching any code. Writes the constraints and an ordered bite checklist onto the slice itself. In this workspace it replaces superpowers:writing-plans: the board is the plan, so there is no plan file."
+description: "Use when a tuckit slice has an approved spec and needs implementation steps — stage reads needs_steps — before touching any code. Writes the constraints and an ordered bite checklist onto the slice itself. Replaces superpowers:writing-plans — same task template and placeholder ban, but the board is the plan, so there is no plan file."
 ---
 
 # Breaking Down a Slice

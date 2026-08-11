@@ -1,6 +1,6 @@
 ---
 name: designing-a-slice
-description: "Use before any creative work in a tuckit-tracked workspace — a new feature, a component, a behavior change, anything not yet designed. Turns an idea into an approved design written into the slice's spec. In this workspace it replaces superpowers:brainstorming: same dialogue, but the design lands on the board instead of a markdown file."
+description: "Use before any creative work in a tuckit-tracked workspace — a new feature, a component, a behavior change, anything not yet designed. Turns an idea into an approved design written into the slice's spec. Replaces superpowers:brainstorming — same dialogue and the same gates, but the design lands on the board instead of a markdown file."
 ---
 
 # Designing a Slice

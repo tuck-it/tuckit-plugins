@@ -1,6 +1,6 @@
 ---
 name: executing-a-slice
-description: "Use when a tuckit slice has bites to implement — stage reads executing — or when picking up a half-finished slice in a fresh session. Runs the checklist and keeps each bite's status current so the board shows where the work actually is. In this workspace it replaces superpowers:executing-plans."
+description: "Use when a tuckit slice has bites to implement — stage reads executing — or when picking up a half-finished slice in a fresh session. Runs the checklist and keeps each bite's status current so the board shows where the work actually is. Replaces superpowers:executing-plans."
 ---
 
 # Executing a Slice

@@ -1,6 +1,6 @@
 ---
 name: shipping-a-slice
-description: "Use when a tuckit slice's implementation is finished — stage reads ready_to_ship — and the branch needs to land. Verifies for real, lands the branch, records what happened on the slice, and asks before marking it shipped. In this workspace it replaces superpowers:finishing-a-development-branch."
+description: "Use when a tuckit slice's implementation is finished — stage reads ready_to_ship — and the branch needs to land. Verifies for real, lands the branch, records what happened on the slice, and asks before marking it shipped. Replaces superpowers:finishing-a-development-branch."
 ---
 
 # Shipping a Slice
