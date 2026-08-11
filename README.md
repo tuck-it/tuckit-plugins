@@ -268,5 +268,11 @@ forgotten `build.py` run can't slip through.
 ## License
 
 MIT — see [LICENSE](LICENSE). The plugins are deliberately permissive so they
-can be vendored into any agent toolchain. The tuckit server they talk to is a
-separate project under [AGPL-3.0](https://github.com/tuck-it/tuckit/blob/main/LICENSE).
+can be vendored into any agent toolchain.
+
+The tuckit server they talk to is a separate project under the
+[Business Source License 1.1](https://github.com/tuck-it/tuckit/blob/main/LICENSE).
+BSL is source-available rather than OSI open source: you can read the code and
+run it in production, including self-hosting it for your own organisation. The
+one thing it withholds is offering tuckit to third parties as a hosted or
+managed service. On 2030-07-10 it converts to Apache 2.0.
