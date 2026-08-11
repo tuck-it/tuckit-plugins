@@ -5,22 +5,87 @@ description: "Use before any creative work in a tuckit-tracked workspace — a n
 
 # Designing a Slice
 
-Turn an idea into a design the next session can pick up. The dialogue is the one
-you would have anyway; what changes is where it lands — the slice's `spec`, not
-a file under `docs/`. A file is read by whoever knows to look for it. A spec is
-read by anyone who opens the board, and by every agent that reads the slice
-before touching the code.
+Help turn ideas into fully formed designs through natural collaborative
+dialogue.
+
+Start by resolving which slice this is and understanding the current project
+context, then ask questions one at a time to refine the idea. Once you
+understand what you're building, present the design and get user approval.
+
+The dialogue is the one you would have anyway; what changes is where it lands —
+the slice's `spec`, not a file under `docs/`. A file is read by whoever knows to
+look for it. A spec is read by anyone who opens the board, and by every agent
+that reads the slice before touching the code.
 
 Vocabulary and stages: `__REPO__/plugins/antigravity/content/domain.md`.
 
 <HARD-GATE>
-Do not write code, scaffold anything, or invoke an implementation skill until
-you have presented a design and the user has approved it. Every project,
-regardless of how simple it looks. "Simple" is where unexamined assumptions do
-the most damage. The design can be three sentences — it still gets presented.
+Do NOT invoke any implementation skill, write any code, scaffold any project, or
+take any implementation action until you have presented a design and the user
+has approved it. This applies to EVERY project regardless of perceived
+simplicity.
 </HARD-GATE>
 
-## 0. Resolve the slice before you ask the first question
+## Anti-Pattern: "This Is Too Simple To Need A Design"
+
+Every project goes through this process. A todo list, a single-function utility,
+a config change — all of them. "Simple" projects are where unexamined
+assumptions cause the most wasted work. The design can be short (a few sentences
+for truly simple projects), but you MUST present it and get approval.
+
+## Checklist
+
+You MUST create a task for each of these items and complete them in order:
+
+1. **Resolve the slice** — find it on the board or create it, before the first
+   question
+2. **Explore project context** — project state, files, recent commits
+3. **Ask clarifying questions** — one at a time, understand purpose /
+   constraints / success criteria
+4. **Propose 2-3 approaches** — with trade-offs and your recommendation
+5. **Present design** — in sections scaled to their complexity, get user
+   approval after each section
+6. **Write the design into the slice** — `update_slice(spec=…)`
+7. **Spec self-review** — read it back and check for placeholders,
+   contradictions, ambiguity, scope
+8. **User reviews the spec on the board** — as it now renders, not as you
+   described it in chat
+9. **Transition to implementation** — invoke `breaking-down-a-slice`
+
+## Process Flow
+
+```dot
+digraph designing {
+    "Resolve the slice" [shape=box];
+    "Explore project context" [shape=box];
+    "Ask clarifying questions" [shape=box];
+    "Propose 2-3 approaches" [shape=box];
+    "Present design sections" [shape=box];
+    "User approves design?" [shape=diamond];
+    "update_slice(spec=…)" [shape=box];
+    "Spec self-review\n(fix inline)" [shape=box];
+    "User reviews spec on board?" [shape=diamond];
+    "Invoke breaking-down-a-slice" [shape=doublecircle];
+
+    "Resolve the slice" -> "Explore project context";
+    "Explore project context" -> "Ask clarifying questions";
+    "Ask clarifying questions" -> "Propose 2-3 approaches";
+    "Propose 2-3 approaches" -> "Present design sections";
+    "Present design sections" -> "User approves design?";
+    "User approves design?" -> "Present design sections" [label="no, revise"];
+    "User approves design?" -> "update_slice(spec=…)" [label="yes"];
+    "update_slice(spec=…)" -> "Spec self-review\n(fix inline)";
+    "Spec self-review\n(fix inline)" -> "User reviews spec on board?";
+    "User reviews spec on board?" -> "update_slice(spec=…)" [label="changes requested"];
+    "User reviews spec on board?" -> "Invoke breaking-down-a-slice" [label="approved"];
+}
+```
+
+**The terminal state is invoking `breaking-down-a-slice`.** Do NOT invoke a
+frontend-design skill, an MCP-builder skill, or any other implementation skill.
+The ONLY skill you invoke after this one is `breaking-down-a-slice`.
+
+## 1. Resolve the slice before you ask the first question
 
 1. Search the board — the idea may already be captured, often months ago and
    better phrased than the request you just got. `list_slices(query=…)` searches
@@ -36,38 +101,74 @@ the most damage. The design can be three sentences — it still gets presented.
      area empty and it waits in the Inbox. Both directions are reversible, so
      this is not a decision worth stalling on.
 
-Step 0 is first because a design conversation that dies before step 5 leaves
+This is first because a design conversation that dies before step 6 leaves
 nothing behind otherwise — and because work the board does not know about is
 exactly what makes the board stale.
 
-## 1. Explore the context
+## 2. Understanding the idea
 
-Read project state from tuckit (`get_project_state`), then the code: the files
-this would touch, recent commits in that area, existing conventions. Check
-whether a neighbouring slice already owns part of this — overlapping designs are
-cheaper to find now than to merge later.
+- Read project state from tuckit (`get_project_state`), then the code: the files
+  this would touch, recent commits in that area, existing conventions. Check
+  whether a neighbouring slice already owns part of this — overlapping designs
+  are cheaper to find now than to merge later.
+- Before asking detailed questions, assess scope: if the request describes
+  multiple independent subsystems (e.g., "build a platform with chat, file
+  storage, billing, and analytics"), flag this immediately. Don't spend
+  questions refining details of a project that needs to be decomposed first.
+- If the project is too large for a single spec, help the user decompose it into
+  sibling slices: what are the independent pieces, how do they relate, what
+  order should they be built? Then design the first one through the normal flow.
+  Each sibling gets its own spec → steps → implementation cycle, and each spec
+  names the others by ref.
+- For appropriately-scoped work, ask questions one at a time to refine the idea
+- Prefer multiple choice questions when possible, but open-ended is fine too
+- Only one question per message — if a topic needs more exploration, break it
+  into multiple questions
+- Focus on understanding: purpose, constraints, success criteria
 
-## 2. Ask questions, one at a time
+## 3. Exploring approaches
 
-One question per message. Prefer multiple choice; open-ended is fine when it has
-to be. You are after purpose, constraints, and what success looks like — not
-implementation detail yet.
+- Propose 2-3 different approaches with trade-offs
+- Present options conversationally with your recommendation and reasoning
+- Lead with your recommended option and explain why
+- YAGNI ruthlessly — remove unnecessary features from every approach and design
 
-**Scope check.** If the request is several independent subsystems, say so
-immediately instead of refining the details of something that needs splitting
-first. Decompose into sibling slices, then design the first one. One slice
-carries one design and one checklist — that is a structural boundary, not a
-style preference (see `breaking-down-a-slice`).
+## 4. Presenting the design
 
-## 3. Propose 2–3 approaches
+- Once you believe you understand what you're building, present the design
+- Scale each section to its complexity: a few sentences if straightforward, up
+  to 200-300 words if nuanced
+- Ask after each section whether it looks right so far
+- Cover: architecture, components, data flow, error handling, testing
+- Be ready to go back and clarify if something doesn't make sense
+- Revise and re-present until the user approves — no silent redesign after a
+  "yes"
 
-With trade-offs, lead with your recommendation and say why. YAGNI ruthlessly:
-strip anything from each approach that this slice does not need.
+**Design for isolation and clarity:**
 
-## 4. Present the design in sections
+- Break the system into smaller units that each have one clear purpose,
+  communicate through well-defined interfaces, and can be understood and tested
+  independently
+- For each unit, you should be able to answer: what does it do, how do you use
+  it, and what does it depend on?
+- Can someone understand what a unit does without reading its internals? Can you
+  change the internals without breaking consumers? If not, the boundaries need
+  work.
+- Smaller, well-bounded units are also easier for you to work with — you reason
+  better about code you can hold in context at once, and your edits are more
+  reliable when files are focused. When a file grows large, that's often a
+  signal that it's doing too much.
 
-Sections scaled to their complexity, approval per section. Revise and re-present
-until the user approves — no silent redesign after a "yes".
+**Working in existing codebases:**
+
+- Explore the current structure before proposing changes. Follow existing
+  patterns.
+- Where existing code has problems that affect the work (e.g., a file that's
+  grown too large, unclear boundaries, tangled responsibilities), include
+  targeted improvements as part of the design — the way a good developer
+  improves code they're working in.
+- Don't propose unrelated refactoring. Stay focused on what serves the current
+  goal.
 
 ## 5. Write the approved design into the slice
 
@@ -86,24 +187,43 @@ render.
   a pointer to the slice ref. A second copy of a design is a second thing to
   keep true, and it is always the one that goes stale.
 
-## 6. Read it back, then let the user read it
+## 6. Spec Self-Review
 
-`get_slice(<ref>)` and read what actually rendered. Check for placeholders you
-meant to fill, contradictions between sections, scope that crept in, and prose
-that is really a constraint in disguise. Fix inline.
+`get_slice(<ref>)` and read what actually rendered, with fresh eyes:
 
-Then ask the user to review the spec **as it now reads on the board** — not as
-you described it in chat.
+1. **Placeholder scan:** Any "TBD", "TODO", incomplete sections, or vague
+   requirements? Fix them.
+2. **Internal consistency:** Do any sections contradict each other? Does the
+   architecture match the feature descriptions?
+3. **Scope check:** Is this focused enough for a single implementation plan, or
+   does it need decomposition into sibling slices?
+4. **Ambiguity check:** Could any requirement be interpreted two different ways?
+   If so, pick one and make it explicit.
+5. **Constraint in disguise:** Is any of this prose really a landmine or a
+   definition of done? Move it to `constraints`.
 
-## 7. Terminal state
+Fix any issues inline. No need to re-review — just fix and move on.
 
-Invoke `breaking-down-a-slice`. That is the only skill you invoke from here — no
-implementation skill, no code, no scaffolding.
+## 7. User Review Gate
+
+After the self-review passes, ask the user to review the spec **as it now reads
+on the board** — not as you described it in chat:
+
+> "Design written to `<ref>`. Please review it on the board and let me know if
+> you want to make any changes before we break it into steps."
+
+Wait for the user's response. If they request changes, make them and re-run the
+self-review. Only proceed once the user approves.
+
+## 8. Implementation
+
+- Invoke `breaking-down-a-slice` to turn the spec into steps on the board
+- Do NOT invoke any other skill. `breaking-down-a-slice` is the next step.
 
 ## Resuming a half-finished design
 
 A session that died mid-design left a slice at `needs_design` with whatever spec
-it had. Pick that slice up at step 1. Do not create a second one for the same
+it had. Pick that slice up at step 2. Do not create a second one for the same
 idea.
 
 ---
