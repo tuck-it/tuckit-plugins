@@ -26,7 +26,7 @@ Works with **Claude Code**, **Codex CLI**, and **Antigravity CLI**.
 | **Antigravity CLI** | Copy 2 files | ⚙️ **Manual** — add tuckit to your MCP config (auto-bundling is coming) |
 
 Everyone gets: the **session-start primer**, the **session-end write-back
-reminder**, the **`tuckit-domain` skill**, and the **four workflow skills**
+reminder**, the **`tuckit-domain` skill**, and the **workflow skills**
 below. Claude Code also gets a **`/tuckit-sync`** command to reconcile the board
 mid-session.
 
