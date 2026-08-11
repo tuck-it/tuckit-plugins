@@ -431,8 +431,9 @@ If the final review returns findings, dispatch **ONE** fix subagent with the
 complete findings list — not one fixer per finding. Per-finding fixers each
 rebuild context and re-run suites; a real session's final-review fix wave cost
 more than all its bites combined. Then run exactly one scoped re-review of the
-fix wave. Adjudicate any residual findings as in the breaker: park with rulings,
-or stop on load-bearing ones. There is no second fix wave — residual
+fix wave — [re-review-prompt.md](../requesting-a-review/re-review-prompt.md) at
+scope `branch`. Adjudicate any residual findings as in the breaker: park with
+rulings, or stop on load-bearing ones. There is no second fix wave — residual
 load-bearing findings surface to your human partner when `shipping-a-slice`
 presents the options.
 
