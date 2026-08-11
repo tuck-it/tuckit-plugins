@@ -1,3 +1,4 @@
+import os
 import shutil
 import sys
 from pathlib import Path
@@ -108,6 +109,33 @@ def test_mirror_skills_ships_the_whole_tree(tmp_path, monkeypatch):
     assert (dst / "demo" / "refs" / "guide.md").read_text() == "see TOKEN/content\n"
     # binary is copied, never decoded
     assert (dst / "demo" / "logo.png").read_bytes() == b"\x89PNG\x00\xff\xfe"
+
+
+def test_mirror_skills_preserves_the_executable_bit(tmp_path, monkeypatch):
+    """A skill may ship a helper script. Neither write_text nor copyfile carries
+    the source's mode, so a payload that silently lost +x fails at the user's
+    install rather than at build time — and a byte-comparison guard stays green
+    through it."""
+    src = _authored_skill(tmp_path)
+    # .sh takes the copyfile branch; .py takes the write_text branch. Both drop
+    # the mode, so both need covering — a single .sh would leave half the bug.
+    (src / "run.sh").write_text("#!/usr/bin/env bash\necho hi\n", encoding="utf-8")
+    (src / "run.sh").chmod(0o755)
+    (src / "run.py").write_text("#!/usr/bin/env python3\nprint('{{ROOT}}')\n", encoding="utf-8")
+    (src / "run.py").chmod(0o755)
+    monkeypatch.setattr(build, "SHARED", tmp_path)
+    dst = tmp_path / "out"
+
+    build._mirror_skills(dst, "TOKEN")
+
+    assert os.access(dst / "demo" / "run.sh", os.X_OK), "executable helper shipped without +x"
+    assert os.access(dst / "demo" / "run.py", os.X_OK), "executable helper shipped without +x"
+    # the token still gets substituted in the branch that also carries the mode
+    assert (dst / "demo" / "run.py").read_text() == "#!/usr/bin/env python3\nprint('TOKEN')\n"
+    # the other half: mode is copied, not forced — otherwise "chmod +x everything"
+    # would satisfy the assertion above while corrupting every other file
+    assert not os.access(dst / "demo" / "SKILL.md", os.X_OK), "non-executable file made executable"
+    assert not os.access(dst / "demo" / "logo.png", os.X_OK), "non-executable file made executable"
 
 
 def test_mirror_skills_removes_what_the_source_deleted(tmp_path, monkeypatch):

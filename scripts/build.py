@@ -44,6 +44,7 @@ def _mirror_files(src: Path, dst: Path) -> list:
         if f.is_file():
             target = dst / f.name
             shutil.copyfile(f, target)
+            shutil.copymode(f, target)
             written.append(target)
     return written
 
@@ -58,6 +59,10 @@ def _mirror_skills(dst_root: Path, token: str) -> list:
 
     `{{ROOT}}` is substituted only in text formats; binary assets are copied
     byte-for-byte so an image or font is never corrupted by a decode.
+
+    File modes are carried over on both paths, because neither `write_text` nor
+    `copyfile` does it: a skill may ship an executable helper, and a payload
+    that silently lost `+x` fails at the user's install rather than here.
     """
     written = []
     src_root = SHARED / "skills"
@@ -83,6 +88,7 @@ def _mirror_skills(dst_root: Path, token: str) -> list:
                 )
             else:
                 shutil.copyfile(src, target)
+            shutil.copymode(src, target)
             written.append(target)
     return written
 
@@ -95,9 +101,11 @@ def build_agent(agent: str) -> list:
 
     written += _mirror_files(SHARED / "content", dst / "content")
 
+    emit_src = SHARED / "scripts" / "emit.py"
     emit_dst = dst / "scripts" / "emit.py"
     emit_dst.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copyfile(SHARED / "scripts" / "emit.py", emit_dst)
+    shutil.copyfile(emit_src, emit_dst)
+    shutil.copymode(emit_src, emit_dst)
     written.append(emit_dst)
 
     written += _mirror_skills(dst / "skills", token)
