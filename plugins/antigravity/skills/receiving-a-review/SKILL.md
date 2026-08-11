@@ -144,9 +144,10 @@ digraph routing {
   not wrong; it is unclear, and unclear items stop everything until you ask.
 - *Fixing it on this branch now?* — **yes** when the finding is Critical or
   Important **and** sits in the change under review, or when it sits in that
-  change and fixing it is smaller than writing it up. Otherwise **no**: code
-  this branch did not touch is not this branch's work, however true the finding
-  is.
+  change and fixing it is smaller than writing it up. Otherwise **no** — either
+  the code is outside this change and is not this branch's work however true the
+  finding is, or it is inside and not worth reopening a reviewed change for.
+  Either way it still needs one of the destinations below.
 - *Will anyone actually do it later?* — would a named person or a next session
   pick this up off the board? Not "should someone" — *will* they.
 
@@ -164,6 +165,14 @@ Four rules govern the routing:
 4. **What the next person must not step on goes in `constraints`**
    (`update_slice`). Notes say what happened to you; constraints say what the
    next person must not repeat. If you hit the landmine yourself, write both.
+
+**② writes nothing by itself.** When the ruling is one the next person could
+re-raise — a design choice that looks wrong from outside, a trade-off you made
+deliberately — it joins the ③ batch. Why we did not do a thing is worth as much
+as what we deferred, and the next reviewer that reaches the same finding deserves
+to meet the answer rather than repeat the round. A pushback nobody will revisit,
+like a misread of a line the diff already answers, stays in your reply: writing
+up every one of them drowns the note that makes the rest findable.
 
 The question that separates ③ from ④ is **"will anyone actually do it"** — not
 severity. A genuinely Important finding nobody will ever pick up is a note; a
@@ -183,8 +192,11 @@ routes still hold:
   item to ④, or put the batch to your human partner and let them say which are
   worth a slice. Do not drop it because the convenient destination is missing.
 
-①, ② and ④ are unaffected. The absence of a slice narrows the routes to three;
-it never adds a way out.
+① and ④ are unaffected, and ② is still delivered to whoever raised it. The one
+part of ② that needs a home — a ruling worth recording, which would have joined
+the ③ batch — travels with ③ above: promoted to a slice, or put to your human
+partner. The absence of a slice narrows the routes to three; it never adds a way
+out.
 
 ## Common Mistakes
 
