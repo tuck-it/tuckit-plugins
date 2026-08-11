@@ -1,6 +1,6 @@
 ---
 name: executing-a-slice
-description: "Use when a tuckit slice has bites to implement — stage reads executing — or when picking up a half-finished slice in a fresh session. Runs the checklist and keeps each bite's status current so the board shows where the work actually is. Replaces superpowers:executing-plans."
+description: "Use when a tuckit slice has bites to implement — stage reads executing — or when picking up a half-finished slice in a fresh session. Runs the checklist and keeps each bite's status current so the board shows where the work actually is."
 ---
 
 # Executing a Slice
@@ -119,18 +119,16 @@ field to set. Terminal state: `shipping-a-slice`.
 ## Subagent execution
 
 One subagent per bite, with a review between them, is a stronger loop than
-executing inline — and it is what `subagent-driven-development` will provide
-once TP-127 lands. Until then, execute inline as above.
+executing inline — and it is what `delegating-a-slice` provides. Use that skill
+instead of this one when the bites are mostly independent and you want a fresh
+implementer and a reviewer per bite. Execute inline as above when they are
+tightly coupled, or when you have no subagents.
 
-The division that skill will follow, when it arrives: **files keep the process;
-tuckit keeps the decisions.** Briefs, reports, and review packages stay on disk.
-Only three things cross to the board — bite status, deferred work (as new
-slices), and constraints you discovered. Streaming a task-by-task ledger into
-notes drowns the activity thread and buys nothing.
-
-Note that upstream keeps a progress ledger in a file because a controller that
-lost its place after compaction re-dispatched whole completed sequences. Here,
-bite status already is that ledger, and it is durable by construction.
+Either way the division is the same: **files keep the process; tuckit keeps the
+decisions.** Reports and review packages stay on disk. Only three things cross
+to the board — bite status, deferred work (as new slices), and constraints you
+discovered. Streaming a bite-by-bite ledger into notes drowns the activity
+thread and buys nothing.
 
 ---
 

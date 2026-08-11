@@ -1,6 +1,6 @@
 ---
 name: breaking-down-a-slice
-description: "Use when a tuckit slice has an approved spec and needs implementation steps — stage reads needs_steps — before touching any code. Writes the constraints and an ordered bite checklist onto the slice itself. Replaces superpowers:writing-plans — same task template and placeholder ban, but the board is the plan, so there is no plan file."
+description: "Use when a tuckit slice has an approved spec and needs implementation steps — stage reads needs_steps — before touching any code. Writes the constraints and an ordered bite checklist onto the slice itself. The board is the plan, so there is no plan file."
 ---
 
 # Breaking Down a Slice
@@ -54,9 +54,9 @@ You MUST create a task for each of these items and complete them in order:
 
 `update_slice(slice_id=…, constraints=…)` before you write a single bite.
 
-Upstream plans carry this as a "Global Constraints" header block. Here it is a
-field, which is a better home for it: it renders on the board and every agent
-that opens the slice is told to treat it as binding.
+This is the plan's global-constraints block, and it is a field rather than a
+header: it renders on the board, and every agent that opens the slice is told to
+treat it as binding.
 
 What belongs there:
 
@@ -238,9 +238,10 @@ Either way the terminal state is `executing-a-slice`.
 
 ## No plan file
 
-Upstream writes plans to `docs/…/plans/YYYY-MM-DD-*.md`. Do not. The plan is the
-slice's constraints plus its bites, where the human already looks and where the
-next session already reads. A plan file is a copy, and the copy is what rots.
+Do not write a plan file — not `docs/…/plans/YYYY-MM-DD-*.md`, not anything like
+it. The plan is the slice's constraints plus its bites, where the human already
+looks and where the next session already reads. A plan file is a copy, and the
+copy is what rots.
 
 ---
 
