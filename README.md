@@ -176,6 +176,10 @@ The hooks are ambient — they orient the agent and nudge it to write back. The
 workflow skills are the other half: they make one unit of work move through
 tuckit end to end, so nothing about it ever lives only in a chat log.
 
+### The pipeline skills
+
+The slice's `stage` names the skill to use next, so there is nothing to choose.
+
 | Skill | Use it when | What it writes to the board |
 |---|---|---|
 | **`designing-a-slice`** | An idea, before any code | Resolves or creates the slice, then writes the approved design into its **spec** |
@@ -183,6 +187,16 @@ tuckit end to end, so nothing about it ever lives only in a chat log.
 | **`executing-a-slice`** | There are bites to do (`executing`) | Each bite's status as it happens; deferrals become new slices |
 | **`delegating-a-slice`** | Same, but the bites are mostly independent and you have subagents | Same, driven by a fresh implementer and reviewer per bite |
 | **`shipping-a-slice`** | The checklist is empty (`ready_to_ship`) | A note with what shipped, and — after asking — `status: shipped` |
+
+### The service skills
+
+These have no stage of their own — a pipeline skill calls them when it needs
+them, and you can call them directly too.
+
+| Skill | Use it when | What it writes to the board |
+|---|---|---|
+| **`requesting-a-review`** | Work needs a reviewer's eyes — one bite, a whole branch before merge, or any range you ask about | Nothing directly; it produces findings |
+| **`receiving-a-review`** | Review feedback has arrived, before you implement any of it | Deferred findings become Inbox slices; rulings become a note; landmines become constraints |
 
 `delegating-a-slice` is where the board pays off twice: a dispatched subagent
 gets a slice ref and a bite id and reads its own requirements, so there is no
@@ -196,13 +210,13 @@ is, instead of hunting for the markdown file the last session left behind.
 
 ### Relationship to Superpowers
 
-These are forks of five [Superpowers](https://github.com/obra/superpowers)
+These are forks of seven [Superpowers](https://github.com/obra/superpowers)
 skills (MIT — see [NOTICE](NOTICE)): `brainstorming`, `writing-plans`,
-`executing-plans`, `subagent-driven-development` and
-`finishing-a-development-branch`. They keep upstream's form — the checklists you
-must materialise as tasks, the task template, the placeholder ban, the
-self-reviews, the fix loop and its breaker, the rationalization tables — and
-change one thing: **every artifact lands on the board instead of in `docs/`.**
+`executing-plans`, `subagent-driven-development`,
+`finishing-a-development-branch`, `requesting-code-review` and
+`receiving-code-review`. They keep upstream's form — the checklists you must
+materialise as tasks, the task template, the placeholder ban, the self-reviews,
+the fix loop and its breaker, the rationalization tables — and change one thing: **every artifact lands on the board instead of in `docs/`.**
 No design file, no plan file, no task briefs, no progress ledger.
 
 **They are a replacement, not a supplement.** Run this plugin *instead of*
@@ -212,9 +226,9 @@ whether your design ends up somewhere the next session can find it.
 
 The trade is honest, so here it is plainly: Superpowers ships layers this
 plugin does not yet have — TDD, systematic debugging,
-verification-before-completion, code review, worktrees. Those are
-being forked next. Until they land, this plugin covers design → steps →
-execution → shipping, and nothing below that line.
+verification-before-completion, worktrees. Those are being forked next. Until
+they land, this plugin covers design → steps → execution → review → shipping,
+and nothing below that line.
 
 ---
 

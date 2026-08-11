@@ -101,7 +101,28 @@ session into one the next agent can resume.
 
 **Don't force through blockers** — stop and ask.
 
-## Step 5: Complete
+## Step 5: Review Before You Finish
+
+Every bite is done, so the branch is what ships. Get a reviewer's eyes on it
+before it does: use `requesting-a-review` with scope `branch`. There is no
+deferred-minors list on this path — that scope's optional input stays empty,
+and the reviewer proceeds without it.
+
+Hand the findings to `receiving-a-review`. Fix what needs fixing on this
+branch, and route the rest — nothing is left in the chat log.
+
+**If you have no subagents**, you cannot dispatch a reviewer, and reviewing
+your own diff in this same session is worth little. Skip the review, but say
+so plainly:
+
+> "No subagents available, so this branch is going to shipping without a
+> code review."
+
+Saying it is the point. Work that was never reviewed and work that was
+reviewed clean look identical on the board, and only your human partner can
+decide whether that trade is acceptable here.
+
+## Step 6: Complete
 
 When every bite is done the slice reads `ready_to_ship` on its own — there is no
 field to set. Terminal state: `shipping-a-slice`.
@@ -123,6 +144,11 @@ executing inline — and it is what `delegating-a-slice` provides. Use that skil
 instead of this one when the bites are mostly independent and you want a fresh
 implementer and a reviewer per bite. Execute inline as above when they are
 tightly coupled, or when you have no subagents.
+
+The difference is no longer whether the work gets reviewed — it does either
+way. It is *when*: `delegating-a-slice` reviews each bite as it lands, so a
+bad bite cannot be built on; this skill reviews once at the end, which is
+later but still before the branch ships.
 
 Either way the division is the same: **files keep the process; tuckit keeps the
 decisions.** Reports and review packages stay on disk. Only three things cross
