@@ -7,7 +7,7 @@
     {
       "name": "tuckit",
       "source": "./plugins/claude",
-      "description": "Use tuckit as your project's single source of truth: domain knowledge, board-freshness hooks, and a design->steps->execute->ship workflow that writes every artifact to the board instead of to docs/. A replacement for Superpowers' planning skills, not a companion to them."
+      "description": "Use tuckit as your project's single source of truth: domain knowledge, board-freshness hooks, and a design->steps->execute->review->ship workflow that writes every artifact to the board instead of to docs/. A replacement for Superpowers' planning skills, not a companion to them."
     }
   ]
 }
