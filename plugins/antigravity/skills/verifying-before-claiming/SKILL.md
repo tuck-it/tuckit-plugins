@@ -23,7 +23,7 @@ NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE
 ```
 
 If you haven't run the verification command in this message, you cannot claim
-it passes.
+it passes. A board write is a claim too.
 
 ## The Gate Function
 
@@ -96,7 +96,7 @@ verify.
 ❌ "Should pass now" / "Looks correct"
 ```
 
-**Regression tests (Red-Green):**
+**Regression tests (TDD Red-Green):**
 ```
 ✅ Write → Run (pass) → Revert fix → Run (MUST FAIL) → Restore → Run (pass)
 ❌ "I've written a regression test" (without red-green verification)

@@ -29,6 +29,13 @@ Vocabulary and stages: `{{ROOT}}/content/domain.md`.
 - Throwaway prototypes
 - Generated code
 - Configuration files
+
+When your human partner agrees to skip test-first for one of those three, that
+agreement is not a memory — write one line into the slice's `constraints`
+(`update_slice`) saying what was skipped and why. Otherwise the next session
+re-litigates it, or worse, reads the missing tests as an oversight.
+
+**Not applicable — no request needed:**
 - **Artifacts that do not execute** — documentation, prompts, pure styling.
   Test-first does not apply to them. Test what *consumes* them instead: run a
   script against controlled inputs and assert its output, side effects or exit
@@ -37,11 +44,6 @@ Vocabulary and stages: `{{ROOT}}/content/domain.md`.
 
 This is not a new rule — it lifts [Behavior, not
 text](writing-good-tests.md) up to where the Iron Law's reader will see it.
-
-When your human partner agrees to skip test-first for this work, that agreement
-is not a memory — write one line into the slice's `constraints` (`update_slice`)
-saying what was skipped and why. Otherwise the next session re-litigates it, or
-worse, reads the missing tests as an oversight.
 
 Thinking "skip TDD just this once"? Stop. That's rationalization.
 
@@ -186,8 +188,8 @@ Don't add features, refactor other code, or "improve" beyond the test.
 **MANDATORY.**
 
 Run the project's test command, scoped to this test file.
-Confirm: the test passes, the message is the one you expected, and nothing
-else in the suite broke.
+Confirm: the test passes, the output is pristine — no errors, no warnings, no
+stray output — and nothing else in the suite broke.
 
 - Test passes
 - Other tests still pass

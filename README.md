@@ -221,18 +221,24 @@ skills (MIT — see [NOTICE](NOTICE)): `brainstorming`, `writing-plans`,
 `receiving-code-review`, `test-driven-development`, `systematic-debugging` and
 `verification-before-completion`. They keep upstream's form — the checklists you must
 materialise as tasks, the task template, the placeholder ban, the self-reviews,
-the fix loop and its breaker, the rationalization tables — and change one thing: **every artifact lands on the board instead of in `docs/`.**
-No design file, no plan file, no task briefs, no progress ledger.
+the fix loop and its breaker, the rationalization tables — and change one
+thing: **the board replaces the markdown files.** Whatever upstream would have
+written into `docs/` — a design, a plan, task briefs, a progress ledger — lands
+on a slice instead, and the forks that produce no artifact of their own decide
+what the others are allowed to claim.
 
 **They are a replacement, not a supplement.** Run this plugin *instead of*
 Superpowers, not alongside it: with both enabled, `designing-a-slice` and
 `brainstorming` compete for the same trigger, and whichever wins decides
 whether your design ends up somewhere the next session can find it.
 
-The trade is honest, so here it is plainly: Superpowers still ships two layers
-this plugin does not have — using-git-worktrees and dispatching-parallel-agents.
-Those are being forked next; everything else Superpowers covers, this plugin
-now covers too.
+The trade is honest, so here it is plainly: Superpowers ships fourteen skills
+and ten of them are forked here. Four are not. Two are layers this plugin does
+not have yet — using-git-worktrees and dispatching-parallel-agents — and they
+are being forked next. The other two, using-superpowers and writing-skills, are
+Superpowers' own meta-tooling for finding and authoring skills; they have no
+counterpart here and none is planned. Every workflow layer Superpowers covers,
+this plugin now covers too.
 
 ---
 

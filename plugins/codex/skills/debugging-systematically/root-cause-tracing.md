@@ -99,15 +99,19 @@ npm test 2>&1 | grep 'DEBUG git init'
 If something appears during tests but you don't know which test, bisect: run
 the test files one at a time, in the order your runner would run them, and
 check after each one whether the polluting file or directory has appeared.
-The run where it first shows up names the polluter.
+The run where it first shows up names the polluter. Set `$CHECK`, `$TESTS` and
+`$TEST_CMD` — your project's test command — before you run the loop. The loop
+never deletes anything: if the state is already there, it says so and stops, so
+you clean up first and start from a known-good tree.
 
 ```bash
 # Find which test creates unwanted state.
 # $CHECK is the file or directory that should not appear; $TESTS is the list of
-# test files to walk, in the order your runner would run them.
+# test files to walk, in the order your runner would run them; $TEST_CMD is the
+# project's test command.
 for t in $TESTS; do
-  rm -rf "$CHECK"
-  <your test command> "$t" >/dev/null 2>&1 || true
+  if [ -e "$CHECK" ]; then echo "state already present before $t — clean it up first"; break; fi
+  "$TEST_CMD" "$t" >/dev/null 2>&1 || true
   if [ -e "$CHECK" ]; then echo "POLLUTER: $t"; break; fi
 done
 ```

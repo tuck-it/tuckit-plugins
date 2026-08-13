@@ -45,9 +45,11 @@ Use for ANY technical issue:
 - You're in a hurry (rushing guarantees rework)
 - Manager wants it fixed NOW (systematic is faster than thrashing)
 
-## The Four Phases
+## The Five Phases
 
-You MUST complete each phase before proceeding to the next.
+Phases 1-4 are the investigation and the fix: you MUST complete each of them
+before proceeding to the next. Phase 5 has its own section further down — it
+runs after the bug is fixed, and it is what the investigation leaves behind.
 
 ### Phase 1: Root Cause Investigation
 
@@ -234,7 +236,7 @@ the session unless it is routed somewhere the next session can find it.
    aside is not a destination.
 4. **The conclusion of a 3+-failure architecture discussion** → a slice.
    Left in the chat, the next person hits the same wall three more times.
-   Phase 4.5 opens that discussion; this is where its conclusion lands.
+   Phase 4, step 5 opens that discussion; this is where its conclusion lands.
 
 While the investigation is open, leave the bite at `doing`. Marking it
 `done` because the bug is fixed is exactly the unverified completion claim
@@ -260,7 +262,7 @@ If you catch yourself thinking:
 
 **ALL of these mean: STOP. Return to Phase 1.**
 
-**If 3+ fixes failed:** Question the architecture (see Phase 4.5)
+**If 3+ fixes failed:** Question the architecture (see Phase 4, step 5)
 
 ## Your Human Partner's Signals You're Doing It Wrong
 
@@ -294,6 +296,7 @@ If you catch yourself thinking:
 | **2. Pattern** | Find working examples, compare | Identify differences |
 | **3. Hypothesis** | Form theory, test minimally | Confirmed or new hypothesis |
 | **4. Implementation** | Create test, fix, verify | Bug resolved, tests pass |
+| **5. What It Leaves Behind** | Route the rule, the session, the stray bug, the architecture conclusion onto the board | What you learned outlives the session |
 
 ## When Process Reveals "No Root Cause"
 

@@ -5,8 +5,10 @@ This product includes work derived from Superpowers
 (https://github.com/obra/superpowers), Copyright (c) 2025 Jesse Vincent,
 licensed under the MIT License.
 
-The following skills are forks of Superpowers skills, rewritten so their
-artifacts land on a tuckit board instead of in markdown files:
+The following skills are forks of Superpowers skills, rewritten around a tuckit
+board: what upstream writes into markdown files lands on a slice instead, and
+the forks that produce no artifact of their own govern what the others may
+claim.
 
   shared/skills/designing-a-slice/      <- skills/brainstorming
   shared/skills/breaking-down-a-slice/  <- skills/writing-plans
@@ -34,8 +36,9 @@ shipped copy would not run) and condition-based-waiting-example.ts (no
 precedent in this family for a code-example file, and it was jest-specific).
 Their content is folded into the .md files that referenced them instead.
 
-Superpowers' remaining skills (using-git-worktrees and
-dispatching-parallel-agents) are not forked here. This plugin is meant to
-replace Superpowers rather than run alongside it, so it does not defer to
-them by name; until they are forked too, the layers they cover are simply
-absent.
+Superpowers' four remaining skills are not forked here: using-git-worktrees and
+dispatching-parallel-agents, which are being forked next, and using-superpowers
+and writing-skills, which are Superpowers' own meta-tooling for finding and
+authoring skills and have no counterpart here. This plugin is meant to replace
+Superpowers rather than run alongside it, so it does not defer to them by name;
+until the first two are forked, the layers they cover are simply absent.

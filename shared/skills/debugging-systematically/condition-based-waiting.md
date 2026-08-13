@@ -79,11 +79,12 @@ async function waitFor<T>(
 }
 ```
 
-The same shape covers most real waits. Three thin wrappers around it, one per
+The same shape covers most real waits. Two thin wrappers around it, one per
 question you're actually asking:
 
 ```typescript
-// Wait until one event matching `predicate` shows up.
+// Wait until one event matching `predicate` shows up. It returns the match,
+// so you can assert on its contents and not just that it exists.
 const waitForEvent = (predicate, timeoutMs = 5000) =>
   waitFor(() => events.find(predicate), 'matching event', timeoutMs);
 
@@ -93,16 +94,11 @@ const waitForEventCount = (predicate, n, timeoutMs = 5000) =>
     const matches = events.filter(predicate);
     return matches.length >= n ? matches : undefined;
   }, `${n} matching events`, timeoutMs);
-
-// Wait for a match and return it, so you can assert on its contents
-// (not just that it exists).
-const waitForEventMatch = (predicate, timeoutMs = 5000) =>
-  waitFor(() => events.find(predicate), 'matching event', timeoutMs);
 ```
 
 The transferable idea is the polling loop, not this event bus's API: swap
 `events.find`/`events.filter` for whatever your system exposes (DOM queries,
-process state, a database row) and the same three shapes still apply.
+process state, a database row) and the same two shapes still apply.
 
 ## Common Mistakes
 
