@@ -118,6 +118,10 @@ whole system. One sentence, then the fix.
 
 Every finding enters here and leaves through exactly one of four destinations.
 
+A finding you cannot explain is not ready to be routed. If the reviewer found a
+bug and you do not yet know why it happens, `debugging-systematically` comes
+first — a fix aimed at a symptom passes review and comes back later.
+
 ```dot
 digraph routing {
     "Technically wrong for this codebase?" [shape=diamond];

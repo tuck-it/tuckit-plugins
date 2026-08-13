@@ -260,7 +260,10 @@ Template: [implementer-prompt.md](implementer-prompt.md)
 
 Implementer subagents report one of four statuses:
 
-**DONE:** Write the review package and dispatch the bite reviewer (step 3).
+**DONE:** Write the review package and dispatch the bite reviewer (step 3). The
+implementer's DONE is a claim, not evidence — the diff you read while writing
+that package is the evidence: `verifying-before-claiming`'s "Agent completed →
+VCS diff shows changes" row is exactly this moment.
 
 **DONE_WITH_CONCERNS:** The implementer completed the work but flagged doubts.
 Read the concerns before proceeding. If they are about correctness or scope,

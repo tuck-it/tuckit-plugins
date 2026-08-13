@@ -117,6 +117,9 @@ its neighbour. Each bite ends with an independently testable deliverable.
 - "Run the tests and make sure they pass" — step
 - "Commit" — step
 
+That cycle is `writing-tests-first`, and the bite bodies you write are what tell
+the executor to follow it.
+
 ## 6. Bite Structure
 
 `add_bites(slice_id=…, bites=[{title, body}, …])`, in execution order.
@@ -225,19 +228,16 @@ will see it.
 
 Then offer the execution choice:
 
-> **"Steps are on the board at `<ref>`. Three execution options:**
+> **"Steps are on the board at `<ref>`. Two execution options:**
 >
 > **1. Subagent-driven (recommended when the bites are mostly independent)** — a
 > fresh implementer per bite with a review between them, in this session.
 >
-> **2. A fresh session** — it starts from the board, which is also the first
-> real test of whether the bites read standalone.
->
-> **3. This session, inline** — I already hold the context.
+> **2. This session, inline** — I already hold the context.
 >
 > **Which approach?"**
 
-Option 1 is `delegating-a-slice`; options 2 and 3 are `executing-a-slice`.
+Option 1 is `delegating-a-slice`; option 2 is `executing-a-slice`.
 
 ## No plan file
 
