@@ -117,6 +117,9 @@ process state, a database row) and the same three shapes still apply.
 
 ## When Arbitrary Timeout IS Correct
 
+The `waitForEvent` below is a project-specific overload (it takes a manager
+and an event type) — not the generic wrapper shape defined above.
+
 ```typescript
 // Tool ticks every 100ms - need 2 ticks to verify partial output
 await waitForEvent(manager, 'TOOL_STARTED'); // First: wait for condition
