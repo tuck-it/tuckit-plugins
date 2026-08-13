@@ -200,7 +200,7 @@ out a step you're already in — and you can call any of them directly too.
 | **`receiving-a-review`** | Review feedback has arrived, before you implement any of it | Deferred findings become Inbox slices; rulings become a note; landmines become constraints |
 | **`writing-tests-first`** | Before writing implementation code for a feature or a fix | An agreed exception becomes a line in the slice's constraints |
 | **`verifying-before-claiming`** | Before saying anything is done — including before ticking a bite | Nothing new; it decides whether the tick is honest |
-| **`debugging-systematically`** | A bug, a test failure, anything unexpected — before proposing a fix | The rule becomes a constraint, the session becomes one note, an unrelated bug becomes an Inbox slice |
+| **`debugging-systematically`** | A bug, a test failure, anything unexpected — before proposing a fix | The rule becomes a constraint, the session becomes one note, an unrelated bug becomes an Inbox slice, and after three failed fixes the architecture conclusion becomes its own slice |
 
 `delegating-a-slice` is where the board pays off twice: a dispatched subagent
 gets a slice ref and a bite id and reads its own requirements, so there is no
