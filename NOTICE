@@ -26,8 +26,7 @@ two of those directories: delegating-a-slice carries implementer-prompt.md,
 and requesting-a-review carries the two review prompts
 (task-reviewer-prompt.md -> reviewer-prompt.md, and re-review-prompt.md).
 
-The verification-before-completion, test-driven-development and
-systematic-debugging forks brought their supporting documents along:
+Two of those forks brought their upstream supporting documents along:
 writing-tests-first carries writing-good-tests.md, and
 debugging-systematically carries root-cause-tracing.md, defense-in-depth.md
 and condition-based-waiting.md. Two upstream supporting files were not
