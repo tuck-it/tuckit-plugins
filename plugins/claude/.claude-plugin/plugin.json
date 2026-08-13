@@ -1,7 +1,7 @@
 {
   "name": "tuckit",
   "description": "Use tuckit as your project's single source of truth: domain knowledge, board-freshness hooks, and a design->steps->execute->review->ship workflow that writes every artifact to the board instead of to docs/. A replacement for Superpowers' planning skills, not a companion to them.",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "license": "MIT",
   "userConfig": {
     "mcp_url": {
