@@ -60,9 +60,9 @@ Skip any step = lying, not verifying
 A board write is heavier than a line in the chat. A claim in the chat log
 scrolls away; `update_bite(status="done")` persists. Your human partner reads
 it tomorrow with no transcript, and the next agent trusts it instead of
-re-checking. Write it literally that way — `update_bite(status="done")` — only
-after the Gate Function above has run for what that bite's body says to
-verify.
+re-checking. So run the Gate Function above on whatever that bite's body says
+to verify, and call `update_bite(status="done")` only once you have read the
+output.
 
 ## Red Flags - STOP
 
