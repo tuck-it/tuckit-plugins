@@ -55,10 +55,12 @@ For each bite:
    This is what makes the board show the work while it is happening; skipping it
    makes a busy slice look idle to everyone else.
 2. Follow the body exactly — it has bite-sized steps for a reason. If it
-   specifies a test-first cycle, follow it: write the failing test, run it and
-   watch it fail, implement the minimum, run the tests, commit.
+   specifies a test-first cycle, follow `writing-tests-first`.
 3. Run verifications as specified. Verification means the project's real check —
-   not the subset that happens to be fast.
+   not the subset that happens to be fast. What counts as evidence here is
+   `verifying-before-claiming`'s territory — including step 5 below:
+   `update_bite(status="done")` is exactly the kind of claim that skill is
+   about.
 4. Commit.
 5. `update_bite(bite_id=…, status="done")`.
 
@@ -85,7 +87,10 @@ readable *during*.
 - You hit a blocker (missing dependency, failing test, unclear instruction)
 - The checklist has critical gaps preventing you from starting
 - You don't understand an instruction
-- Verification fails repeatedly
+- A verification keeps failing — that is a bug to investigate, not a blocker to
+  report. Use `debugging-systematically`. Stop and ask only once three fixes
+  have failed, which is that skill's own signal that the architecture, not the
+  hypothesis, is wrong.
 
 Leave the bite at `doing` and `add_note` what you hit — that turns a dead
 session into one the next agent can resume.

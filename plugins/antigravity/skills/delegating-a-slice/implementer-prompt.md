@@ -39,7 +39,7 @@ Subagent (general-purpose):
 
     Once you're clear on requirements:
     1. Implement exactly what the bite specifies
-    2. Write tests (following TDD if the bite says to)
+    2. Write tests — follow `writing-tests-first` if the bite calls for it
     3. Verify the implementation works
     4. Commit your work
     5. Self-review (see below)

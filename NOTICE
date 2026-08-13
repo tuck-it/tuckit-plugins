@@ -5,8 +5,10 @@ This product includes work derived from Superpowers
 (https://github.com/obra/superpowers), Copyright (c) 2025 Jesse Vincent,
 licensed under the MIT License.
 
-The following skills are forks of Superpowers skills, rewritten so their
-artifacts land on a tuckit board instead of in markdown files:
+The following skills are forks of Superpowers skills, rewritten around a tuckit
+board: what upstream writes into markdown files lands on a slice instead, and
+the forks that produce no artifact of their own govern what the others may
+claim.
 
   shared/skills/designing-a-slice/      <- skills/brainstorming
   shared/skills/breaking-down-a-slice/  <- skills/writing-plans
@@ -15,14 +17,27 @@ artifacts land on a tuckit board instead of in markdown files:
   shared/skills/shipping-a-slice/       <- skills/finishing-a-development-branch
   shared/skills/requesting-a-review/    <- skills/requesting-code-review
   shared/skills/receiving-a-review/     <- skills/receiving-code-review
+  shared/skills/verifying-before-claiming/  <- skills/verification-before-completion
+  shared/skills/writing-tests-first/        <- skills/test-driven-development
+  shared/skills/debugging-systematically/   <- skills/systematic-debugging
 
 The prompt templates forked from subagent-driven-development are split across
 two of those directories: delegating-a-slice carries implementer-prompt.md,
 and requesting-a-review carries the two review prompts
 (task-reviewer-prompt.md -> reviewer-prompt.md, and re-review-prompt.md).
 
-Superpowers' remaining skills (test-driven-development, systematic-debugging,
-verification-before-completion, using-git-worktrees and
-dispatching-parallel-agents) are not forked here. This plugin is meant to replace
+Two of those forks brought their upstream supporting documents along:
+writing-tests-first carries writing-good-tests.md, and
+debugging-systematically carries root-cause-tracing.md, defense-in-depth.md
+and condition-based-waiting.md. Two upstream supporting files were not
+ported: find-polluter.sh (build.py does not preserve executable bits, so a
+shipped copy would not run) and condition-based-waiting-example.ts (no
+precedent in this family for a code-example file, and it was jest-specific).
+Their content is folded into the .md files that referenced them instead.
+
+Superpowers' four remaining skills are not forked here: using-git-worktrees and
+dispatching-parallel-agents, which are being forked next, and using-superpowers
+and writing-skills, which are Superpowers' own meta-tooling for finding and
+authoring skills and have no counterpart here. This plugin is meant to replace
 Superpowers rather than run alongside it, so it does not defer to them by name;
-until they are forked too, the layers they cover are simply absent.
+until the first two are forked, the layers they cover are simply absent.

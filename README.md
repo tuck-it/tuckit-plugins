@@ -190,13 +190,17 @@ The slice's `stage` names the skill to use next, so there is nothing to choose.
 
 ### The service skills
 
-These have no stage of their own — a pipeline skill calls them when it needs
-them, and you can call them directly too.
+These have no stage of their own: the review pair is *called* by a pipeline
+skill when it needs a reviewer, while the other three govern *how* you carry
+out a step you're already in — and you can call any of them directly too.
 
 | Skill | Use it when | What it writes to the board |
 |---|---|---|
 | **`requesting-a-review`** | Work needs a reviewer's eyes — one bite, a whole branch before merge, or any range you ask about | Nothing directly; it produces findings |
 | **`receiving-a-review`** | Review feedback has arrived, before you implement any of it | Deferred findings become Inbox slices; rulings become a note; landmines become constraints |
+| **`writing-tests-first`** | Before writing implementation code for a feature or a fix | An agreed exception becomes a line in the slice's constraints |
+| **`verifying-before-claiming`** | Before saying anything is done — including before ticking a bite | Nothing new; it decides whether the tick is honest |
+| **`debugging-systematically`** | A bug, a test failure, anything unexpected — before proposing a fix | The rule becomes a constraint, the session becomes one note, an unrelated bug becomes an Inbox slice, and after three failed fixes the architecture conclusion becomes its own slice |
 
 `delegating-a-slice` is where the board pays off twice: a dispatched subagent
 gets a slice ref and a bite id and reads its own requirements, so there is no
@@ -210,25 +214,31 @@ is, instead of hunting for the markdown file the last session left behind.
 
 ### Relationship to Superpowers
 
-These are forks of seven [Superpowers](https://github.com/obra/superpowers)
+These are forks of ten [Superpowers](https://github.com/obra/superpowers)
 skills (MIT — see [NOTICE](NOTICE)): `brainstorming`, `writing-plans`,
 `executing-plans`, `subagent-driven-development`,
-`finishing-a-development-branch`, `requesting-code-review` and
-`receiving-code-review`. They keep upstream's form — the checklists you must
+`finishing-a-development-branch`, `requesting-code-review`,
+`receiving-code-review`, `test-driven-development`, `systematic-debugging` and
+`verification-before-completion`. They keep upstream's form — the checklists you must
 materialise as tasks, the task template, the placeholder ban, the self-reviews,
-the fix loop and its breaker, the rationalization tables — and change one thing: **every artifact lands on the board instead of in `docs/`.**
-No design file, no plan file, no task briefs, no progress ledger.
+the fix loop and its breaker, the rationalization tables — and change one
+thing: **the board replaces the markdown files.** Whatever upstream would have
+written into `docs/` — a design, a plan, task briefs, a progress ledger — lands
+on a slice instead, and the forks that produce no artifact of their own decide
+what the others are allowed to claim.
 
 **They are a replacement, not a supplement.** Run this plugin *instead of*
 Superpowers, not alongside it: with both enabled, `designing-a-slice` and
 `brainstorming` compete for the same trigger, and whichever wins decides
 whether your design ends up somewhere the next session can find it.
 
-The trade is honest, so here it is plainly: Superpowers ships layers this
-plugin does not yet have — TDD, systematic debugging,
-verification-before-completion, worktrees. Those are being forked next. Until
-they land, this plugin covers design → steps → execution → review → shipping,
-and nothing below that line.
+The trade is honest, so here it is plainly: Superpowers ships fourteen skills
+and ten of them are forked here. Four are not. Two are layers this plugin does
+not have yet — using-git-worktrees and dispatching-parallel-agents — and they
+are being forked next. The other two, using-superpowers and writing-skills, are
+Superpowers' own meta-tooling for finding and authoring skills; they have no
+counterpart here and none is planned. Every *other* workflow layer Superpowers
+covers, this plugin now covers too.
 
 ---
 
