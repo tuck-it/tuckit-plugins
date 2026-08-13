@@ -237,8 +237,8 @@ and ten of them are forked here. Four are not. Two are layers this plugin does
 not have yet — using-git-worktrees and dispatching-parallel-agents — and they
 are being forked next. The other two, using-superpowers and writing-skills, are
 Superpowers' own meta-tooling for finding and authoring skills; they have no
-counterpart here and none is planned. Every workflow layer Superpowers covers,
-this plugin now covers too.
+counterpart here and none is planned. Every *other* workflow layer Superpowers
+covers, this plugin now covers too.
 
 ---
 

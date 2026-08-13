@@ -102,18 +102,23 @@ check after each one whether the polluting file or directory has appeared.
 The run where it first shows up names the polluter. Set `$CHECK`, `$TESTS` and
 `$TEST_CMD` — your project's test command — before you run the loop. The loop
 never deletes anything: if the state is already there, it says so and stops, so
-you clean up first and start from a known-good tree.
+you clean up first and start from a known-good tree. It always prints something,
+so silence means you never ran it.
 
 ```bash
 # Find which test creates unwanted state.
 # $CHECK is the file or directory that should not appear; $TESTS is the list of
 # test files to walk, in the order your runner would run them; $TEST_CMD is the
-# project's test command.
+# project's test command. $TEST_CMD stays unquoted below so a multi-word command
+# — npm test, go test, uv run pytest — still runs as a command rather than being
+# looked up as one binary with a space in its name.
+found=""
 for t in $TESTS; do
-  if [ -e "$CHECK" ]; then echo "state already present before $t — clean it up first"; break; fi
-  "$TEST_CMD" "$t" >/dev/null 2>&1 || true
-  if [ -e "$CHECK" ]; then echo "POLLUTER: $t"; break; fi
+  if [ -e "$CHECK" ]; then echo "state already present before $t — clean it up first"; found=pre-existing; break; fi
+  $TEST_CMD "$t" >/dev/null 2>&1 || true
+  if [ -e "$CHECK" ]; then echo "POLLUTER: $t"; found="$t"; break; fi
 done
+[ -n "$found" ] || echo "no polluter found — $CHECK never appeared"
 ```
 
 For example, with `CHECK='.git'` and `TESTS` set to the project's
