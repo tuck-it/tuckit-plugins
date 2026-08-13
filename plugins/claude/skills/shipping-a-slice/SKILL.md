@@ -19,17 +19,18 @@ Vocabulary and stages: `${CLAUDE_PLUGIN_ROOT}/content/domain.md`.
 
 ## Step 1: Verify For Real
 
+The standard for what counts as evidence here — and what does not — is
+`verifying-before-claiming`. Landing is where it matters most: this is the
+last gate before the board says shipped.
+
 - Run the project's **full** test suite (`npm test` / `cargo test` / `pytest` /
-  `go test ./...`) — not the scoped subset you were iterating on. Narrowing to
-  the directory you touched skips the wiring guards that live above it, and
-  those are the ones that catch integration mistakes.
+  `go test ./...`) — not the scoped subset you were iterating on.
 - Re-read the slice's `constraints` and check the work against them literally.
   That field is where "done" was defined, by someone who had more context than
   you do now.
-- If the change has a surface a person uses, open it and look. Endpoint tests
-  pass while the screen is broken.
+- If the change has a surface a person uses, open it and look.
 - If production runs a different database or runtime than your local one, run
-  the check there too. A green local suite is evidence about your machine.
+  the check there too.
 
 **If tests fail**, report the failures and stop — the menu comes after a green
 suite:
