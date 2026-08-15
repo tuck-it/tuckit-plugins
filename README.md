@@ -176,6 +176,17 @@ The hooks are ambient — they orient the agent and nudge it to write back. The
 workflow skills are the other half: they make one unit of work move through
 tuckit end to end, so nothing about it ever lives only in a chat log.
 
+### The adoption skill
+
+| Skill | Use it when | What it writes to the board |
+|---|---|---|
+| **`adopting-a-project`** | The workspace is empty and the project is not — you are putting tuckit on something already running | The first **areas**, and a **slice** per piece of work already in flight — specs left empty, evidence in notes |
+
+It runs once, before the pipeline: the other skills read a slice's `stage` to
+know what to do, and at this moment there is no board for a stage to live on.
+It proposes and waits — tuckit has no delete tool, so anything it creates
+unasked is cleanup someone does by hand.
+
 ### The pipeline skills
 
 The slice's `stage` names the skill to use next, so there is nothing to choose.

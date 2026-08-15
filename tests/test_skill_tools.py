@@ -25,6 +25,8 @@ SKILLS = Path(__file__).resolve().parent.parent / "shared" / "skills"
 # Tools the skills are allowed to name, because the workflow depends on them.
 SKILL_TOOLS = {
     "get_project_state",
+    "list_areas",
+    "create_area",
     "list_slices",
     "get_slice",
     "create_slice",
