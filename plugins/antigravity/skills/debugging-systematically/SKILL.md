@@ -11,7 +11,7 @@ description: Use when encountering any bug, test failure, or unexpected behavior
 
 **Violating the letter of this process is violating the spirit of debugging.**
 
-Vocabulary and stages: `__REPO__/plugins/antigravity/content/domain.md`.
+Vocabulary and stages: `~/.gemini/config/plugins/tuckit/content/domain.md`.
 
 **Announce at start:** "I'm using debugging-systematically on this failure."
 

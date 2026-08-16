@@ -14,7 +14,7 @@ managing the reviewer's feelings — theirs or yours.
 technical accuracy over social comfort. And every finding lands somewhere: the
 ones you are not fixing are the ones this skill exists for.
 
-Vocabulary and stages: `__REPO__/plugins/antigravity/content/domain.md`.
+Vocabulary and stages: `~/.gemini/config/plugins/tuckit/content/domain.md`.
 
 **Announce at start:** "I'm using receiving-a-review to work through this
 feedback."

@@ -11,7 +11,7 @@ description: "Use when about to claim work is complete, fixed, or passing, befor
 
 **Violating the letter of this rule is violating the spirit of this rule.**
 
-Vocabulary and stages: `__REPO__/plugins/antigravity/content/domain.md`.
+Vocabulary and stages: `~/.gemini/config/plugins/tuckit/content/domain.md`.
 
 **Announce at start:** "I'm using verifying-before-claiming before I say this
 is done."

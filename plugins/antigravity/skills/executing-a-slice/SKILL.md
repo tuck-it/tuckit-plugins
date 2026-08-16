@@ -15,7 +15,7 @@ written where the human and the next session can already see it. A slice sitting
 at `executing` with three of seven bites done is a resumable state, not a lost
 one. That is the whole reason this skill exists.
 
-Vocabulary and stages: `__REPO__/plugins/antigravity/content/domain.md`.
+Vocabulary and stages: `~/.gemini/config/plugins/tuckit/content/domain.md`.
 
 **Announce at start:** "I'm using executing-a-slice to implement <ref>."
 

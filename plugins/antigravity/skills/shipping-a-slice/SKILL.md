@@ -13,7 +13,7 @@ Present options → Execute choice → Record what happened → Clean up.
 Two things end here: the branch, and the board's claim about this work. Letting
 one happen without the other is how a tracker starts lying.
 
-Vocabulary and stages: `__REPO__/plugins/antigravity/content/domain.md`.
+Vocabulary and stages: `~/.gemini/config/plugins/tuckit/content/domain.md`.
 
 **Announce at start:** "I'm using shipping-a-slice to land <ref>."
 

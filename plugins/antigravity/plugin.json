@@ -1,0 +1,5 @@
+{
+  "$schema": "https://antigravity.google/schemas/v1/plugin.json",
+  "name": "tuckit",
+  "description": "Use tuckit as your project's single source of truth: domain knowledge, board-freshness hooks, and a design->steps->execute->review->ship workflow that writes every artifact to the board instead of to docs/."
+}

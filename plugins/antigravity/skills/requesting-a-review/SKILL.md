@@ -16,7 +16,7 @@ reviewer that sees only the change reviews the change.
 **Core principle:** requirements in, diff in, findings out. You choose the scope
 and the model; the reviewer decides nothing about what happens next.
 
-Vocabulary and stages: `__REPO__/plugins/antigravity/content/domain.md`.
+Vocabulary and stages: `~/.gemini/config/plugins/tuckit/content/domain.md`.
 
 **Announce at start:** "I'm using requesting-a-review to review <what>."
 

@@ -17,7 +17,7 @@ the slice's `spec`, not a file under `docs/`. A file is read by whoever knows to
 look for it. A spec is read by anyone who opens the board, and by every agent
 that reads the slice before touching the code.
 
-Vocabulary and stages: `__REPO__/plugins/antigravity/content/domain.md`.
+Vocabulary and stages: `~/.gemini/config/plugins/tuckit/content/domain.md`.
 
 <HARD-GATE>
 Do NOT invoke any implementation skill, write any code, scaffold any project, or

@@ -22,7 +22,7 @@ its body**, and little else.
 **Announce at start:** "I'm using breaking-down-a-slice to turn the spec into
 steps on the board."
 
-Vocabulary and stages: `__REPO__/plugins/antigravity/content/domain.md`.
+Vocabulary and stages: `~/.gemini/config/plugins/tuckit/content/domain.md`.
 
 ## Checklist
 
