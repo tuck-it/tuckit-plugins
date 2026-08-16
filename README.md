@@ -23,7 +23,7 @@ Works with **Claude Code**, **Codex CLI**, and **Antigravity CLI**.
 |---|---|---|
 | **Claude Code** | 2 slash commands | ✅ **Automatic** — URL is prefilled; you authorize once in your browser (OAuth), no token to paste |
 | **Codex CLI** | Marketplace add + `/plugins` | ✅ **Automatic** — bundled; you just set one env var |
-| **Antigravity CLI** | Copy 2 files | ⚙️ **Manual** — add tuckit to your MCP config (auto-bundling is coming) |
+| **Antigravity CLI** | 1 command | ✅ **Automatic** — bundled; you authorize once in your browser (OAuth), no token to paste |
 
 Everyone gets: the **session-start primer**, the **session-end write-back
 reminder**, the **`tuckit-domain` skill**, and the **workflow skills**
@@ -38,8 +38,8 @@ mid-session.
    nothing to `pip install`.
 2. **Your tuckit MCP URL** — only if you self-host. On tuckit Cloud the URL is
    already the default (`https://app.tuckit.dev/mcp`), so you need nothing here.
-   - **Claude Code** authorizes in your browser (OAuth) on first use — no token
-     to prepare or paste.
+   - **Claude Code** and **Antigravity** authorize in your browser (OAuth) on
+     first use — no token to prepare or paste.
    - **Codex** still reads a token from an env var; grab it in tuckit under
      **Settings → API tokens / MCP snippet**.
 
@@ -125,47 +125,44 @@ export TUCKIT_MCP_TOKEN="<YOUR_TOKEN>"    # add to your shell profile to keep it
 > `plugins/codex/.mcp.json`.
 </details>
 
-### Antigravity CLI — manual copy
-
-Antigravity references the plugin by absolute path, so first clone this repo
-somewhere stable:
+### Antigravity CLI — one command
 
 ```bash
-git clone https://github.com/tuck-it/tuckit-plugins.git
-cd tuckit-plugins && pwd    # ← copy this absolute path; it's your __REPO__ below
+agy plugin install https://github.com/tuck-it/tuckit-plugins/tree/main/plugins/antigravity
 ```
 
-Then, in your Antigravity workspace:
+That installs the skills, the hooks, **and the tuckit MCP server** — no
+`mcp_config.json` edit needed. On first tool use Antigravity opens your browser
+to **authorize once via OAuth**; there's no token to paste.
 
-```bash
-# 1) Hooks (primer + write-back)
-mkdir -p .agents
-cp __REPO__/plugins/antigravity/.agents/hooks.json .agents/hooks.json
-sed -i '' "s|__REPO__|$(cd __REPO__ && pwd)|g" .agents/hooks.json   # macOS; GNU sed: drop the ''
-
-# 2) The tuckit-domain skill
-mkdir -p .agents/skills
-cp -R __REPO__/plugins/antigravity/skills/tuckit-domain .agents/skills/
-```
+> **Point at the plugin directory, not the repository root.** `agy plugin
+> install <repo URL>` treats `plugins/` as a bulk directory and installs the
+> Claude Code plugin too. Both declare the name `tuckit`, so they land in the
+> same directory and their `hooks.json` files are *merged* — and the merged
+> file is rejected whole, leaving you with no hooks at all.
 
 Antigravity has no `SessionStart` event, so the primer rides on `PreInvocation`
 with a first-turn guard (it injects once per session, not every turn); `Stop`
-carries the write-back reminder.
-
-**MCP is manual on Antigravity for now** — add tuckit to your MCP config as
-shown in [Connecting the MCP by hand](#connecting-the-mcp-by-hand). (Automatic
-bundling like Claude Code and Codex is planned, pending live verification that
-Antigravity auto-registers a plugin's MCP config.)
+carries the write-back reminder, which is why the agent takes one extra turn
+when it first tries to finish.
 
 <details>
-<summary>Heads-up on hook behavior</summary>
+<summary>Options &amp; troubleshooting</summary>
 
-> The Antigravity hook schema, `Stop` semantics, and the session-id field name on
-> hook stdin are best-effort from Antigravity's docs and not yet verified live.
-> If the primer repeats every turn or the write-back never fires, adjust
-> `plugins/antigravity/.agents/hooks.json` — and, for the session id, the key
-> list in `shared/scripts/emit.py`'s `extract_session_id` (then re-run
-> `python3 scripts/build.py`).
+- **Working from a clone?** `agy plugin install` also takes a local directory:
+  `agy plugin install ./plugins/antigravity`.
+- **Self-hosting tuckit?** Edit `serverUrl` in `plugins/antigravity/mcp_config.json`
+  before installing, or configure it manually (see
+  [Connecting the MCP by hand](#connecting-the-mcp-by-hand)).
+- **Check what's installed:** `agy plugin list`. Turn it off with
+  `agy plugin disable tuckit`.
+- **Reinstalling?** `agy plugin uninstall tuckit` drops the entry but leaves
+  `~/.gemini/config/plugins/tuckit/` on disk. Delete that directory too if you
+  want a genuinely clean reinstall.
+- **Nothing seems to happen?** The install output is not evidence — it prints
+  `hooks : 2 processed` for a file it has not parsed yet. The real parse happens
+  when the next session starts, and a bad file becomes one line in
+  `~/.gemini/antigravity-cli/log/cli-*.log`. Look there first.
 </details>
 
 ---
@@ -255,11 +252,11 @@ covers, this plugin now covers too.
 
 ## Connecting the MCP by hand
 
-Claude Code and Codex wire the MCP for you (above). Use these only for
-Antigravity, for self-hosting, or if you'd rather set it up yourself. Claude
-Code authorizes via browser OAuth (no token); for Codex and Antigravity your
-workspace token lives in tuckit under **Settings → API tokens / MCP snippet** —
-no credentials are ever committed to this repo.
+All three plugins wire the MCP for you (above). Use these only for self-hosting,
+or if you'd rather set it up yourself. Claude Code and Antigravity authorize via
+browser OAuth (no token); for Codex your workspace token lives in tuckit under
+**Settings → API tokens / MCP snippet** — no credentials are ever committed to
+this repo.
 
 - **Claude Code** — OAuth is auto-detected; no token needed:
   ```bash
@@ -271,10 +268,10 @@ no credentials are ever committed to this repo.
   url = "<YOUR_MCP_URL>"
   bearer_token_env_var = "TUCKIT_MCP_TOKEN"
   ```
-- **Antigravity** — add to your `mcp_config.json`:
+- **Antigravity** — add to `~/.gemini/config/mcp_config.json`; OAuth runs in
+  your browser on first use, so there is no token to put here:
   ```json
-  { "mcpServers": { "tuckit": { "serverUrl": "<YOUR_MCP_URL>",
-      "headers": { "Authorization": "Bearer <YOUR_TOKEN>" } } } }
+  { "mcpServers": { "tuckit": { "serverUrl": "<YOUR_MCP_URL>" } } }
   ```
 
 ---

@@ -1,0 +1,18 @@
+{
+  "tuckit-primer": {
+    "PreInvocation": [
+      {
+        "type": "command",
+        "command": "python3 scripts/emit.py --agent antigravity --event start --content primer"
+      }
+    ]
+  },
+  "tuckit-writeback": {
+    "Stop": [
+      {
+        "type": "command",
+        "command": "python3 scripts/emit.py --agent antigravity --event stop --content writeback"
+      }
+    ]
+  }
+}

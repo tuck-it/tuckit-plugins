@@ -18,7 +18,7 @@ coordination work.
 **Core principle:** Fresh subagent per bite + bite review (spec + quality) +
 broad final review = high quality, fast iteration
 
-Vocabulary and stages: `__REPO__/plugins/antigravity/content/domain.md`.
+Vocabulary and stages: `~/.gemini/config/plugins/tuckit/content/domain.md`.
 
 **Announce at start:** "I'm using delegating-a-slice to implement <ref>."
 

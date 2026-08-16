@@ -24,7 +24,11 @@ PLUGINS = REPO_ROOT / "plugins"
 AGENT_ROOT_TOKENS = {
     "claude": "${CLAUDE_PLUGIN_ROOT}",
     "codex": "${PLUGIN_ROOT}",
-    "antigravity": "__REPO__/plugins/antigravity",
+    # Antigravity has no plugin-root variable to expand, so the skill has to
+    # name where `agy plugin install` puts a plugin: a literal path, under the
+    # manifest's `name`. A skill body is read by the agent rather than by agy,
+    # so a token agy alone understands would not help here anyway.
+    "antigravity": "~/.gemini/config/plugins/tuckit",
 }
 
 # Formats the `{{ROOT}}` substitution may touch. Anything else is copied as

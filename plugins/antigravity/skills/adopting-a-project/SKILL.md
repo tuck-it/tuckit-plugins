@@ -13,7 +13,7 @@ The goal is not to move the past onto the board. It is to end with a board that
 tells the truth about **right now**, so the next session has something real to
 read.
 
-Vocabulary and stages: `__REPO__/plugins/antigravity/content/domain.md`.
+Vocabulary and stages: `~/.gemini/config/plugins/tuckit/content/domain.md`.
 
 <HARD-GATE>
 Do NOT create any area or slice until you have shown the human the full proposal
