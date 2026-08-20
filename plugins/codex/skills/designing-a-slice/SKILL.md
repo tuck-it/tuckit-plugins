@@ -171,7 +171,7 @@ so the conversation carries on while you wait:
 ```bash
 for i in $(seq 1 450); do
   r=$(curl -s --max-time 5 "<watch_url>" || true)
-  case "$r" in *chosen*) echo "$r"; break ;; esac
+  case "$r" in *chosen*) echo "$r"; break ;; *expired*) break ;; esac
   sleep 2
 done
 ```
