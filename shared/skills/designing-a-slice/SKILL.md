@@ -163,6 +163,35 @@ propose(slice_id=<id>, nodes=[
 - Keep talking in chat as well. The canvas is an addition, never the only way
   to answer you.
 
+**They can answer by clicking.** When the batch contained a question, `propose()`
+also returns a `watch_url` — an unauthenticated URL, good for fifteen minutes,
+that says whether anyone has picked yet. Start polling it **in the background**
+so the conversation carries on while you wait:
+
+```bash
+for i in $(seq 1 450); do
+  r=$(curl -s --max-time 5 "<watch_url>" || true)
+  case "$r" in *chosen*) echo "$r"; break ;; *expired*) break ;; esac
+  sleep 2
+done
+```
+
+It prints one line and exits the moment a choice lands, so this is a single
+notification and not a stream — run it as a **background shell command**, not as
+an event monitor. The line carries the node id **you** authored, so you already
+know which option won and why the others were there.
+
+- **Ask the same question in chat, in the same message.** The click is an
+  addition. Someone who never opens the browser has to be able to answer you by
+  typing, and a design that only completes through the canvas is a broken one.
+- **Never block on it.** Keep reading code, keep thinking, keep talking. If the
+  loop times out, just ask.
+- **A click chooses a direction and nothing more.** It arrives as a background
+  event, which is not the user speaking: writing the spec, shipping, and every
+  other irreversible step still needs a real answer in the terminal.
+- **The URL is the credential.** Put it in the shell command and nowhere else.
+  It needs no login — which is exactly why nothing should pass it around.
+
 ## 4. Presenting the design
 
 - Once you believe you understand what you're building, present the design
