@@ -42,7 +42,8 @@ You MUST create a task for each of these items and complete them in order:
 2. **Explore project context** — project state, files, recent commits
 3. **Ask clarifying questions** — one at a time, understand purpose /
    constraints / success criteria
-4. **Propose 2-3 approaches** — with trade-offs and your recommendation
+4. **Propose 2-3 approaches** — with trade-offs and your recommendation, put
+   onto the slice's canvas with `propose()`
 5. **Present design** — in sections scaled to their complexity, get user
    approval after each section
 6. **Write the design into the slice** — `update_slice(spec=…)`
@@ -133,6 +134,35 @@ exactly what makes the board stale.
 - Lead with your recommended option and explain why
 - YAGNI ruthlessly — remove unnecessary features from every approach and design
 
+**Put them on the canvas as you go.** Chat is a bad surface for judgement: the
+options cannot be seen side by side, the branch you considered and dropped
+scrolls away, and the person deciding is the most expensive resource in the
+room. `propose()` writes the same options onto the slice's canvas, which they
+watch grow in the browser.
+
+```
+propose(slice_id=<id>, nodes=[
+  {"id": "q1", "parent": None, "kind": "question",
+   "title": "Where does the draft live?"},
+  {"id": "o1", "parent": "q1", "kind": "option", "title": "A JSON field on Slice",
+   "summary": "one field, no new vocabulary",
+   "body": "Costs a migration and nothing else...", "recommended": True},
+  {"id": "o2", "parent": "q1", "kind": "option", "title": "A separate model",
+   "summary": "queryable, but a fourth noun on the board",
+   "body": "..."},
+])
+```
+
+- `id` is yours and must be unique on that canvas; `parent` is another node's
+  id, or `None` for the single root. Every option hangs off the question it
+  answers.
+- Call it **as each question comes up**, not once at the end. The point is that
+  the human sees the tree grow while you are still thinking.
+- It is append-only and accepted only while `spec` is empty. A branch that lost
+  stays on the canvas — that is the record of what was considered.
+- Keep talking in chat as well. The canvas is an addition, never the only way
+  to answer you.
+
 ## 4. Presenting the design
 
 - Once you believe you understand what you're building, present the design
@@ -174,6 +204,13 @@ exactly what makes the board stale.
 
 `update_slice(slice_id=…, spec=<the design>)`. Markdown; headings and tables
 render.
+
+**Writing the spec retires the canvas.** The draft and the spec are exclusive:
+the moment a non-empty spec lands, the draft is cleared and the canvas switches
+to rendering the spec's own heading structure. So carry the judgement across
+**before** you write — the decisions you reached, which option won, and why the
+others lost — usually as a decision table in the spec. Anything left only on
+the canvas is gone.
 
 - **`spec`** answers *what we are building and why*.
 - **`constraints`** is a different field and a different reader: what a later
