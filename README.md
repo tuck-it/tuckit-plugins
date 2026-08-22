@@ -95,7 +95,8 @@ workspace. This is shared project state, not per-agent memory.
 **Every install ships the same payload:** the session-start primer, the
 session-end write-back reminder, the `tuckit-domain` reference skill, and all of
 the workflow skills described below. Claude Code additionally gets a
-`/tuckit-sync` command for reconciling the board mid-session.
+`reconciling-the-board` skill, which you can also invoke by name to reconcile
+mid-session.
 
 ## Before you start
 
@@ -129,7 +130,7 @@ automatically.
 
 That one install gives you the primer, the write-back reminder, the
 `tuckit-domain` skill, **every workflow skill in this repository**, the
-`/tuckit-sync` command, and a live tuckit MCP connection.
+`reconciling-the-board` skill, and a live tuckit MCP connection.
 
 <details>
 <summary>Options and troubleshooting</summary>
@@ -237,7 +238,15 @@ turn the first time it tries to finish.
 
 ## The workflow skills
 
-The hooks are ambient. They orient the agent and nudge it to write back. The
+The hooks are ambient, and deliberately thin. Between them the session-start
+primer and the session-end nudge are about 170 words, because that text is
+injected into **every** session whether or not it touches the board — a session
+that never opens tuckit still pays for it. So the hooks say what is true with no
+skill loaded (this workspace is tuckit-tracked, read state from tuckit, here is
+the skill to use) and nothing else. The substance lives in the skills below,
+which load only when they are needed.
+
+The hooks orient the agent and nudge it to write back. The
 workflow skills are the other half: they make one unit of work move through
 tuckit end to end, so nothing about it ever lives only in a chat log.
 
@@ -283,11 +292,40 @@ are already in. You can also invoke any of them directly.
 | Skill | Use it when | What it writes to the board |
 |---|---|---|
 | **`requesting-a-review`** | Work needs a reviewer's eyes: one bite, a whole branch before merge, or any range you ask about | Nothing directly. It produces findings. |
-| **`receiving-a-review`** | Review feedback has arrived, before you implement any of it | Deferred findings become Inbox slices, rulings become a note, landmines become constraints |
+| **`receiving-a-review`** | Review feedback has arrived, before you implement any of it | Deferred findings are proposed as Inbox slices and created once your partner approves the batch, rulings become a note, landmines become constraints |
 | **`writing-tests-first`** | Before writing implementation code for a feature or a fix | An agreed exception becomes a line in the slice's constraints |
 | **`verifying-before-claiming`** | Before saying anything is done, including before ticking a bite | Nothing new. It decides whether the tick is honest. |
 | **`debugging-systematically`** | A bug, a test failure, anything unexpected, before proposing a fix | The rule becomes a constraint, the session becomes one note, an unrelated bug becomes an Inbox slice, and after three failed fixes the architecture conclusion becomes its own slice |
 | **`explain-change`** | Someone needs to actually understand a change an agent wrote | Nothing new. It turns a branch, PR or commit range into a self-contained HTML walkthrough that links each slice's recorded intent and ends in a quiz. |
+
+### Keeping the board readable
+
+An open slice costs nothing to create and nothing to keep, and a board left
+alone converges on a state where everything is true and nothing is readable.
+This one runs periodically rather than as part of any single piece of work.
+
+| Skill | Use it when | What it writes to the board |
+|---|---|---|
+| **`clearing-the-board`** | More open slices than anyone reads: a capped roadmap, a piled-up Inbox, or nobody can say what is next | Nothing without approval. It proposes what to close and why, then closes the approved set as `dropped` and records the list and reasons on one slice |
+
+It proposes and waits, like `adopting-a-project` and for the same reason: this
+is the one skill that can make a board smaller, so running it casually is its
+failure mode rather than its purpose.
+
+### Keeping the board honest
+
+Neither of these belongs to one piece of work. The first runs at the end of a
+session, the second every so often.
+
+| Skill | Use it when | What it writes to the board |
+|---|---|---|
+| **`reconciling-the-board`** | A session that touched the board is ending, or you want the board reconciled right now | Closes what became untrue, notes what you did, and proposes anything new for approval before creating it |
+| **`clearing-the-board`** | More open slices than anyone reads: a capped roadmap, a piled-up Inbox, or nobody can say what is next | Nothing without approval. It proposes what to close and why, then closes the approved set as `dropped` and records the list and reasons on one slice |
+
+`reconciling-the-board` is what the session-end hook points at — the hook is the
+nudge, this is the checklist. `clearing-the-board` proposes and waits for the
+same reason `adopting-a-project` does: it is the one skill that can make a board
+smaller, so running it casually is its failure mode rather than its purpose.
 
 ### Reference
 
@@ -367,9 +405,20 @@ scripts/                dev tooling (not shipped in any plugin)
 docs/media/             README artwork and the demo recording
 ```
 
-The manifests, hooks, commands, and the AGENTS snippet under each
-`plugins/<agent>/` are authored in place. Only `content/`, `scripts/emit.py`,
-and the skills are generated.
+The manifests, hooks, and the AGENTS snippet under each `plugins/<agent>/` are
+authored in place. Only `content/`, `scripts/emit.py`, and the skills are
+generated.
+
+**There are no slash commands.** There was one, `/tuckit-sync`, and it drifted:
+it kept telling the agent to capture follow-ups on its own for as long as it
+took anyone to notice that the checklist had grown an approval step. It lived
+outside `shared/`, so no build and no guard could catch it. Every entry point is
+a skill now — one copy, generated into all three agents, invocable by a person
+or by the model.
+
+`content/` is capped by a test. It is injected into every session, so words
+added there are paid for by sessions that had no use for them; if a hook needs
+to say more, that is a signal the material belongs in a skill.
 
 Two guards pull in opposite directions on purpose. `content/` may name **only**
 `get_project_state`, because that prose has to survive the tool catalog

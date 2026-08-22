@@ -7,7 +7,7 @@ copy, so `build.py` fans the source out into `plugins/<agent>/`, substituting th
 per-agent path token in the skill. Run it after editing anything under `shared/`.
 
 Only the GENERATED subset is written (content, scripts/emit.py, skills). The
-per-agent static files — manifests, hooks, commands, the AGENTS snippet — are
+per-agent static files — manifests, hooks, the AGENTS snippet — are
 authored in place under plugins/<agent>/ and left untouched.
 """
 from __future__ import annotations

@@ -129,14 +129,14 @@ digraph routing {
     "Fixing it on this branch now?" [shape=diamond];
     "① Fix it" [shape=box];
     "Will anyone actually do it later?" [shape=diamond];
-    "④ create_slice, no area (Inbox)" [shape=box];
+    "④ propose a slice (Inbox), in the approval batch" [shape=box];
     "③ One line in a note, why not" [shape=box];
 
     "Technically wrong for this codebase?" -> "② Push back with reasoning" [label="yes"];
     "Technically wrong for this codebase?" -> "Fixing it on this branch now?" [label="no"];
     "Fixing it on this branch now?" -> "① Fix it" [label="yes"];
     "Fixing it on this branch now?" -> "Will anyone actually do it later?" [label="no"];
-    "Will anyone actually do it later?" -> "④ create_slice, no area (Inbox)" [label="yes"];
+    "Will anyone actually do it later?" -> "④ propose a slice (Inbox), in the approval batch" [label="yes, and it clears rule 5"];
     "Will anyone actually do it later?" -> "③ One line in a note, why not" [label="no"];
 }
 ```
@@ -155,7 +155,20 @@ digraph routing {
 - *Will anyone actually do it later?* — would a named person or a next session
   pick this up off the board? Not "should someone" — *will* they.
 
-Four rules govern the routing:
+  **Answer this one from the board's numbers, not from how the finding feels.**
+  You are making a prediction about other people, at the moment you are most
+  convinced the thing matters. Call `get_project_state` first and read three
+  fields:
+
+  | field | what it tells you |
+  |---|---|
+  | `totals.drop_ratio` | the share of everything ever captured here that a human later decided was not work |
+  | `inbox.open_count` | how many captures are already waiting, unfiled |
+  | `inbox.oldest_idle_days` | how long the oldest of them has sat untouched |
+
+  Then apply the bar in rule 5.
+
+Five rules govern the routing:
 
 1. **No silent discard.** Every item takes one of the four. A `TODO` comment is
    not a destination, a line in your closing message is not a destination, and
@@ -169,6 +182,17 @@ Four rules govern the routing:
 4. **What the next person must not step on goes in `constraints`**
    (`update_slice`). Notes say what happened to you; constraints say what the
    next person must not repeat. If you hit the landmine yourself, write both.
+5. **④ demotes to ③ by default once the board is already full.** When
+   `inbox.open_count` is **20 or more**, or `totals.drop_ratio` is **0.5 or
+   higher**, a finding may only take ④ if you can write down *who* will do it
+   and *when* — a name and an occasion, not "a future session". If you cannot,
+   it is a note. Below both thresholds, route on the question alone.
+
+   The thresholds are not taste. 20 is roughly where an Inbox stops being read
+   in one sitting, and a drop ratio of 0.5 means the board has been discarding
+   most of what it collects — at that point one more capture is evidence about
+   your prediction, not an exception to it. If you find yourself wanting to
+   raise these numbers, that is the feeling this rule exists to overrule.
 
 **② writes nothing by itself.** When the ruling is one the next person could
 re-raise — a design choice that looks wrong from outside, a trade-off you made
@@ -184,14 +208,30 @@ trivial one the next person fixes in five minutes is a slice. Filing everything
 as a slice fails the same way as filing nothing: an Inbox full of items nobody
 reads stops being read at all.
 
+This is not hypothetical, and knowing it was not enough. That paragraph was
+already in this skill on 2026-08-22, when a board reached 140 open slices and
+109 of them were closed in a single pass without being read — 78% of everything
+ever captured. One review of one feature had produced seven of them, and four
+were closed unread. The gate answered "yes" seven times; the honest answer was
+three. What was missing was never the warning. It was that nothing on the
+agent's side of the product reported how full the Inbox was, how old it was, or
+how much of it had historically been thrown away, so "will anyone do it" was a
+prediction with no evidence attached. Rule 5 is that evidence, made binding.
+
+**④ does not create anything by itself.** Collect the items that clear the bar
+and hand them to your closing batch-confirm — the list your human partner
+approves before anything is written. A gate that is wrong is survivable when a
+person sees the list; it is not when the slices are already there.
+
 ### When there is no slice
 
 An `ad-hoc` review or a PR comment can arrive with no slice behind it. The
 routes still hold:
 
-- **④ works unchanged.** `create_slice` with no area needs no parent slice —
-  that is what the Inbox is. Name the repo and the PR in the body, because there
-  is no slice context for it to inherit.
+- **④ works unchanged.** A slice with no area needs no parent slice — that is
+  what the Inbox is. Name the repo and the PR in the body, because there is no
+  slice context for it to inherit. It still goes into the approval batch rather
+  than being created on the spot.
 - **③ has nowhere to land**, since a note needs a slice to sit on. Promote the
   item to ④, or put the batch to your human partner and let them say which are
   worth a slice. Do not drop it because the convenient destination is missing.

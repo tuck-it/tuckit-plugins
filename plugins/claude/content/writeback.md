@@ -1,20 +1,8 @@
-# Before you finish: is the tuckit board current?
+# Before you finish
 
-A stale board makes the SSOT lie. Reconcile now.
+If this session changed nothing about the board, stop here — say nothing and
+end. Most sessions are this one.
 
-1. **Did this session decide to do something NEXT or LATER? Put it on the board
-   — this matters most.** A committed next step (e.g. "backend this slice,
-   frontend NEXT slice") → create a Slice now in the right Area (leave its spec
-   empty; tuckit will show it as "needs design") so it shows up as what's next.
-   A vaguer follow-up or "someday" → create a Slice with no area (it lands in
-   the Inbox; file it into an Area later — that's reversible). An agreement
-   that isn't in tuckit does not exist — the chat log is not the SSOT.
-2. New follow-ups or bugs that surfaced this session → capture as Slices with
-   no area (the Inbox).
-3. What you actually did → check off completed Bites and leave a note on the
-   Slice (what you did, blockers, PR links). Checking off the last Bite already
-   moves its stage to `ready_to_ship` on its own — nothing else to set there.
-4. If a Slice is genuinely finished (its stage already reads `ready_to_ship`)
-   → mark it shipped. That status change is the one decision on this list
-   that's yours to make, not derived.
-5. If there is nothing to reflect, do nothing — this is a reminder, not a gate.
+Otherwise use the **`reconciling-the-board`** skill now. It closes what became
+untrue, records what you did, and puts anything new in front of your human
+partner before it is created.
