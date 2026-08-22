@@ -21,15 +21,21 @@ state.
 
 ## Before you start: reconcile with the board
 
-Before doing work, check whether a Slice already covers it (in an Area, or
-still in the Inbox with no area). If one does, continue that one. If none
-does, create it first. Doing work the board doesn't know about is exactly
-what makes the board go stale.
+Before doing work, check whether a Slice already covers it — in an Area, or
+still in the Inbox with no area. Search before you conclude there is nothing:
+by text, and separately through the unfiled captures — the ones with no area,
+which are the easiest to miss and usually the oldest. If one covers it, continue that
+one. Only if none does, create it. Doing work the board doesn't know about is
+what makes the board go stale — and filing a second slice for work it already
+knows about is what makes it unreadable.
 
 ## When you finish: reconcile again
 
-Before ending, make sure what you did — and anything you decided to do *next* —
-is on the board.
+Before ending, make sure the board reflects what happened: what you did, what
+became untrue and can be closed, and — with your human partner's approval —
+what should exist and doesn't.
+
+Closing counts as reconciling. The board only gets smaller on purpose.
 
 The exact set of tools is whatever the tuckit MCP server exposes; discover it
 there rather than assuming a fixed list.

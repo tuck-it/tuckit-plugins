@@ -283,11 +283,25 @@ are already in. You can also invoke any of them directly.
 | Skill | Use it when | What it writes to the board |
 |---|---|---|
 | **`requesting-a-review`** | Work needs a reviewer's eyes: one bite, a whole branch before merge, or any range you ask about | Nothing directly. It produces findings. |
-| **`receiving-a-review`** | Review feedback has arrived, before you implement any of it | Deferred findings become Inbox slices, rulings become a note, landmines become constraints |
+| **`receiving-a-review`** | Review feedback has arrived, before you implement any of it | Deferred findings are proposed as Inbox slices and created once your partner approves the batch, rulings become a note, landmines become constraints |
 | **`writing-tests-first`** | Before writing implementation code for a feature or a fix | An agreed exception becomes a line in the slice's constraints |
 | **`verifying-before-claiming`** | Before saying anything is done, including before ticking a bite | Nothing new. It decides whether the tick is honest. |
 | **`debugging-systematically`** | A bug, a test failure, anything unexpected, before proposing a fix | The rule becomes a constraint, the session becomes one note, an unrelated bug becomes an Inbox slice, and after three failed fixes the architecture conclusion becomes its own slice |
 | **`explain-change`** | Someone needs to actually understand a change an agent wrote | Nothing new. It turns a branch, PR or commit range into a self-contained HTML walkthrough that links each slice's recorded intent and ends in a quiz. |
+
+### Keeping the board readable
+
+An open slice costs nothing to create and nothing to keep, and a board left
+alone converges on a state where everything is true and nothing is readable.
+This one runs periodically rather than as part of any single piece of work.
+
+| Skill | Use it when | What it writes to the board |
+|---|---|---|
+| **`clearing-the-board`** | More open slices than anyone reads: a capped roadmap, a piled-up Inbox, or nobody can say what is next | Nothing without approval. It proposes what to close and why, then closes the approved set as `dropped` and records the list and reasons on one slice |
+
+It proposes and waits, like `adopting-a-project` and for the same reason: this
+is the one skill that can make a board smaller, so running it casually is its
+failure mode rather than its purpose.
 
 ### Reference
 
