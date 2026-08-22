@@ -56,6 +56,10 @@ List the open slices, including the unfiled ones. Each row carries `age_days`
 and `idle_days`. Read `stage` too: a slice at `executing` with recent activity
 is someone's work in progress and is not a candidate, whatever its age.
 
+Read `priority` as well. A row with none is simply unranked — that is the
+normal state and says nothing either way. A row that *has* one is a decision
+somebody made, and it changes what its age means.
+
 ### 3. Sort each one into three piles
 
 **Alive** — leave it open, say nothing about it.
@@ -64,6 +68,17 @@ is someone's work in progress and is not a candidate, whatever its age.
 
 **Ask** — you cannot tell without the human's context. Do not guess; a wrong
 close here is how a roadmap loses a load-bearing item.
+
+**A high priority that has sat still belongs in Ask, never in the close list.**
+Somebody decided this was urgent and then nobody did it. That means one of two
+things — it was not actually urgent, or it is blocked — and you cannot tell
+which from the board. Both need the human, and both are worth more than the
+slice itself: the first says the ranking is miscalibrated, the second says
+something is stuck and silent.
+
+It is the strongest signal on this pass, and the easiest to get backwards.
+Age alone would put it at the top of the close list; it is the one row that
+most deserves a person's eyes.
 
 The line that matters, and the one this pass gets wrong:
 
@@ -123,6 +138,11 @@ closing things is treating a symptom. The repair lives on the capture side —
 the review-routing gate, and the end-of-session approval batch. Name that in
 your closing message rather than scheduling another cleanup.
 
+The same goes for a pile of stalled high priorities: that is not a cleanup
+problem either. It means the ranking and the doing have come apart, and the
+repair is the priority policy — the criteria are wrong, or nobody is reading
+them. Name it instead of closing the rows.
+
 ## Red flags
 
 | You are about to… | Instead |
@@ -134,3 +154,4 @@ your closing message rather than scheduling another cleanup.
 | Run this because the session felt untidy | Run it on the numbers, or on the schedule |
 | Delete instead of dropping | The record survives. That is the product's whole claim |
 | Schedule another cleanup after a high `drop_ratio` | Fix the capture gate instead |
+| Close a high priority because it has not moved | That is the strongest signal on the board. It goes to Ask |
