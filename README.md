@@ -95,7 +95,8 @@ workspace. This is shared project state, not per-agent memory.
 **Every install ships the same payload:** the session-start primer, the
 session-end write-back reminder, the `tuckit-domain` reference skill, and all of
 the workflow skills described below. Claude Code additionally gets a
-`/tuckit-sync` command for reconciling the board mid-session.
+`reconciling-the-board` skill, which you can also invoke by name to reconcile
+mid-session.
 
 ## Before you start
 
@@ -129,7 +130,7 @@ automatically.
 
 That one install gives you the primer, the write-back reminder, the
 `tuckit-domain` skill, **every workflow skill in this repository**, the
-`/tuckit-sync` command, and a live tuckit MCP connection.
+`reconciling-the-board` skill, and a live tuckit MCP connection.
 
 <details>
 <summary>Options and troubleshooting</summary>
@@ -318,7 +319,7 @@ session, the second every so often.
 
 | Skill | Use it when | What it writes to the board |
 |---|---|---|
-| **`reconciling-the-board`** | A session that touched the board is ending, or someone runs `/tuckit-sync` | Closes what became untrue, notes what you did, and proposes anything new for approval before creating it |
+| **`reconciling-the-board`** | A session that touched the board is ending, or you want the board reconciled right now | Closes what became untrue, notes what you did, and proposes anything new for approval before creating it |
 | **`clearing-the-board`** | More open slices than anyone reads: a capped roadmap, a piled-up Inbox, or nobody can say what is next | Nothing without approval. It proposes what to close and why, then closes the approved set as `dropped` and records the list and reasons on one slice |
 
 `reconciling-the-board` is what the session-end hook points at — the hook is the
@@ -404,11 +405,16 @@ scripts/                dev tooling (not shipped in any plugin)
 docs/media/             README artwork and the demo recording
 ```
 
-The manifests, hooks, commands, and the AGENTS snippet under each
-`plugins/<agent>/` are authored in place. Only `content/`, `scripts/emit.py`,
-and the skills are generated. Watch the hand-authored ones: `commands/` is not
-built from `shared/`, so a command that restates a skill goes stale on its own
-and nothing catches it. Point at the skill instead of summarising it.
+The manifests, hooks, and the AGENTS snippet under each `plugins/<agent>/` are
+authored in place. Only `content/`, `scripts/emit.py`, and the skills are
+generated.
+
+**There are no slash commands.** There was one, `/tuckit-sync`, and it drifted:
+it kept telling the agent to capture follow-ups on its own for as long as it
+took anyone to notice that the checklist had grown an approval step. It lived
+outside `shared/`, so no build and no guard could catch it. Every entry point is
+a skill now — one copy, generated into all three agents, invocable by a person
+or by the model.
 
 `content/` is capped by a test. It is injected into every session, so words
 added there are paid for by sessions that had no use for them; if a hook needs

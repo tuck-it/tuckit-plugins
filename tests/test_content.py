@@ -72,3 +72,24 @@ def test_injected_hook_payload_stays_small():
         f"(ceiling {MAX_INJECTED_WORDS}). Move the substance into a skill "
         f"rather than raising this."
     )
+
+
+def test_no_plugin_ships_a_slash_command():
+    """Every entry point is a skill.
+
+    There was one command, /tuckit-sync, and it went stale: it kept instructing
+    the agent to capture follow-ups on its own long after the checklist had
+    grown an approval step. It lived outside shared/, so the build never
+    regenerated it and no guard read it -- the two properties that let a second
+    copy of anything drift unnoticed.
+
+    Skills do not have that failure mode: one authored copy, generated into all
+    three agents, and callable by a person or by the model. If a command ever
+    earns its place again, delete this test on purpose rather than around it.
+    """
+    plugins = Path(__file__).resolve().parent.parent / "plugins"
+    offenders = [p for p in plugins.glob("*/commands")]
+    assert offenders == [], (
+        f"hand-authored slash commands are back: {[str(p) for p in offenders]} — "
+        f"make it a skill in shared/skills/ instead"
+    )
