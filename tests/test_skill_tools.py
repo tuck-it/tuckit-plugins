@@ -36,6 +36,7 @@ SKILL_TOOLS = {
     "update_bite",
     "add_note",
     "propose",
+    "append_priority_policy",
 }
 
 requires_tuckit = pytest.mark.skipif(
