@@ -19,13 +19,15 @@ SERVER_REL = Path("tuckit") / "tuckit" / "core" / "mcp" / "server.py"
 def _find_server_py() -> Path:
     """Locate the sibling tuckit checkout's MCP server.
 
-    Normally it sits next to this repo. Development happens in worktrees
-    (`<workspace>/.worktrees/<name>/`), which pushes the sibling one level
-    further up — and a guard that silently skips in the layout people actually
-    work in is a guard that never runs. Returns the plain sibling path when
-    neither exists, so the skip message names the expected location.
+    Normally it sits next to this repo. Development happens in worktrees, which
+    push the sibling further up — one level for `<workspace>/.worktrees/<name>/`
+    and two for `<workspace>/<repo>/.worktrees/<name>/`, which is what
+    `git worktree add` inside the repo produces. Both layouts are in use here,
+    so both are searched: a guard that silently skips in the layout people
+    actually work in is a guard that never runs. Returns the plain sibling path
+    when none exists, so the skip message names the expected location.
     """
-    for base in (REPO_ROOT.parent, REPO_ROOT.parent.parent):
+    for base in (REPO_ROOT.parent, REPO_ROOT.parent.parent, REPO_ROOT.parent.parent.parent):
         candidate = base / SERVER_REL
         if candidate.exists():
             return candidate
