@@ -143,7 +143,7 @@ watch grow in the browser.
 ```
 propose(slice_id=<id>, nodes=[
   {"id": "q1", "parent": None, "kind": "question",
-   "title": "Where does the draft live?"},
+   "title": "Where does the decision record live?"},
   {"id": "o1", "parent": "q1", "kind": "option", "title": "A JSON field on Slice",
    "summary": "one field, no new vocabulary",
    "body": "Costs a migration and nothing else...", "recommended": True},
@@ -234,12 +234,17 @@ know which option won and why the others were there.
 `update_slice(slice_id=…, spec=<the design>)`. Markdown; headings and tables
 render.
 
-**Writing the spec retires the canvas.** The draft and the spec are exclusive:
-the moment a non-empty spec lands, the draft is cleared and the canvas switches
-to rendering the spec's own heading structure. So carry the judgement across
-**before** you write — the decisions you reached, which option won, and why the
-others lost — usually as a decision table in the spec. Anything left only on
-the canvas is gone.
+**The canvas outlives the spec, and closes to new writes.** The decision record
+and the spec answer different questions — how you got here, and where you
+arrived — so writing one never destroys the other. What the spec write does end
+is your ability to add to the record: after it, `propose()` is rejected and a
+recorded choice can no longer be corrected.
+
+So settle the record **before** you write. If a question was answered in chat
+rather than by a click, make sure the canvas says so now, while it still
+accepts writes. You do not need to copy the tree into the spec to keep it — the
+spec carries the *conclusion*, and the canvas keeps the reasoning that produced
+it.
 
 - **`spec`** answers *what we are building and why*.
 - **`constraints`** is a different field and a different reader: what a later
