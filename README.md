@@ -237,7 +237,15 @@ turn the first time it tries to finish.
 
 ## The workflow skills
 
-The hooks are ambient. They orient the agent and nudge it to write back. The
+The hooks are ambient, and deliberately thin. Between them the session-start
+primer and the session-end nudge are about 170 words, because that text is
+injected into **every** session whether or not it touches the board — a session
+that never opens tuckit still pays for it. So the hooks say what is true with no
+skill loaded (this workspace is tuckit-tracked, read state from tuckit, here is
+the skill to use) and nothing else. The substance lives in the skills below,
+which load only when they are needed.
+
+The hooks orient the agent and nudge it to write back. The
 workflow skills are the other half: they make one unit of work move through
 tuckit end to end, so nothing about it ever lives only in a chat log.
 
@@ -302,6 +310,21 @@ This one runs periodically rather than as part of any single piece of work.
 It proposes and waits, like `adopting-a-project` and for the same reason: this
 is the one skill that can make a board smaller, so running it casually is its
 failure mode rather than its purpose.
+
+### Keeping the board honest
+
+Neither of these belongs to one piece of work. The first runs at the end of a
+session, the second every so often.
+
+| Skill | Use it when | What it writes to the board |
+|---|---|---|
+| **`reconciling-the-board`** | A session that touched the board is ending, or someone runs `/tuckit-sync` | Closes what became untrue, notes what you did, and proposes anything new for approval before creating it |
+| **`clearing-the-board`** | More open slices than anyone reads: a capped roadmap, a piled-up Inbox, or nobody can say what is next | Nothing without approval. It proposes what to close and why, then closes the approved set as `dropped` and records the list and reasons on one slice |
+
+`reconciling-the-board` is what the session-end hook points at — the hook is the
+nudge, this is the checklist. `clearing-the-board` proposes and waits for the
+same reason `adopting-a-project` does: it is the one skill that can make a board
+smaller, so running it casually is its failure mode rather than its purpose.
 
 ### Reference
 
@@ -383,7 +406,13 @@ docs/media/             README artwork and the demo recording
 
 The manifests, hooks, commands, and the AGENTS snippet under each
 `plugins/<agent>/` are authored in place. Only `content/`, `scripts/emit.py`,
-and the skills are generated.
+and the skills are generated. Watch the hand-authored ones: `commands/` is not
+built from `shared/`, so a command that restates a skill goes stale on its own
+and nothing catches it. Point at the skill instead of summarising it.
+
+`content/` is capped by a test. It is injected into every session, so words
+added there are paid for by sessions that had no use for them; if a hook needs
+to say more, that is a signal the material belongs in a skill.
 
 Two guards pull in opposite directions on purpose. `content/` may name **only**
 `get_project_state`, because that prose has to survive the tool catalog
