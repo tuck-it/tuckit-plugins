@@ -153,9 +153,40 @@ propose(slice_id=<id>, nodes=[
 ])
 ```
 
+…the human picks `o1`, and **the next call hangs off the option that won** —
+not off `q1`:
+
+```
+propose(slice_id=<id>, nodes=[
+  {"id": "d1", "parent": "o1", "kind": "note",
+   "title": "A JSON field it is",
+   "body": "Migration only. o2 lost on the fourth noun."},
+  {"id": "q2", "parent": "d1", "kind": "question",
+   "title": "Who may write to that field?"},
+  {"id": "p1", "parent": "q2", "kind": "option", "title": "Agents only", ...},
+])
+```
+
+### Where a node hangs
+
 - `id` is yours and must be unique on that canvas; `parent` is another node's
-  id, or `None` for the single root. Every option hangs off the question it
-  answers.
+  id, or `None` for the single root.
+- **A question's children are its options.** Nothing else hangs off a question:
+  not a note, not the next question.
+- **After a question is answered, everything that follows is a child of the
+  option that won.** This is not a convention you are asked to keep — those
+  nodes exist *because* of that choice, and hanging them anywhere else lets a
+  later re-answer silently re-read all of them as the result of a decision that
+  never produced them. The server refuses any other parent and names the id to
+  use, so getting it wrong costs you a round trip rather than the record.
+- **If the human rejects the question itself, put up a sibling question** and
+  leave the old one alone. Being told "that is the wrong question" and asking a
+  better one is ordinary design, not an error path — the board renders the
+  abandoned one as passed over rather than still waiting.
+- **Once `spec` is written the record is sealed.** A direction that changes
+  after that is a **new slice**, not an edit to this one: the record is the
+  snapshot of how this slice was decided, and re-answering it two days later
+  would rewrite work that has already been built on the old answer.
 - Call it **as each question comes up**, not once at the end. The point is that
   the human sees the tree grow while you are still thinking.
 - It is append-only and accepted only while `spec` is empty. A branch that lost
