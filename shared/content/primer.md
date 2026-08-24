@@ -11,5 +11,8 @@ Before starting work, check whether the board already covers it, and continue
 that rather than opening a second one. When the session ends, use the
 **`reconciling-the-board`** skill.
 
+If live state has no Areas, use **`starting-with-tuckit`**; otherwise treat a
+new idea as a Slice on the board that already exists.
+
 The model (Area / Slice / Bite) and the workflow are in the
 **`tuckit-domain`** skill. Load it when you need more than the above.
