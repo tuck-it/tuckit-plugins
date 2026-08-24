@@ -254,16 +254,18 @@ Each skill ends by naming the next one, so the chain runs itself. The payoff is
 **resumption**: a new session reads the slice's stage and knows where the work
 is, instead of hunting for the markdown file the last session left behind.
 
-### Starting from an existing project
+### Starting with tuckit
 
 | Skill | Use it when | What it writes to the board |
 |---|---|---|
-| **`adopting-a-project`** | The workspace is empty and the project is not. You are putting tuckit on something already running. | The first **areas**, and a **slice** per piece of work already in flight, with specs left empty and evidence in notes |
+| **`starting-with-tuckit`** | This project's board has no Areas yet, whether the project is new or already running. | An approved, responsibility-based set of **Areas**, then one first goal or the evidence-backed work already in flight, with specs left empty |
 
-It runs once, before the pipeline. The other skills read a slice's `stage` to
-know what to do, and at this moment there is no board for a stage to live on. It
-proposes and waits, because tuckit has no delete tool, so anything it creates
-unasked is cleanup somebody does by hand.
+It runs once, before the pipeline. It reads the project and the human's intent,
+drafts the whole Area set, and asks only questions whose answers would produce
+different responsibility boundaries. The other skills read a slice's `stage`
+to know what to do, and at this moment there is no Area for that first slice to
+live under. It proposes and waits, because anything it creates unasked is
+cleanup somebody does by hand.
 
 ### The pipeline
 
@@ -308,7 +310,7 @@ This one runs periodically rather than as part of any single piece of work.
 |---|---|---|
 | **`clearing-the-board`** | More open slices than anyone reads: a capped roadmap, a piled-up Inbox, or nobody can say what is next | Nothing without approval. It proposes what to close and why, then closes the approved set as `dropped` and records the list and reasons on one slice |
 
-It proposes and waits, like `adopting-a-project` and for the same reason: this
+It proposes and waits, like `starting-with-tuckit` and for the same reason: this
 is the one skill that can make a board smaller, so running it casually is its
 failure mode rather than its purpose.
 
@@ -324,8 +326,9 @@ session, the second every so often.
 
 `reconciling-the-board` is what the session-end hook points at — the hook is the
 nudge, this is the checklist. `clearing-the-board` proposes and waits for the
-same reason `adopting-a-project` does: it is the one skill that can make a board
-smaller, so running it casually is its failure mode rather than its purpose.
+same reason `starting-with-tuckit` does: it is the one skill that can make a
+board smaller, so running it casually is its failure mode rather than its
+purpose.
 
 ### Reference
 

@@ -1,6 +1,6 @@
 {
   "name": "tuckit",
-  "version": "0.17.0",
+  "version": "0.18.0",
   "description": "Use tuckit as your project's single source of truth: domain knowledge, board-freshness hooks, and a design->steps->execute->review->ship workflow that writes every artifact to the board instead of to docs/. A replacement for Superpowers' planning skills, not a companion to them.",
   "author": {
     "name": "tuck-it"
@@ -12,6 +12,12 @@
     "shortDescription": "Keep tuckit as your project's single source of truth.",
     "longDescription": "Orients the agent on tuckit at session start (read state via get_project_state, not git) and reminds it to write work and next-step decisions back to the board at session end.",
     "developerName": "tuck-it",
-    "category": "Productivity"
+    "category": "Productivity",
+    "capabilities": ["Interactive", "Write"],
+    "defaultPrompt": [
+      "Set up this project with tuckit.",
+      "What should we work on next?",
+      "Design the next Slice with me."
+    ]
   }
 }

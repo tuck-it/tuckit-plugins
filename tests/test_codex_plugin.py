@@ -11,6 +11,12 @@ def test_codex_plugin_manifest_valid_and_hookless():
     assert data["description"]
     assert data["author"]["name"]
     assert data["interface"]["displayName"]
+    assert data["interface"]["capabilities"] == ["Interactive", "Write"]
+    assert data["interface"]["defaultPrompt"] == [
+        "Set up this project with tuckit.",
+        "What should we work on next?",
+        "Design the next Slice with me.",
+    ]
     assert data["skills"] == "./skills/"
     assert "hooks" not in data                   # Codex validator rejects a hooks field
 
