@@ -210,10 +210,13 @@ via OAuth**, so there is no token to paste.
 > the same directory and their `hooks.json` files get merged. The merged file is
 > then rejected whole, leaving you with no hooks at all.
 
-Antigravity has no `SessionStart` event, so the primer rides on `PreInvocation`
-behind a first-turn guard, injecting once per session rather than every turn.
-`Stop` carries the write-back reminder, which is why the agent takes one extra
-turn the first time it tries to finish.
+Antigravity has no `SessionStart`, and the pre-turn event it does have can
+inject only an `ephemeralMessage` — a transient step the model stops seeing
+almost immediately. So the orientation ships as `rules/AGENTS.md`, which agy
+loads for as long as the plugin is enabled, and which also spells out how a
+tool is called here (`call_mcp_tool`, since agy does not bind MCP tools as
+functions). `Stop` stays a hook and carries the write-back reminder, which is
+why the agent takes one extra turn the first time it tries to finish.
 
 <details>
 <summary>Options and troubleshooting</summary>

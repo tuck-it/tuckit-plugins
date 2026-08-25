@@ -52,7 +52,12 @@ def build_start_payload(text: str, agent: str) -> dict:
     if agent == "codex":
         return {"additional_contexts": [text]}
     if agent == "antigravity":
-        return {"injectSteps": [{"ephemeralMessage": text}]}
+        # agy has no start event that can inject context that lasts. Its
+        # `PreInvocation` carries only an `ephemeralMessage` — a transient
+        # system step the model stops seeing almost immediately — so the
+        # orientation ships as `rules/AGENTS.md`, which agy loads for as long
+        # as the plugin is enabled. Nothing should call this.
+        raise ValueError("antigravity is oriented by rules/AGENTS.md, not a start hook")
     raise ValueError(f"unknown agent: {agent}")
 
 
@@ -105,11 +110,6 @@ def main(argv=None, stdin_text: str = "") -> int:
     text = load_content(args.content)
 
     if args.event == "start":
-        # Antigravity has no SessionStart; PreInvocation fires every turn, so
-        # inject the primer only on the first invocation of this session.
-        if args.agent == "antigravity" and not first_time(session_id, "primer"):
-            print(json.dumps({}))
-            return 0
         print(json.dumps(build_start_payload(text, args.agent)))
         return 0
 

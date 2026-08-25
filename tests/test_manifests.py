@@ -116,7 +116,9 @@ def test_agy_hooks_key_on_hook_name_then_event():
     for path in _agy_hook_files():
         hooks = json.loads(path.read_text())
         events = {e for spec in hooks.values() if isinstance(spec, dict) for e in spec}
-        assert events == {"PreInvocation", "Stop"}, f"{path.name}: {events}"
+        # Stop alone since the primer became a rule file; the shape being
+        # checked here is where the event sits, not which events are used.
+        assert events == {"Stop"}, f"{path.name}: {events}"
         for name, spec in hooks.items():
             assert "command" not in spec, f"{path.name}: {name} keyed on event"
 
@@ -140,11 +142,24 @@ def test_agy_hooks_reject_the_claude_wrapper_key():
         assert "hooks" not in json.loads(path.read_text())
 
 
-def test_agy_hooks_invoke_emit_for_both_events():
+def test_agy_hooks_carry_the_stop_event_and_no_start():
+    """agy's only pre-turn event injects an `ephemeralMessage`, which the model
+    stops seeing almost immediately — that is why the primer moved to
+    rules/AGENTS.md. Stop has no such alternative and stays a hook."""
     blob = json.dumps(json.loads((ANTIGRAVITY / "hooks.json").read_text()))
     assert "PLUGIN_ROOT" not in blob
-    assert f"{AGY_EMIT} --agent antigravity --event start --content primer" in blob
     assert f"{AGY_EMIT} --agent antigravity --event stop --content writeback" in blob
+    assert "--event start" not in blob
+
+
+def test_agy_rules_carry_the_call_shape_and_the_shared_primer():
+    """The rule file is the whole orientation for agy, so it has to answer the
+    question the primer alone could not: HOW a tool is called here. It is
+    generated, so it must also still match the shared primer verbatim."""
+    rules = (ANTIGRAVITY / "rules" / "AGENTS.md").read_text()
+    assert "call_mcp_tool(ServerName=\"tuckit\"" in rules
+    primer = (ROOT / "shared" / "content" / "primer.md").read_text()
+    assert primer.strip() in rules
 
 
 def test_agy_ships_no_workspace_agents_copy():

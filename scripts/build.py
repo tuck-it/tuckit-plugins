@@ -6,9 +6,9 @@
 copy, so `build.py` fans the source out into `plugins/<agent>/`, substituting the
 per-agent path token in the skill. Run it after editing anything under `shared/`.
 
-Only the GENERATED subset is written (content, scripts/emit.py, skills). The
-per-agent static files — manifests, hooks, the AGENTS snippet — are
-authored in place under plugins/<agent>/ and left untouched.
+Only the GENERATED subset is written (content, scripts/emit.py, skills, and
+Antigravity's rules/AGENTS.md). The per-agent static files — manifests, hooks —
+are authored in place under plugins/<agent>/ and left untouched.
 """
 from __future__ import annotations
 
@@ -30,6 +30,15 @@ AGENT_ROOT_TOKENS = {
     # so a token agy alone understands would not help here anyway.
     "antigravity": "~/.gemini/config/plugins/tuckit",
 }
+
+# Antigravity takes its always-on orientation as a rule file rather than a hook:
+# agy loads `plugins/<name>/rules/AGENTS.md` for as long as the plugin is
+# enabled, while its only session-start-ish event (`PreInvocation`) can inject
+# nothing but an `ephemeralMessage`, which does not survive the turn it lands
+# in. The rule file is built from the same primer the other agents get, so the
+# orientation cannot drift between agents, with the agy-specific call mapping
+# ahead of it.
+AGENT_RULES = {"antigravity": ("rules/antigravity.md", "content/primer.md")}
 
 # Formats the `{{ROOT}}` substitution may touch. Anything else is copied as
 # bytes — a skill is free to ship images or fonts without them being decoded.
@@ -113,6 +122,18 @@ def build_agent(agent: str) -> list:
     written.append(emit_dst)
 
     written += _mirror_skills(dst / "skills", token)
+
+    if agent in AGENT_RULES:
+        head, tail = (SHARED / part for part in AGENT_RULES[agent])
+        rules = dst / "rules" / "AGENTS.md"
+        rules.parent.mkdir(parents=True, exist_ok=True)
+        rules.write_text(
+            head.read_text(encoding="utf-8").rstrip("\n")
+            + "\n\n---\n\n"
+            + tail.read_text(encoding="utf-8"),
+            encoding="utf-8",
+        )
+        written.append(rules)
 
     return [str(p.relative_to(REPO_ROOT)) for p in written]
 

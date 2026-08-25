@@ -4,7 +4,10 @@ import os
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "shared" / "scripts"))
+import pytest
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT / "shared" / "scripts"))
 import emit  # noqa: E402
 
 def test_load_content_reads_and_strips():
@@ -27,9 +30,11 @@ def test_build_start_payload_per_agent():
         "hookSpecificOutput": {"hookEventName": "SessionStart", "additionalContext": "HELLO"}
     }
     assert emit.build_start_payload("HELLO", "codex") == {"additional_contexts": ["HELLO"]}
-    assert emit.build_start_payload("HELLO", "antigravity") == {
-        "injectSteps": [{"ephemeralMessage": "HELLO"}]
-    }
+    # agy is deliberately absent: `ephemeralMessage` is the only thing its
+    # PreInvocation can inject and it does not survive the turn, so the
+    # orientation ships as rules/AGENTS.md instead of a start hook.
+    with pytest.raises(ValueError, match="rules/AGENTS.md"):
+        emit.build_start_payload("HELLO", "antigravity")
 
 def test_build_stop_payload_per_agent():
     assert emit.build_stop_payload("WB", "claude-code") == {
@@ -68,14 +73,15 @@ def test_main_claude_start_injects_primer(monkeypatch, tmp_path):
     assert "get_project_state" in out["hookSpecificOutput"]["additionalContext"]
 
 
-def test_main_antigravity_start_guarded(monkeypatch, tmp_path):
-    stdin = json.dumps({"session_id": "S1"})
-    _, first = _run(monkeypatch, tmp_path,
-                    ["--agent", "antigravity", "--event", "start", "--content", "primer"], stdin)
-    _, second = _run(monkeypatch, tmp_path,
-                     ["--agent", "antigravity", "--event", "start", "--content", "primer"], stdin)
-    assert first["injectSteps"][0]["ephemeralMessage"]  # injected first turn
-    assert second == {}                                 # suppressed after
+def test_agy_start_is_gone_from_the_hook_file_and_the_payloads():
+    """Both halves have to go together. A hooks.json that still called
+    `--event start` would now raise instead of printing an empty object, and a
+    payload builder that still answered would resurrect the ephemeral primer
+    the rule file replaced."""
+    hooks = json.loads((ROOT / "plugins" / "antigravity" / "hooks.json").read_text())
+    assert "--event start" not in json.dumps(hooks)
+    with pytest.raises(ValueError):
+        emit.build_start_payload("HELLO", "antigravity")
 
 
 def test_main_stop_reminds_once_then_allows(monkeypatch, tmp_path):
