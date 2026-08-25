@@ -90,7 +90,7 @@ workspace. This is shared project state, not per-agent memory.
 |---|---|---|
 | **Claude Code** | Two slash commands | Wired by the plugin. You authorize once in your browser (OAuth), with no token to paste. |
 | **Codex CLI** | Marketplace add, then `/plugins` | Bundled. You set one environment variable. |
-| **Antigravity CLI** | One command | Bundled. You authorize once in your browser (OAuth), with no token to paste. |
+| **Antigravity CLI** | One command, then `/mcp` | Bundled. `/mcp` authorizes it in your browser once, with no token to paste. |
 
 **Every install ships the same payload:** the session-start primer, the
 session-end write-back reminder, the `tuckit-domain` reference skill, and all of
@@ -106,9 +106,9 @@ mid-session.
    There is nothing to `pip install`.
 3. **Your MCP URL**, only if you self-host. On tuckit Cloud the default
    (`https://app.tuckit.dev/mcp`) is already correct, so you need nothing here.
-   Claude Code and Antigravity authorize in your browser on first use. Codex
-   reads a token from an environment variable, which you can generate in tuckit
-   under **Settings > Access tokens**.
+   Claude Code authorizes in your browser on first use; Antigravity authorizes
+   when you run `/mcp`. Codex reads a token from an environment variable, which
+   you can generate in tuckit under **Settings > Access tokens**.
 
 ## Install
 
@@ -199,10 +199,27 @@ export TUCKIT_MCP_TOKEN="<YOUR_TOKEN>"    # add to your shell profile to keep it
 agy plugin install https://github.com/tuck-it/tuckit-plugins/tree/main/plugins/antigravity
 ```
 
-That installs the hooks, the `tuckit-domain` skill, **every workflow skill in
-this repository**, and the tuckit MCP server. There is no `mcp_config.json` edit
-to make. On first tool use Antigravity opens your browser to **authorize once
-via OAuth**, so there is no token to paste.
+That installs the rules file, the `Stop` hook, the `tuckit-domain` skill,
+**every workflow skill in this repository**, and the tuckit MCP server. There is
+no `mcp_config.json` edit to make.
+
+Then authorize the server, once:
+
+```
+/mcp
+```
+
+Approve tuckit in the browser tab it opens. There is no token to paste, and
+every later session connects on its own — this is a one-time step, not a
+per-session one.
+
+**Do not skip it.** Until the server is authorized, Antigravity has no live
+connection to it, so the board is absent from the agent's tool surface rather
+than reported as broken. What you see is an agent that goes looking for another
+way in: reading the plugin directory, defining a subagent, checking whether
+`tuckit` is a command on your `PATH`. To confirm it worked, ask a new session
+what the state of the project is; it should answer from `get_project_state`
+without touching the filesystem.
 
 > **Point at the plugin directory, not the repository root.** Given a bare repo
 > URL, `agy plugin install` treats `plugins/` as a bulk directory and installs
@@ -231,6 +248,12 @@ why the agent takes one extra turn the first time it tries to finish.
 - **Reinstalling?** `agy plugin uninstall tuckit` drops the entry but leaves
   `~/.gemini/config/plugins/tuckit/` on disk. Delete that directory too if you
   want a genuinely clean reinstall.
+- **The agent cannot find tuckit?** Check the authorization first: an
+  unauthorized server is invisible rather than broken. `agy mcp list` will not
+  settle it — that command reads only the global
+  `~/.gemini/config/mcp_config.json` and never shows a server a plugin
+  provides, so `No MCP servers configured` is not evidence of anything. Run
+  `/mcp` instead.
 - **Nothing seems to happen?** The install output is not evidence. It prints
   `hooks : 2 processed` for a file it has not parsed yet. The real parse happens
   when the next session starts, and a bad file becomes one line in
