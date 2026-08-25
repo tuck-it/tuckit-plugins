@@ -4,6 +4,10 @@ tuckit is the single source of truth for this project's state, roadmap and
 deferred work — not git, not markdown files. You read and write it over MCP;
 your human partner reads and writes the same board on the web.
 
+Every tuckit tool is served by the MCP server named `tuckit`, and that
+server is the only way to reach the board. Call the tools there; do not look
+for another path to tuckit.
+
 For "what's the state / what are we working on / what's next", call
 `get_project_state` first and answer from it.
 
