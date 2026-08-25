@@ -74,10 +74,27 @@ responsibility, never automatic cuts.
 Do not carry project archetypes or a fixed Area menu between projects. Derive
 the cut from this user's intent and this project's evidence.
 
-Bias low: one Area is valid. Split only when there is evidence of an independent
-responsibility, owner, or operating/change cycle. There is no hard Area count,
-but every proposed Area beyond three must state the independent responsibility
-that makes merging it misleading.
+Start at one. A single Area is a working board, not a floor to climb off, and
+splitting later costs nothing — an Area that should have existed is cheap to
+add, while a boundary nobody works along is paid for at every filing decision.
+
+Every Area after the first must state the independent responsibility that makes
+merging it misleading: a different person who owns it, or a change cycle that
+runs on its own clock. "These are different kinds of code" is not that. If you
+cannot name it, there is one Area.
+
+A project with no repository and one person has no such evidence yet, by
+definition. Propose one Area and say so; the split can come the day the
+evidence does.
+
+Reject the cut outright if it falls on one of these lines, however the
+responsibility is worded around it:
+
+- collection vs display, engine vs UI, frontend vs backend, client vs server
+- a directory, a language, a deployment target, a monorepo package
+
+Those are layers of one responsibility. A plausible boundary paragraph written
+over a layer split is still a layer split.
 
 ## 3. Interview only decisions that change the board
 
@@ -99,7 +116,12 @@ so the human must see the complete set together before choosing it.
 
 ## 4. Present the whole proposal
 
-Present two visibly separate blocks:
+First test the cut against your own Slice list. If the first real Slice would
+touch two proposed Areas, those two are one Area: work that crosses a boundary
+on day one is the boundary telling you it is not there. Merge and redraft
+before the human sees anything.
+
+Then present two visibly separate blocks:
 
 1. **Areas** — name, durable responsibility, and the user/repo evidence for the
    boundary.
