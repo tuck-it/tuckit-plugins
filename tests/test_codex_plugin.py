@@ -20,10 +20,28 @@ def test_codex_plugin_manifest_valid_and_hookless():
     assert data["skills"] == "./skills/"
     assert "hooks" not in data                   # Codex validator rejects a hooks field
 
-def test_codex_plugin_hooks_snake_case_events_invoke_emit():
-    hooks = json.loads((PLUGIN / "hooks" / "hooks.json").read_text())
-    assert "session_start" in hooks and "stop" in hooks
-    blob = json.dumps(hooks)
+def test_codex_hooks_file_uses_the_shape_codex_actually_parses():
+    """Codex plugin hooks.json is the Claude Code shape: a top-level object whose
+    only fields are `description` and `hooks`, with PascalCase event names inside
+    `hooks`. The snake_case names Codex prints in its own errors ("unknown field
+    `session_start`") are internal serde identifiers, not the file format.
+
+    This file shipped for four weeks with the events at the top level in
+    snake_case. Codex refused to parse it on every startup and skipped the hooks,
+    while the test that was supposed to guard it asserted the broken shape.
+    """
+    data = json.loads((PLUGIN / "hooks" / "hooks.json").read_text())
+    assert set(data) <= {"description", "hooks"}, "Codex rejects any other top-level field"
+    assert "hooks" in data
+    assert set(data["hooks"]) == {"SessionStart", "Stop"}
+    for entries in data["hooks"].values():
+        for entry in entries:                       # each is a matcher group
+            for hook in entry["hooks"]:
+                assert hook["type"] == "command"
+
+
+def test_codex_hooks_invoke_emit_with_the_codex_agent():
+    blob = json.dumps(json.loads((PLUGIN / "hooks" / "hooks.json").read_text()))
     assert "${PLUGIN_ROOT}/scripts/emit.py" in blob
     assert "--agent codex" in blob
     assert "--event start" in blob and "--content primer" in blob

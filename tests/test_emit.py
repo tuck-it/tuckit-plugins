@@ -29,7 +29,12 @@ def test_build_start_payload_per_agent():
     assert emit.build_start_payload("HELLO", "claude-code") == {
         "hookSpecificOutput": {"hookEventName": "SessionStart", "additionalContext": "HELLO"}
     }
-    assert emit.build_start_payload("HELLO", "codex") == {"additional_contexts": ["HELLO"]}
+    # Codex takes the same wire as Claude Code. It used to be given
+    # {"additional_contexts": [...]}, a field Codex has never had — the hook ran
+    # and the primer was dropped on the floor with no error anywhere.
+    assert emit.build_start_payload("HELLO", "codex") == {
+        "hookSpecificOutput": {"hookEventName": "SessionStart", "additionalContext": "HELLO"}
+    }
     # agy is deliberately absent: `ephemeralMessage` is the only thing its
     # PreInvocation can inject and it does not survive the turn, so the
     # orientation ships as rules/AGENTS.md instead of a start hook.
@@ -82,6 +87,30 @@ def test_agy_start_is_gone_from_the_hook_file_and_the_payloads():
     assert "--event start" not in json.dumps(hooks)
     with pytest.raises(ValueError):
         emit.build_start_payload("HELLO", "antigravity")
+
+
+def test_main_codex_start_injects_primer_on_the_wire_codex_reads(monkeypatch, tmp_path):
+    """Codex's SessionStart output is `hookSpecificOutput.additionalContext`.
+    Any other top-level key is ignored silently, so asserting the primer text is
+    *somewhere* in the payload would pass on a payload Codex throws away."""
+    rc, out = _run(monkeypatch, tmp_path,
+                   ["--agent", "codex", "--event", "start", "--content", "primer"])
+    assert rc == 0
+    assert list(out) == ["hookSpecificOutput"]
+    assert out["hookSpecificOutput"]["hookEventName"] == "SessionStart"
+    assert "get_project_state" in out["hookSpecificOutput"]["additionalContext"]
+
+
+def test_main_codex_stop_uses_the_stop_command_output_wire(monkeypatch, tmp_path):
+    """Codex's StopCommandOutputWire is {continue, stopReason, suppressOutput,
+    systemMessage}. Unlike SessionStart it is NOT the Claude Code shape, so the
+    two must not be "unified" into one payload."""
+    stdin = json.dumps({"session_id": "S11"})
+    _, payload = _run(monkeypatch, tmp_path,
+                      ["--agent", "codex", "--event", "stop", "--content", "writeback"], stdin)
+    assert payload["continue"] is True
+    assert "board" in payload["systemMessage"].lower()
+    assert set(payload) <= {"continue", "stopReason", "suppressOutput", "systemMessage"}
 
 
 def test_main_stop_reminds_once_then_allows(monkeypatch, tmp_path):

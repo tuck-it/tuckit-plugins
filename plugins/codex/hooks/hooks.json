@@ -1,22 +1,24 @@
 {
-  "session_start": [
-    {
-      "hooks": [
-        {
-          "type": "command",
-          "command": "python3 \"${PLUGIN_ROOT}/scripts/emit.py\" --agent codex --event start --content primer"
-        }
-      ]
-    }
-  ],
-  "stop": [
-    {
-      "hooks": [
-        {
-          "type": "command",
-          "command": "python3 \"${PLUGIN_ROOT}/scripts/emit.py\" --agent codex --event stop --content writeback"
-        }
-      ]
-    }
-  ]
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${PLUGIN_ROOT}/scripts/emit.py\" --agent codex --event start --content primer"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${PLUGIN_ROOT}/scripts/emit.py\" --agent codex --event stop --content writeback"
+          }
+        ]
+      }
+    ]
+  }
 }

@@ -50,7 +50,12 @@ def build_start_payload(text: str, agent: str) -> dict:
         return {"hookSpecificOutput": {"hookEventName": "SessionStart",
                                        "additionalContext": text}}
     if agent == "codex":
-        return {"additional_contexts": [text]}
+        # Codex's SessionStart hook takes the same wire as Claude Code's, down
+        # to the camelCase keys. The snake_case names in Codex's own docs and
+        # error messages ("unknown field `session_start`") are its internal
+        # serde identifiers, not the JSON a hook writes or reads.
+        return {"hookSpecificOutput": {"hookEventName": "SessionStart",
+                                       "additionalContext": text}}
     if agent == "antigravity":
         # agy has no start event that can inject context that lasts. Its
         # `PreInvocation` carries only an `ephemeralMessage` — a transient
