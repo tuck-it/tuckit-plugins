@@ -7,7 +7,7 @@
     "mcp_url": {
       "type": "string",
       "title": "tuckit MCP URL",
-      "description": "Your workspace's MCP endpoint. Leave the default for tuckit Cloud; set your own only if self-hosting. Authorization happens in your browser on first use — no token to paste.",
+      "description": "Your workspace's MCP endpoint. Leave the default for tuckit Cloud; set your own only if yours differs. Authorization happens in your browser on first use — no token to paste.",
       "required": false,
       "default": "https://app.tuckit.dev/mcp"
     }

@@ -16,7 +16,6 @@
   <a href="https://tuckit.dev">Website</a> &middot;
   <a href="https://docs.tuckit.dev">Docs</a> &middot;
   <a href="https://app.tuckit.dev">Get a workspace</a> &middot;
-  <a href="https://github.com/tuck-it/tuckit">Server source</a> &middot;
   <a href="LICENSE">MIT</a>
 </p>
 
@@ -100,12 +99,11 @@ mid-session.
 
 ## Before you start
 
-1. **A tuckit workspace.** Sign up at [app.tuckit.dev](https://app.tuckit.dev),
-   or [self-host the server](https://github.com/tuck-it/tuckit).
+1. **A tuckit workspace.** Sign up at [app.tuckit.dev](https://app.tuckit.dev).
 2. **Python 3** on your `PATH`. The hooks run a small, dependency-free script.
    There is nothing to `pip install`.
-3. **Your MCP URL**, only if you self-host. On tuckit Cloud the default
-   (`https://app.tuckit.dev/mcp`) is already correct, so you need nothing here.
+3. **Your MCP URL**, only if yours differs from the default. On tuckit Cloud it
+   is `https://app.tuckit.dev/mcp` and you need nothing here.
    Claude Code authorizes in your browser on first use; Antigravity authorizes
    when you run `/mcp`. Codex reads a token from an environment variable, which
    you can generate in tuckit under **Settings > Access tokens**.
@@ -123,7 +121,7 @@ In a Claude Code session:
 
 When the plugin enables, it **wires up the MCP connection for you**, so there is
 no separate `claude mcp add` to run. The URL is prefilled to tuckit Cloud, so
-press Enter to accept it, or type your own if you self-host. On first tool use,
+press Enter to accept it, or type your own if yours differs. On first tool use,
 Claude Code opens your browser to **authorize once via OAuth**. There is no
 token to paste, and the credential is stored in your OS keychain and refreshed
 automatically.
@@ -139,7 +137,7 @@ That one install gives you the primer, the write-back reminder, the
   takes a git URL or a local path, for example
   `/plugin marketplace add ./tuckit-plugins`.
 - **Scripted, with no prompt?** On tuckit Cloud you need nothing extra, because
-  the URL defaults in and OAuth runs on first use. Self-hosters pass their URL:
+  the URL defaults in and OAuth runs on first use. A different URL is passed in:
   ```bash
   claude plugin install tuckit@tuckit-plugins --scope user \
     --config mcp_url="<YOUR_MCP_URL>"
@@ -177,8 +175,8 @@ export TUCKIT_MCP_TOKEN="<YOUR_TOKEN>"    # add to your shell profile to keep it
 <details>
 <summary>Options and troubleshooting</summary>
 
-- **Self-hosting tuckit?** The bundled URL defaults to the hosted app
-  (`https://app.tuckit.dev/mcp`). Point it at your own server by editing `url`
+- **Pointing at a different workspace?** The bundled URL defaults to
+  `https://app.tuckit.dev/mcp`. Change it by editing `url`
   in `plugins/codex/.mcp.json`, or configure it manually (see
   [Connecting the MCP by hand](#connecting-the-mcp-by-hand)).
 - Your token is never committed. Codex reads it from `TUCKIT_MCP_TOKEN` each
@@ -240,7 +238,7 @@ why the agent takes one extra turn the first time it tries to finish.
 
 - **Working from a clone?** `agy plugin install` also takes a local directory:
   `agy plugin install ./plugins/antigravity`.
-- **Self-hosting tuckit?** Edit `serverUrl` in
+- **Pointing at a different workspace?** Edit `serverUrl` in
   `plugins/antigravity/mcp_config.json` before installing, or configure it
   manually (see [Connecting the MCP by hand](#connecting-the-mcp-by-hand)).
 - **Check what is installed:** `agy plugin list`. Turn it off with
@@ -392,7 +390,7 @@ skills; nothing here corresponds to them and nothing is planned.
 ## Connecting the MCP by hand
 
 All three plugins wire the MCP for you, as described above. Use this section
-only for self-hosting, or if you would rather set it up yourself. Claude Code
+only if you would rather set it up yourself. Claude Code
 and Antigravity authorize through browser OAuth, so they need no token. For
 Codex, your workspace token lives in tuckit under **Settings > Access tokens**.
 No credentials are ever committed to this repository.
@@ -482,9 +480,3 @@ Two rules, both learned the hard way:
 MIT. See [LICENSE](LICENSE). The plugins are deliberately permissive so they can
 be vendored into any agent toolchain.
 
-The tuckit server they talk to is a separate project under the
-[Business Source License 1.1](https://github.com/tuck-it/tuckit/blob/main/LICENSE).
-BSL is source-available rather than OSI open source: you can read the code and
-run it in production, including self-hosting it for your own organisation. The
-one thing it withholds is offering tuckit to third parties as a hosted or
-managed service. On 2030-07-10 it converts to Apache 2.0.
