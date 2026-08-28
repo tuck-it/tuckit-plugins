@@ -2,7 +2,7 @@
 
 tuckit is the single source of truth (SSOT) for a product's state, roadmap, and
 deferred work. The human reads and writes it on the web dashboard; you read and
-write the same workspace over MCP. One database, no sync step — whichever one
+write the same board over MCP. One database, no sync step — whichever one
 you look at is current, so keeping your writes on the board is what keeps it
 honest.
 

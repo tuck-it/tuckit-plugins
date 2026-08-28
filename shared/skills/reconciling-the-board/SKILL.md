@@ -73,7 +73,7 @@ The list you are about to present is the only time this session asks the human
 anything. So the priorities ride along with it rather than becoming a second
 prompt: one message, one yes.
 
-Read `org.priority_policy` from the project-state tool first. It is what counts
+Read `workspace.priority_policy` from the project-state tool first. It is what counts
 as which priority *here*, written by a person in their own words. Rank against
 that text, not against your own sense of what is usually urgent — the two are
 not the same, and only one of them knows this business.
@@ -145,6 +145,6 @@ If they corrected nothing, there is nothing to harvest. Say nothing.
 | Skip step 1 because nothing obviously died | It is the only step that shrinks the board, so it is the one that never happens |
 | Run the whole checklist on a session that never touched the board | Stop at the top |
 | Ask about priorities in a second message | One batch, one yes. Friction is how a feature gets switched off |
-| Rank from your own sense of what is urgent, with a policy sitting right there | Read `org.priority_policy`. It knows this business and you do not |
+| Rank from your own sense of what is urgent, with a policy sitting right there | Read `workspace.priority_policy`. It knows this business and you do not |
 | Stay quiet about ranking blind when the policy is empty | Saying it is what gets the policy written |
 | Append a line to the policy they did not say | You are transcribing a correction, not authoring criteria |

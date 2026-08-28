@@ -90,7 +90,7 @@ The ONLY skill you invoke after this one is `breaking-down-a-slice`.
 
 1. Search the board — the idea may already be captured, often months ago and
    better phrased than the request you just got. `list_slices(query=…)` searches
-   the whole org; `list_slices(area_id='')` is the Inbox specifically. Look at
+   the whole workspace; `list_slices(area_id='')` is the Inbox specifically. Look at
    both: unfiled captures are the easiest to miss and usually the oldest.
 2. If a slice covers this, use it. Say which one, by ref.
 3. If none does, `create_slice(title=…)` **now**, with an **empty spec**.
