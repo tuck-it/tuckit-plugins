@@ -27,23 +27,31 @@ so rather than working around it.
 
 # This workspace is tracked in tuckit
 
-tuckit is the single source of truth for this project's state, roadmap and
-deferred work — not git, not markdown files. You read and write it over MCP;
-your human partner reads and writes the same board on the web.
+tuckit holds this project's decisions, its roadmap and its deferred work. The
+codebase is the truth about what the software is today; tuckit is the truth
+about why it is that way and what is still owed. Neither answers the other's
+question. A design that also lives in a markdown file is a second copy, and the
+copy is the one that goes stale.
 
-Every tuckit tool is served by the MCP server named `tuckit`, and that
-server is the only way to reach the board. Call the tools there; do not look
-for another path to tuckit.
+You read and write the board over MCP; your human partner reads and writes the
+same board on the web. Every tuckit tool is served by the MCP server named
+`tuckit`, and that server is the only way to reach it.
 
 For "what's the state / what are we working on / what's next", call
 `get_project_state` first and answer from it.
 
-Before starting work, check whether the board already covers it, and continue
-that rather than opening a second one. When the session ends, use the
-**`reconciling-the-board`** skill.
+Work enters through the board. Before you change code, find the slice this
+belongs to or create one, and take anything you would have to think about
+first through **`designing-a-slice`**.
 
-If live state has no Areas, use **`starting-with-tuckit`**; otherwise treat a
-new idea as a Slice on the board that already exists.
+If live state has no Areas, use **`starting-with-tuckit`**. When the session
+ends, use **`reconciling-the-board`**.
 
-The model (Area / Slice / Bite) and the workflow are in the
-**`tuckit-domain`** skill. Load it when you need more than the above.
+The model (Area / Slice / Bite) and the workflow are in the **`tuckit-domain`**
+skill.
+
+---
+
+Board check: find the tuckit slice this belongs to, or create one, before you
+change code. Undesigned work goes through **`designing-a-slice`** first; a
+one-line spec is enough for a small fix. Ignore this if the request is not work.

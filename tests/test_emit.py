@@ -131,3 +131,40 @@ def test_claude_stop_payload_avoids_the_blocking_error_path(monkeypatch, tmp_pat
                       ["--agent", "claude-code", "--event", "stop", "--content", "writeback"], stdin)
     assert "decision" not in payload
     assert "reason" not in payload
+
+
+# --- the door: the only event that fires when work is asked for -----------
+
+
+@pytest.mark.parametrize("agent", ["claude-code", "codex"])
+def test_prompt_payload_is_the_wire_each_agent_reads(agent):
+    out = emit.build_prompt_payload("knock", agent)
+    assert out["hookSpecificOutput"]["hookEventName"] == "UserPromptSubmit"
+    assert out["hookSpecificOutput"]["additionalContext"] == "knock"
+
+
+def test_agy_has_no_prompt_hook_because_its_only_pre_turn_event_is_ephemeral():
+    """A one-turn lifetime would actually suit a per-prompt reminder. The
+    reason it still ships in rules/AGENTS.md is that agy accepts a hook file
+    it has not parsed and reports nothing either way, so an unverified schema
+    here would install clean and do nothing."""
+    with pytest.raises(ValueError):
+        emit.build_prompt_payload("knock", "antigravity")
+
+
+def test_the_door_fires_on_every_prompt_not_once_a_session(tmp_path):
+    """Once per session is what SessionStart already does, and a reminder that
+    fired once at position zero is the state this was built to fix."""
+    import io, json as _json
+    from contextlib import redirect_stdout
+
+    seen = []
+    for _ in range(3):
+        buf = io.StringIO()
+        with redirect_stdout(buf):
+            emit.main(["--agent", "claude-code", "--event", "prompt",
+                       "--content", "door"],
+                      stdin_text=_json.dumps({"session_id": "same-session"}))
+        seen.append(_json.loads(buf.getvalue()))
+
+    assert all(p["hookSpecificOutput"]["additionalContext"] for p in seen)

@@ -33,7 +33,7 @@ def test_codex_hooks_file_uses_the_shape_codex_actually_parses():
     data = json.loads((PLUGIN / "hooks" / "hooks.json").read_text())
     assert set(data) <= {"description", "hooks"}, "Codex rejects any other top-level field"
     assert "hooks" in data
-    assert set(data["hooks"]) == {"SessionStart", "Stop"}
+    assert set(data["hooks"]) == {"SessionStart", "UserPromptSubmit", "Stop"}
     for entries in data["hooks"].values():
         for entry in entries:                       # each is a matcher group
             for hook in entry["hooks"]:

@@ -168,9 +168,14 @@ Expected: PASS
 
 - [ ] **Step 5: Commit**
 
+Write the slice's ref into the subject, and write the real ref rather than the
+literal `<REF>`. `get_slice` prints it on the `Ref:` line — it is not the id you
+passed in, and the two number spaces are close enough to look right and far
+enough apart to name a different slice.
+
 ```bash
 git add tests/path/test.py src/path/file.py
-git commit -m "feat: add specific feature"
+git commit -m "<REF>: add specific feature"
 ```
 ````
 

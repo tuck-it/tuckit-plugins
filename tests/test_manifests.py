@@ -2,9 +2,12 @@ import json
 import re
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parent.parent
 CLAUDE = ROOT / "plugins" / "claude"
 ANTIGRAVITY = ROOT / "plugins" / "antigravity"
+CODEX = ROOT / "plugins" / "codex"
 
 # The one endpoint we deliberately commit: tuckit Cloud, the default for
 # everyone who isn't self-hosting. It is public and carries no credential.
@@ -68,14 +71,30 @@ def test_marketplace_json_points_at_claude_plugin():
     assert entry["source"] == "./plugins/claude"  # plugin lives in its own subdir
 
 
-def test_cc_hooks_invoke_emit_for_both_events():
+def test_cc_hooks_invoke_emit_for_all_three_events():
     hooks = json.loads((CLAUDE / "hooks" / "hooks.json").read_text())["hooks"]
-    assert "SessionStart" in hooks and "Stop" in hooks
+    assert set(hooks) == {"SessionStart", "UserPromptSubmit", "Stop"}
     blob = json.dumps(hooks)
     assert "${CLAUDE_PLUGIN_ROOT}/scripts/emit.py" in blob
     assert "--event start" in blob and "--content primer" in blob
+    assert "--event prompt" in blob and "--content door" in blob
     assert "--event stop" in blob and "--content writeback" in blob
     assert "--agent claude-code" in blob
+
+
+@pytest.mark.parametrize("plugin,root,agent", [
+    (CLAUDE, "CLAUDE_PLUGIN_ROOT", "claude-code"),
+    (CODEX, "PLUGIN_ROOT", "codex"),
+])
+def test_the_door_is_wired_where_requests_actually_arrive(plugin, root, agent):
+    """SessionStart lands once, at position zero. UserPromptSubmit is the only
+    event that fires at the moment work is asked for, which is the moment the
+    board gets skipped -- so a plugin that ships without it has a door nobody
+    walks through."""
+    hooks = json.loads((plugin / "hooks" / "hooks.json").read_text())["hooks"]
+    command = hooks["UserPromptSubmit"][0]["hooks"][0]["command"]
+    assert f"${{{root}}}/scripts/emit.py" in command
+    assert f"--agent {agent} --event prompt --content door" in command
 
 
 # --- agy plugin package ----------------------------------------------------
@@ -142,6 +161,16 @@ def test_agy_hooks_reject_the_claude_wrapper_key():
         assert "hooks" not in json.loads(path.read_text())
 
 
+def test_agy_rules_carry_the_door_since_it_cannot_be_a_hook():
+    """agy's pre-turn event injects only an `ephemeralMessage` and its schema
+    is unverified here, so the door rides in the always-loaded rule file. It
+    has to actually be there: a plugin whose rules stop at orientation leaves
+    agy the one agent with no door at all."""
+    rules = (ANTIGRAVITY / "rules" / "AGENTS.md").read_text()
+    door = (ROOT / "shared" / "content" / "door.md").read_text()
+    assert door.strip() in rules
+
+
 def test_agy_hooks_carry_the_stop_event_and_no_start():
     """agy's only pre-turn event injects an `ephemeralMessage`, which the model
     stops seeing almost immediately — that is why the primer moved to
@@ -150,6 +179,7 @@ def test_agy_hooks_carry_the_stop_event_and_no_start():
     assert "PLUGIN_ROOT" not in blob
     assert f"{AGY_EMIT} --agent antigravity --event stop --content writeback" in blob
     assert "--event start" not in blob
+    assert "--event prompt" not in blob
 
 
 def test_agy_rules_carry_the_call_shape_and_the_shared_primer():

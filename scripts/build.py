@@ -38,7 +38,8 @@ AGENT_ROOT_TOKENS = {
 # in. The rule file is built from the same primer the other agents get, so the
 # orientation cannot drift between agents, with the agy-specific call mapping
 # ahead of it.
-AGENT_RULES = {"antigravity": ("rules/antigravity.md", "content/primer.md")}
+AGENT_RULES = {"antigravity": (
+    "rules/antigravity.md", "content/primer.md", "content/door.md")}
 
 # Formats the `{{ROOT}}` substitution may touch. Anything else is copied as
 # bytes — a skill is free to ship images or fonts without them being decoded.
@@ -124,15 +125,11 @@ def build_agent(agent: str) -> list:
     written += _mirror_skills(dst / "skills", token)
 
     if agent in AGENT_RULES:
-        head, tail = (SHARED / part for part in AGENT_RULES[agent])
+        parts = [(SHARED / part).read_text(encoding="utf-8").strip()
+                 for part in AGENT_RULES[agent]]
         rules = dst / "rules" / "AGENTS.md"
         rules.parent.mkdir(parents=True, exist_ok=True)
-        rules.write_text(
-            head.read_text(encoding="utf-8").rstrip("\n")
-            + "\n\n---\n\n"
-            + tail.read_text(encoding="utf-8"),
-            encoding="utf-8",
-        )
+        rules.write_text("\n\n---\n\n".join(parts) + "\n", encoding="utf-8")
         written.append(rules)
 
     return [str(p.relative_to(REPO_ROOT)) for p in written]

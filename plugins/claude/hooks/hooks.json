@@ -10,6 +10,16 @@
         ]
       }
     ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/emit.py\" --agent claude-code --event prompt --content door"
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "hooks": [

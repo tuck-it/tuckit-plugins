@@ -41,7 +41,7 @@ Subagent (general-purpose):
     1. Implement exactly what the bite specifies
     2. Write tests — follow `writing-tests-first` if the bite calls for it
     3. Verify the implementation works
-    4. Commit your work
+    4. Commit your work, with [slice ref] at the start of the subject line
     5. Self-review (see below)
     6. Report back
 
@@ -159,4 +159,7 @@ Subagent (general-purpose):
 - `<REF>` / `<SLICE_ID>` / `<BITE_ID>` — REQUIRED: how the subagent finds its own
   requirements on the board. Never paste the bite body in their place.
 - `[REPORT_FILE]` — REQUIRED: `$WORK/report-bite-<BITE_ID>.md`
+- `[slice ref]` — the slice's ref, from the `Ref:` line of `get_slice` and not
+  the id you passed it. The implementer never sees the board, so if you do not
+  put the ref in the prompt, its commits cannot carry one.
 - `[directory]` — the worktree the implementer works from
