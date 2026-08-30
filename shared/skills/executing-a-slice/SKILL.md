@@ -30,7 +30,21 @@ Vocabulary and stages: `{{ROOT}}/content/domain.md`.
    redo them; verify only if you have reason to doubt them.
 4. **activity** — notes explain why the last session stopped.
 
-Then:
+Then, before the first bite, **read what was already decided about the files
+you are about to touch**:
+
+```bash
+git log --oneline -12 -- <the files this slice names>
+```
+
+Subjects carry slice refs. Any ref you do not recognise is a decision someone
+made about this code, and `get_slice(<ref>)` is the whole reasoning behind it —
+including the options that lost, which nothing in the code will ever tell you.
+Two minutes here is what stops you re-litigating a settled question or quietly
+undoing one.
+
+This only reaches back as far as the convention does; older commits carry no
+ref, and that is a gap to work around rather than a reason to skip the look.
 
 - Review the plan critically — identify any questions or concerns about it
 - If concerns: raise them with your human partner **before the first bite**, not
@@ -61,7 +75,10 @@ For each bite:
    `verifying-before-claiming`'s territory — including step 5 below:
    `update_bite(status="done")` is exactly the kind of claim that skill is
    about.
-4. Commit.
+4. Commit, with the slice's ref in the subject line (`TUC-42: …`). That ref is
+   the only thread running from a line of code back to the reason it exists:
+   git says what changed, and following the ref is what turns that into why.
+   Take it from the `Ref:` line of `get_slice`, never from the id you passed.
 5. `update_bite(bite_id=…, status="done")`.
 
 **Never batch the status updates at the end.** A checklist filled in all at once

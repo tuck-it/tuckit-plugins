@@ -66,6 +66,28 @@ def build_start_payload(text: str, agent: str) -> dict:
     raise ValueError(f"unknown agent: {agent}")
 
 
+def build_prompt_payload(text: str, agent: str) -> dict:
+    """The door, injected as each request arrives.
+
+    SessionStart lands once, at position zero of a conversation that may run
+    for hours; by the thirtieth turn it is competing with a direct instruction
+    from three lines ago and losing. This is the only event that fires at the
+    moment work is actually asked for, which is the moment the board gets
+    skipped.
+    """
+    if agent in ("claude-code", "codex"):
+        return {"hookSpecificOutput": {"hookEventName": "UserPromptSubmit",
+                                       "additionalContext": text}}
+    if agent == "antigravity":
+        # agy's pre-turn event carries only an `ephemeralMessage`. A one-turn
+        # lifetime would actually suit a per-prompt reminder -- but the schema
+        # is unverified here, and a hook agy accepts and ignores reports
+        # nothing, so the door ships in rules/AGENTS.md, which is always
+        # loaded, rather than in a hook that may quietly do nothing.
+        raise ValueError("antigravity carries the door in rules/AGENTS.md, not a hook")
+    raise ValueError(f"unknown agent: {agent}")
+
+
 def build_stop_payload(text: str, agent: str) -> dict:
     if agent == "claude-code":
         # `decision: "block"` would also keep the turn going, but Claude Code
@@ -103,8 +125,9 @@ def extract_session_id(hook_input: dict) -> str:
 def main(argv=None, stdin_text: str = "") -> int:
     parser = argparse.ArgumentParser(description="Emit tuckit hook context.")
     parser.add_argument("--agent", required=True, choices=AGENTS)
-    parser.add_argument("--event", required=True, choices=("start", "stop"))
-    parser.add_argument("--content", required=True, choices=("primer", "writeback"))
+    parser.add_argument("--event", required=True, choices=("start", "prompt", "stop"))
+    parser.add_argument("--content", required=True,
+                        choices=("primer", "door", "writeback"))
     args = parser.parse_args(argv)
 
     try:
@@ -116,6 +139,13 @@ def main(argv=None, stdin_text: str = "") -> int:
 
     if args.event == "start":
         print(json.dumps(build_start_payload(text, args.agent)))
+        return 0
+
+    if args.event == "prompt":
+        # Every prompt, deliberately. Once per session is what SessionStart
+        # already does, and a reminder that fired once is the state this was
+        # written to fix.
+        print(json.dumps(build_prompt_payload(text, args.agent)))
         return 0
 
     # event == "stop": remind exactly once per session, then allow stopping.

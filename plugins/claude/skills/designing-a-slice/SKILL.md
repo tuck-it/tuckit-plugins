@@ -20,18 +20,39 @@ that reads the slice before touching the code.
 Vocabulary and stages: `${CLAUDE_PLUGIN_ROOT}/content/domain.md`.
 
 <HARD-GATE>
-Do NOT invoke any implementation skill, write any code, scaffold any project, or
-take any implementation action until you have presented a design and the user
-has approved it. This applies to EVERY project regardless of perceived
-simplicity.
+Do NOT write code, scaffold a project, or invoke any implementation skill until
+**the work exists on the board**, and — unless it is in the small lane defined
+below — until you have presented a design and the user has approved it.
+
+The board half has no exception. The design half has exactly one, and you take
+it by naming it out loud, not by deciding privately that this one is obvious.
 </HARD-GATE>
 
-## Anti-Pattern: "This Is Too Simple To Need A Design"
+## Which lane this is in
 
-Every project goes through this process. A todo list, a single-function utility,
-a config change — all of them. "Simple" projects are where unexamined
-assumptions cause the most wasted work. The design can be short (a few sentences
-for truly simple projects), but you MUST present it and get approval.
+Two lanes, and the split is whether there is a decision in the work.
+
+**The small lane** — a typo, a version bump, a copy fix, a one-line change with
+one obvious way to do it. Create the slice, write the one line of spec that
+says what it is, do the work, and say which slice it was. That is the whole
+ceremony, and running the checklist below on it would be theatre.
+
+**Everything else — this skill.** If you can name a choice you would be making
+on the reader's behalf, it is not in the small lane. Neither is anything where
+you catch yourself writing "I'll just" or reaching for a second file.
+
+Two things this split is not.
+
+- It is not a size estimate. A four-line change that picks between two shapes
+  of an interface is in the second lane; a two-hundred-line mechanical rename
+  is in the first.
+- **It is not a licence to skip the board.** Both lanes create a slice. What
+  the small lane skips is the design, not the record — a change nobody can
+  trace back to a reason is the failure this whole model exists to prevent,
+  and it is much more common than an over-designed typo fix.
+
+When you are unsure which lane you are in, you are in the second one. But say
+which lane you picked, in one line, so a human can put you back.
 
 ## Checklist
 
@@ -99,8 +120,10 @@ The ONLY skill you invoke after this one is `breaking-down-a-slice`.
    - Do not pre-fill the spec with the raw request. Undesigned work that looks
      designed is worse than an empty field.
    - File it into an area if it obviously belongs to one; otherwise leave the
-     area empty and it waits in the Inbox. Both directions are reversible, so
-     this is not a decision worth stalling on.
+     area empty and it waits in the Inbox. Filing is the board's way of saying
+     someone means to do this, so it is a real judgement — but a reversible
+     one in both directions, so do not stall on it here. Working through a
+     whole Inbox is `filing-the-inbox`, not this skill.
 
 This is first because a design conversation that dies before step 6 leaves
 nothing behind otherwise — and because work the board does not know about is
@@ -215,6 +238,25 @@ know which option won and why the others were there.
 - **Ask the same question in chat, in the same message.** The click is an
   addition. Someone who never opens the browser has to be able to answer you by
   typing, and a design that only completes through the canvas is a broken one.
+- **When they answer by typing, write it down.** Pass
+  `answers={"q1": "o1"}` to `propose` — in the same call that hangs what
+  follows off the winner, which is why the two go together:
+
+  ```
+  propose(slice_id=<id>, answers={"q1": "o1"}, nodes=[
+    {"id": "d1", "parent": "o1", "kind": "note", "title": "A JSON field it is",
+     "body": "Migration only. o2 lost on the fourth noun."},
+  ])
+  ```
+
+  An answer you do not record is worse than an unasked question: writing the
+  spec seals the record, and `question_state` reads an unanswered question on a
+  sealed record as **passed over**. So a design settled entirely in the
+  terminal produces a record whose last word is that nobody decided.
+
+  It is stored as a relay — your report of what a human said — and the board
+  shows it as one, which is what keeps the record auditable now that you can
+  write to it. Never relay an answer you were not actually given.
 - **Never block on it.** Keep reading code, keep thinking, keep talking. If the
   loop times out, just ask.
 - **A click chooses a direction and nothing more.** It arrives as a background

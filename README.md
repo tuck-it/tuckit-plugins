@@ -91,11 +91,18 @@ workspace. This is shared project state, not per-agent memory.
 | **Codex CLI** | Marketplace add, then `/plugins` | Bundled. You set one environment variable. |
 | **Antigravity CLI** | One command, then `/mcp` | Bundled. `/mcp` authorizes it in your browser once, with no token to paste. |
 
-**Every install ships the same payload:** the session-start primer, the
-session-end write-back reminder, the `tuckit-domain` reference skill, and all of
-the workflow skills described below. Claude Code additionally gets a
+**Every install ships the same payload:** the session-start primer, a one-line
+reminder on each request that work goes on the board before it goes in the
+code, the session-end write-back reminder, the `tuckit-domain` reference skill,
+and all of the workflow skills described below. Claude Code additionally gets a
 `reconciling-the-board` skill, which you can also invoke by name to reconcile
 mid-session.
+
+The per-request reminder is what makes the rest of it fire. A session-start
+primer lands once and then competes, thirty turns later, with an instruction
+from three lines ago — and loses. Antigravity gets the same line in its rule
+file, because its only pre-turn event cannot carry text that survives the
+turn.
 
 ## Before you start
 
@@ -324,35 +331,24 @@ are already in. You can also invoke any of them directly.
 | **`debugging-systematically`** | A bug, a test failure, anything unexpected, before proposing a fix | The rule becomes a constraint, the session becomes one note, an unrelated bug becomes an Inbox slice, and after three failed fixes the architecture conclusion becomes its own slice |
 | **`explain-change`** | Someone needs to actually understand a change an agent wrote | Nothing new. It turns a branch, PR or commit range into a self-contained HTML walkthrough that links each slice's recorded intent and ends in a quiz. |
 
-### Keeping the board readable
-
-An open slice costs nothing to create and nothing to keep, and a board left
-alone converges on a state where everything is true and nothing is readable.
-This one runs periodically rather than as part of any single piece of work.
-
-| Skill | Use it when | What it writes to the board |
-|---|---|---|
-| **`clearing-the-board`** | More open slices than anyone reads: a capped roadmap, a piled-up Inbox, or nobody can say what is next | Nothing without approval. It proposes what to close and why, then closes the approved set as `dropped` and records the list and reasons on one slice |
-
-It proposes and waits, like `starting-with-tuckit` and for the same reason: this
-is the one skill that can make a board smaller, so running it casually is its
-failure mode rather than its purpose.
-
 ### Keeping the board honest
 
-Neither of these belongs to one piece of work. The first runs at the end of a
-session, the second every so often.
+None of these belongs to one piece of work. The first runs at the end of a
+session; the other two every so often.
 
 | Skill | Use it when | What it writes to the board |
 |---|---|---|
 | **`reconciling-the-board`** | A session that touched the board is ending, or you want the board reconciled right now | Closes what became untrue, notes what you did, and proposes anything new for approval before creating it |
-| **`clearing-the-board`** | More open slices than anyone reads: a capped roadmap, a piled-up Inbox, or nobody can say what is next | Nothing without approval. It proposes what to close and why, then closes the approved set as `dropped` and records the list and reasons on one slice |
+| **`filing-the-inbox`** | Captures are piling up unfiled, or nobody can say what is in the Inbox | Nothing without approval. It proposes, in one batch, which captures are worth doing and where they go, which stay put, and which are dead |
+| **`clearing-the-board`** | More open slices than anyone reads: a capped roadmap, or nobody can say what is next | Nothing without approval. It proposes what to close and why, then closes the approved set as `dropped` and records the list and reasons on one slice |
 
 `reconciling-the-board` is what the session-end hook points at — the hook is the
-nudge, this is the checklist. `clearing-the-board` proposes and waits for the
-same reason `starting-with-tuckit` does: it is the one skill that can make a
-board smaller, so running it casually is its failure mode rather than its
-purpose.
+nudge, this is the checklist.
+
+The other two both make a board smaller, so they propose and wait for the same
+reason `starting-with-tuckit` does. Run `filing-the-inbox` before
+`clearing-the-board`: filing is the judgement that something is worth doing, and
+what you file stops being a candidate for closing.
 
 ### Reference
 

@@ -14,7 +14,7 @@ def _all_text():
     return "\n".join(p.read_text(encoding="utf-8") for p in CONTENT.glob("*.md"))
 
 def test_content_files_exist():
-    for name in ("primer", "writeback", "domain"):
+    for name in ("primer", "door", "writeback", "domain"):
         assert (CONTENT / f"{name}.md").is_file(), name
 
 def test_primer_names_get_project_state():
@@ -48,7 +48,7 @@ def _named_skills(text: str) -> set[str]:
 def test_hook_content_only_names_skills_that_exist():
     """A pointer to a skill that isn't there fails silently: the hook is just
     text, so a wrong name kills nothing and the checklist simply never runs."""
-    for name in ("primer", "writeback"):
+    for name in ("primer", "door", "writeback"):
         text = (CONTENT / f"{name}.md").read_text(encoding="utf-8")
         for skill in _named_skills(text):
             assert (SKILLS / skill / "SKILL.md").is_file(), \
@@ -72,6 +72,61 @@ def test_injected_hook_payload_stays_small():
         f"(ceiling {MAX_INJECTED_WORDS}). Move the substance into a skill "
         f"rather than raising this."
     )
+
+
+# The door is charged differently from the other two: it fires on EVERY user
+# prompt, not once a session, so a word here is paid for tens of times in one
+# conversation. It is short because it is a signpost -- the substance it points
+# at lives in skills that load only when they are needed.
+MAX_DOOR_WORDS = 60
+
+
+def test_the_door_is_short_enough_to_fire_every_prompt():
+    words = len((CONTENT / "door.md").read_text(encoding="utf-8").split())
+    assert words <= MAX_DOOR_WORDS, (
+        f"door.md is {words} words and lands on every prompt "
+        f"(ceiling {MAX_DOOR_WORDS}). Point at a skill instead of explaining."
+    )
+
+
+def test_the_door_sends_undesigned_work_to_the_design_skill():
+    """The door exists because SessionStart lands once and then loses to
+    whatever was said thirty turns later. If it stops naming the skill, it is
+    a reminder to feel guilty rather than a route to take."""
+    text = (CONTENT / "door.md").read_text(encoding="utf-8")
+    assert "designing-a-slice" in text
+
+
+def test_the_primer_names_the_skill_that_gates_implementation():
+    """It named `reconciling-the-board` and `tuckit-domain` and never this one,
+    so the only always-on text in the product pointed at how to tidy up after
+    work and not at how to start it."""
+    text = (CONTENT / "primer.md").read_text(encoding="utf-8")
+    assert "designing-a-slice" in text
+
+
+def test_the_primer_does_not_tell_agents_the_board_outranks_git():
+    """It used to open with "not git". The scope made that defensible on a
+    careful reading, and it is the first paragraph of every session -- a
+    sentence that is only true if read carefully is a sentence that will be
+    read wrong. The codebase is what the software IS; tuckit is why."""
+    text = (CONTENT / "primer.md").read_text(encoding="utf-8")
+    assert "not git" not in text
+    # The one it replaced is still a real competitor, and still refused.
+    assert "markdown file" in text
+
+
+def test_the_workflow_names_the_skill_that_owns_each_step():
+    """The workflow was six nouns. An agent that went looking for how work
+    moves found the stages and no doors, which is most of why it never took
+    one."""
+    text = (CONTENT / "domain.md").read_text(encoding="utf-8")
+    workflow = text.split("## The workflow")[1]
+    for skill in ("designing-a-slice", "breaking-down-a-slice",
+                  "executing-a-slice", "delegating-a-slice",
+                  "shipping-a-slice", "filing-the-inbox"):
+        assert skill in workflow, f"the workflow never names {skill}"
+        assert (SKILLS / skill / "SKILL.md").is_file(), skill
 
 
 def test_no_plugin_ships_a_slash_command():

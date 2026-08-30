@@ -1,13 +1,13 @@
 {
   "name": "tuckit",
   "description": "Use tuckit as your project's single source of truth: domain knowledge, board-freshness hooks, and a design->steps->execute->review->ship workflow that writes every artifact to the board instead of to docs/. A replacement for Superpowers' planning skills, not a companion to them.",
-  "version": "0.25.0",
+  "version": "0.26.0",
   "license": "MIT",
   "userConfig": {
     "mcp_url": {
       "type": "string",
       "title": "tuckit MCP URL",
-      "description": "Your workspace's MCP endpoint. Leave the default for tuckit Cloud; set your own only if yours differs. Authorization happens in your browser on first use — no token to paste.",
+      "description": "Your workspace's MCP endpoint. Leave the default for tuckit Cloud; set your own only if yours differs. Authorization happens in your browser on first use \u2014 no token to paste.",
       "required": false,
       "default": "https://app.tuckit.dev/mcp"
     }
