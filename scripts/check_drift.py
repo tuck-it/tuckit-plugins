@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 """Dev-only guard: content must not hardcode tuckit's MCP tool catalog.
 
-Only `get_project_state` (the stable entry point) may appear. When ../tuckit is
-checked out, the known-tool set is derived from its MCP server; otherwise the
-script skips cleanly (a public plugin repo won't always have the sibling).
+Only `get_project_state` (the stable entry point) may appear. When the product
+checkout is beside this repo, the known-tool set is derived from its MCP server;
+otherwise the script skips cleanly (a public plugin repo won't always have the
+sibling). A checkout that IS present but has no server at the expected path is
+an error rather than a skip: that means the path below went stale, which is what
+happened when the product repo was renamed `tuckit/` -> `tuckit-saas/` and this
+guard silently skipped for every run after the cutover.
 """
 from __future__ import annotations
 
@@ -13,7 +17,8 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 CONTENT_DIR = REPO_ROOT / "shared" / "content"
 ENTRY_POINT = "get_project_state"
-SERVER_REL = Path("tuckit") / "tuckit" / "core" / "mcp" / "server.py"
+PRODUCT_REPO = "tuckit-saas"
+SERVER_REL = Path(PRODUCT_REPO) / "tuckit" / "core" / "mcp" / "server.py"
 
 
 def _find_server_py() -> Path:
@@ -27,10 +32,16 @@ def _find_server_py() -> Path:
     actually work in is a guard that never runs. Returns the plain sibling path
     when none exists, so the skip message names the expected location.
     """
-    for base in (REPO_ROOT.parent, REPO_ROOT.parent.parent, REPO_ROOT.parent.parent.parent):
+    bases = (REPO_ROOT.parent, REPO_ROOT.parent.parent, REPO_ROOT.parent.parent.parent)
+    for base in bases:
         candidate = base / SERVER_REL
         if candidate.exists():
             return candidate
+    # No server found. If the product checkout itself is there, the path above is
+    # stale and the caller must fail instead of skipping.
+    for base in bases:
+        if (base / PRODUCT_REPO).is_dir():
+            return base / SERVER_REL
     return REPO_ROOT.parent / SERVER_REL
 
 
@@ -57,7 +68,10 @@ def known_tools_from_server() -> set:
 
 def main() -> int:
     if not SERVER_PY.exists():
-        print(f"skip: {SERVER_PY} not found (tuckit not checked out)")
+        if SERVER_PY.parents[3].is_dir():
+            print(f"STALE: {SERVER_PY.parents[3]} is checked out but {SERVER_PY} does not exist")
+            return 1
+        print(f"skip: {SERVER_PY} not found ({PRODUCT_REPO} not checked out)")
         return 0
     known = known_tools_from_server()
     content = "\n".join(p.read_text(encoding="utf-8") for p in CONTENT_DIR.glob("*.md"))
