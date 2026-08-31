@@ -1,10 +1,18 @@
 # tuckit domain reference
 
 tuckit is where a product's decisions, roadmap and deferred work live. The
-codebase is the truth about what the software IS today; tuckit is the truth
-about why it is that way and what is still owed — the reasoning that touched no
+codebase is the truth about what the software IS today; tuckit is the record of
+what was decided, when, and what is still owed — the reasoning that touched no
 files, which is exactly the part git cannot reconstruct. Reach for git to see
 what changed; reach for tuckit to see what was decided and what is left.
+
+Every spec is a snapshot of the moment it was written. As a record it does not
+go stale, and that is the whole point of keeping it. As a description of
+today's code it can, and often has: the work moved on and the spec did not
+follow, because it was never meant to. So when a spec and the code disagree,
+neither is simply wrong — the code is what shipped, the spec is why someone
+meant to. Say that and ask which one is out of date, rather than quietly
+editing either to match the other.
 
 The human reads and writes it on the web dashboard; you read and write the same
 board over MCP. One database, no sync step — whichever one you look at is
