@@ -92,6 +92,34 @@ and expected. Skipping step 1 is not — that is how a repo fills up with
 changes nobody can explain, and it is the failure this whole model exists to
 prevent.
 
+## Asking your partner something
+
+You can write ten thousand lines in an afternoon; they cannot outsource
+understanding what those lines commit them to. Their judgement is the scarce
+thing in the session, and a decision made without understanding is not one.
+
+So a message asking them to decide is finished only when they can answer it
+without leaving the message:
+
+- **A ref never travels alone.** Give it its title, and a line of what it is.
+  A ref is an address, not a meaning, and a row they have to look up is a row
+  they approve without reading.
+- **Options say what changes for them**, not what you would build.
+- **Spell out any identifier they did not introduce** — a ref, a stage name, a
+  flag, a file they have not seen. This is the checkable version of "write it
+  more simply", which is not something the writer can measure.
+
+Length follows what is at stake, not what you happen to know. Reversible
+decisions get one scannable line each, batched. Irreversible ones get what
+breaks and what cannot be undone, first.
+
+Short is not the axis. A bare "TP-1?" is the other end of the same failure:
+told to be brief, an agent compresses into identifiers and abbreviations. The
+axis is whether they can answer from the message.
+
+**Do not ask whether they understood.** That moves the cost of understanding
+onto them, and people say yes to it.
+
 ## Tools
 
 The exact MCP tool names and their arguments are whatever the tuckit server
