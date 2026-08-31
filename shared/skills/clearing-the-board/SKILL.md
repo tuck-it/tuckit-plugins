@@ -112,6 +112,9 @@ in **Ask**, not in the close list.
 Group them so the human can scan and veto in blocks (by area, or by the reason
 they are dying), and state the totals: closing N of M, leaving K.
 
+Every row carries its title. This list exists to be scanned, and a row that is
+only a number cannot be.
+
 Then stop and wait. Nothing is closed before approval, and "no objection" is
 not approval.
 

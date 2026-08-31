@@ -28,9 +28,9 @@ so rather than working around it.
 # This workspace is tracked in tuckit
 
 tuckit holds this project's decisions, its roadmap and its deferred work. The
-codebase is the truth about what the software is today; tuckit is the truth
-about why it is that way and what is still owed. Neither answers the other's
-question. A design that also lives in a markdown file is a second copy, and the
+codebase is the truth about what the software is today; tuckit is the record of
+what was decided and when — a snapshot, not a standing instruction. Neither
+answers the other's question. A design that also lives in a markdown file is a second copy, and the
 copy is the one that goes stale.
 
 You read and write the board over MCP; your human partner reads and writes the
@@ -55,3 +55,6 @@ skill.
 Board check: find the tuckit slice this belongs to, or create one, before you
 change code. Undesigned work goes through **`designing-a-slice`** first; a
 one-line spec is enough for a small fix. Ignore this if the request is not work.
+
+A ref never reaches your partner without its title, and a question they
+cannot answer from the message is unfinished.

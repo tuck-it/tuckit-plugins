@@ -113,7 +113,7 @@ triaged it.
 
 If the human changed any priority you proposed, **ask why, once, in one line.**
 
-> "Noted. What made TP-42 a 1 rather than a 3?"
+> "Noted. What made TP-42 “Export the board as CSV” a 1 rather than a 3?"
 
 The answer is the thing that matters in this whole loop. It is a criterion they
 would never have written into an empty box, and it only exists because a wrong
