@@ -113,7 +113,8 @@ The ONLY skill you invoke after this one is `breaking-down-a-slice`.
    better phrased than the request you just got. `list_slices(query=…)` searches
    the whole workspace; `list_slices(area_id='')` is the Inbox specifically. Look at
    both: unfiled captures are the easiest to miss and usually the oldest.
-2. If a slice covers this, use it. Say which one, by ref.
+2. If a slice covers this, use it. Say which one, by ref and title — a bare
+   ref makes your partner open the board to follow you.
 3. If none does, `create_slice(title=…)` **now**, with an **empty spec**.
    - An empty spec is not laziness — it reads back as stage `needs_design`,
      which is the board saying *someone is designing this right now*.

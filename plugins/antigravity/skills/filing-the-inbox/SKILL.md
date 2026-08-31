@@ -83,15 +83,20 @@ actually do this**, and the honest answer for most of an old Inbox is no.
 
 Present all three lists at once. Every filing gets the Area; every proposed
 close gets **one line saying what killed it**. Say the numbers you read in step
-1, because they are the argument:
+1, because they are the argument.
+
+**Every ref carries its title.** A row the reader has to look up is a row they
+approve without reading, which is the failure this batch was meant to avoid.
 
 > "Inbox: 13 open, oldest idle 40 days, and this board has dropped 50% of
 > everything it ever captured.
 >
-> **File (6)** — TP-355 → oss, TP-352 → oss, …
-> **Leave (4)** — TP-306, … : still true, no moment yet.
-> **Close (3)** — TP-280: the Slack re-point it describes was rebuilt in
-> TP-291. …
+> **File (6)** — TP-355 "Retry duplicates the welcome note" → oss,
+> TP-352 "Docs search returns nothing for two-word queries" → oss, …
+> **Leave (4)** — TP-306 "Split the settings page in two", … : still true,
+> no moment yet.
+> **Close (3)** — TP-280 "Re-point the webhook at the new queue": the
+> re-point it describes was rebuilt in TP-291 "Queue rewrite". …
 >
 > Objections, or shall I apply it?"
 
