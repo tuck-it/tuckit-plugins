@@ -31,11 +31,9 @@ SKILL_TOOLS = {
     "get_slice",
     "create_slice",
     "update_slice",
-    "add_bites",
-    "list_bites",
-    "update_bite",
+    "append_decision",
+    "record_verification",
     "add_note",
-    "propose",
     "append_priority_policy",
 }
 
@@ -46,7 +44,14 @@ requires_tuckit = pytest.mark.skipif(
 
 
 def _skills_text():
-    return "\n".join(p.read_text(encoding="utf-8") for p in SKILLS.glob("*/SKILL.md"))
+    """Every markdown a skill ships, not just its SKILL.md.
+
+    The prompt templates are where a skill actually tells a subagent which tool
+    to call, and they outlived a tool rename once because this glob stopped at
+    SKILL.md: `list_bites` sat in two reviewer templates while all three tests
+    here were green.
+    """
+    return "\n".join(p.read_text(encoding="utf-8") for p in sorted(SKILLS.rglob("*.md")))
 
 
 def test_every_allowlisted_tool_is_actually_used():

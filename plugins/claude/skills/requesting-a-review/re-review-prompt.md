@@ -13,7 +13,7 @@ below, which differ by what the fix round belongs to.
 
 | Scope | The fix round follows | Requirements come from | What follows this round |
 |---|---|---|---|
-| `bite` | a bite-scoped gate | the bite's body | the branch review, later |
+| `piece` | a piece-scoped gate | what that dispatch asked for | the branch review, later |
 | `branch` | the merge gate | the slice's spec | nothing |
 | `ad-hoc` | a standalone review | whatever was stated, if anything | nothing |
 
@@ -38,9 +38,9 @@ Subagent (general-purpose):
 
     ## What Is Under Verification
 
-    <!-- SCOPE: bite -->
-    Call get_slice("<REF>") and list_bites(<SLICE_ID>). The item under
-    verification is bite id <BITE_ID>; its body is what was requested.
+    <!-- SCOPE: piece -->
+    Call get_slice("<REF>"). What was requested is [REQUESTED] — the piece
+    this dispatch owns — and the slice's Constraints section is binding.
 
     <!-- SCOPE: branch -->
     Call get_slice("<REF>"). What was requested is the slice's spec, and its
@@ -81,8 +81,8 @@ Subagent (general-purpose):
     outside the fix diff, report it under Out-of-Scope Observations — it does
     not block this round and does not extend the loop.
 
-    <!-- SCOPE: bite -->
-    A broad whole-branch review happens after every bite is complete.
+    <!-- SCOPE: piece -->
+    A broad whole-branch review happens once the branch is complete.
 
     <!-- SCOPE: branch -->
     This fix wave closes the branch review. Nothing broader follows it, so an
@@ -124,7 +124,7 @@ Subagent (general-purpose):
 
     Issues you noticed entirely outside the fix diff. Non-blocking.
 
-    <!-- SCOPE: bite -->
+    <!-- SCOPE: piece -->
     The controller records these for the final review.
 
     <!-- SCOPE: branch, ad-hoc -->
@@ -144,10 +144,12 @@ Subagent (general-purpose):
 - `[MODEL]` — REQUIRED: reviewer model per SKILL.md Model selection; scoped
   re-reviews of small fix diffs take a cheap-to-mid tier
 - `[SCOPE_LABEL]` — REQUIRED: what the fix round belongs to, for the dispatch
-  line — `bite 88`, `branch`, or `the reported findings`
-- `<REF>` / `<SLICE_ID>` / `<BITE_ID>` — the same board address the implementer
-  and the first reviewer worked from. All three are REQUIRED in `bite` scope;
-  `branch` scope needs `<REF>` only; `ad-hoc` may have no slice at all
+  line — `piece 2`, `branch`, or `the reported findings`
+- `<REF>` — the same board address the implementer and the first reviewer worked
+  from. REQUIRED in `piece` and `branch` scope; `ad-hoc` may have no slice at all
+- `[REQUESTED]` — REQUIRED in `piece` scope: what this dispatch was asked to
+  build, in the controller's own words, identical to what the first reviewer was
+  given
 - `[REQUIREMENTS]` — `ad-hoc` scope: what was requested, if anything was stated
 - `[FINDINGS]` — the Critical/Important findings and spec gaps from the previous
   review, copied verbatim, one per bullet

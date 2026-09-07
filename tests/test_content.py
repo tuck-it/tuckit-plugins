@@ -122,7 +122,7 @@ def test_the_workflow_names_the_skill_that_owns_each_step():
     one."""
     text = (CONTENT / "domain.md").read_text(encoding="utf-8")
     workflow = text.split("## The workflow")[1]
-    for skill in ("designing-a-slice", "breaking-down-a-slice",
+    for skill in ("designing-a-slice", "verifying-before-claiming",
                   "executing-a-slice", "delegating-a-slice",
                   "shipping-a-slice", "filing-the-inbox"):
         assert skill in workflow, f"the workflow never names {skill}"

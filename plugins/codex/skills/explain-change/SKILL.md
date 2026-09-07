@@ -118,9 +118,9 @@ trusting it, and record the link as inferred. If nothing matches, say so where
 the intent section would have been — a range no one wrote intent for is a
 finding, not a section to drop in silence.
 
-Keep the two sources distinct — **tuckit**
-(`get_slice`, `list_bites`) is what we meant to build and what a later agent was
-told not to get wrong; **git** is what exists now. The gap between them is the
+Keep the two sources distinct — **tuckit** (`get_slice`) is what we meant to
+build, what would have settled it, and what a later agent was told not to get
+wrong; **git** is what exists now. The gap between them is the
 most valuable thing on the page.
 
 ## 3. Identify the reader
@@ -237,7 +237,7 @@ decoration.
     building it forces you to go find the line that settles the question, which
     is also how the widget keeps the surrounding prose honest.
   - **Controls are the reader's verbs, not the schema's fields.** *"File it"*,
-    *"change your mind"* — never `bites_total`. Knobs named after columns make
+    *"change your mind"* — never `verified_at`. Knobs named after columns make
     the reader translate their own experience into your tables, which is the
     glossary failure of §3 committed in the interaction layer instead of the
     prose.

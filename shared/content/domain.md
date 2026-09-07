@@ -31,15 +31,15 @@ current, so keeping your writes on the board is what keeps it honest.
     the thing works, while "an expired token returns HTTP 401 rather than a
     tool error inside a 200" can be wrong in a way somebody notices. Write it
     BEFORE you build.
-  - `evidence` — what somebody actually saw. Written only by
-    `record_verification`, which stamps when. It is what opens the ship gate.
+  - `evidence` — what somebody actually saw. It has one writing tool of its
+    own, which stamps when, and it is what opens the ship gate.
   - `area` — where it belongs. **Empty means it is still in the Inbox** — the
     idea is captured but not yet filed. Setting an area files it; clearing the
     area sends it back. Both directions are reversible.
 - **Decisions** — the prose record of how a slice was decided: what was
   chosen, why, what was turned down, and what the choice leans on. It hangs
-  off the slice and is append-only through `append_decision`. What was turned
-  down is kept on purpose — it is the only record of what was considered and
+  off the slice and is append-only: its tool adds to the record and nothing
+  rewrites it. What was turned down is kept on purpose — it is the only record of what was considered and
   rejected, and nothing in the code will ever say it. Nothing seals it: a
   direction that changes halfway through the work belongs here too.
 
@@ -97,7 +97,7 @@ it — the skills carry the parts that go wrong.
    and put the slice's ref in the commit message: that ref is the only thread
    running from a line of code back to the reason it exists.
 5. **Show it was met** — **`verifying-before-claiming`**. Write down what you
-   actually SAW with `record_verification`, and name what you did not check.
+   actually SAW, and name what you did not check.
    This is what moves the slice to `ready_to_ship`; until it exists the board
    refuses to ship, and that refusal is the point.
 6. **Ship it** — **`shipping-a-slice`**.

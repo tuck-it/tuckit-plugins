@@ -63,8 +63,8 @@ You MUST create a task for each of these items and complete them in order:
 2. **Explore project context** — project state, files, recent commits
 3. **Ask clarifying questions** — one at a time, understand purpose /
    constraints / success criteria
-4. **Propose 2-3 approaches** — with trade-offs and your recommendation, put
-   onto the slice's canvas with `propose()`
+4. **Propose 2-3 approaches** — with trade-offs and your recommendation,
+   recording each decision as you reach it with `append_decision()`
 5. **Present design** — in sections scaled to their complexity, get user
    approval after each section
 6. **Write the design into the slice** — `update_slice(spec=…)`
@@ -72,7 +72,8 @@ You MUST create a task for each of these items and complete them in order:
    contradictions, ambiguity, scope
 8. **User reviews the spec on the board** — as it now renders, not as you
    described it in chat
-9. **Transition to implementation** — invoke `breaking-down-a-slice`
+9. **Write the done_when** — what would settle that this is finished
+10. **Transition to implementation** — invoke `executing-a-slice`
 
 ## Process Flow
 
@@ -87,7 +88,8 @@ digraph designing {
     "update_slice(spec=…)" [shape=box];
     "Spec self-review\n(fix inline)" [shape=box];
     "User reviews spec on board?" [shape=diamond];
-    "Invoke breaking-down-a-slice" [shape=doublecircle];
+    "Write the done_when" [shape=box];
+    "Invoke executing-a-slice" [shape=doublecircle];
 
     "Resolve the slice" -> "Explore project context";
     "Explore project context" -> "Ask clarifying questions";
@@ -99,13 +101,14 @@ digraph designing {
     "update_slice(spec=…)" -> "Spec self-review\n(fix inline)";
     "Spec self-review\n(fix inline)" -> "User reviews spec on board?";
     "User reviews spec on board?" -> "update_slice(spec=…)" [label="changes requested"];
-    "User reviews spec on board?" -> "Invoke breaking-down-a-slice" [label="approved"];
+    "User reviews spec on board?" -> "Write the done_when" [label="approved"];
+    "Write the done_when" -> "Invoke executing-a-slice";
 }
 ```
 
-**The terminal state is invoking `breaking-down-a-slice`.** Do NOT invoke a
+**The terminal state is invoking `executing-a-slice`.** Do NOT invoke a
 frontend-design skill, an MCP-builder skill, or any other implementation skill.
-The ONLY skill you invoke after this one is `breaking-down-a-slice`.
+The ONLY skill you invoke after this one is `executing-a-slice`.
 
 ## 1. Resolve the slice before you ask the first question
 
@@ -158,113 +161,51 @@ exactly what makes the board stale.
 - Lead with your recommended option and explain why
 - YAGNI ruthlessly — remove unnecessary features from every approach and design
 
-**Put them on the canvas as you go.** Chat is a bad surface for judgement: the
-options cannot be seen side by side, the branch you considered and dropped
-scrolls away, and the person deciding is the most expensive resource in the
-room. `propose()` writes the same options onto the slice's canvas, which they
-watch grow in the browser.
+**Write each decision down as you reach it.** Chat is a bad surface for
+judgement: the option you considered and dropped scrolls away, and the person
+deciding is the most expensive resource in the room. `append_decision()` puts
+it on the slice, where the next reader -- a person in six months, or the agent
+that opens the slice before touching the code -- actually looks.
 
 ```
-propose(slice_id=<id>, nodes=[
-  {"id": "q1", "parent": None, "kind": "question",
-   "title": "Where does the decision record live?"},
-  {"id": "o1", "parent": "q1", "kind": "option", "title": "A JSON field on Slice",
-   "summary": "one field, no new vocabulary",
-   "body": "Costs a migration and nothing else...", "recommended": True},
-  {"id": "o2", "parent": "q1", "kind": "option", "title": "A separate model",
-   "summary": "queryable, but a fourth noun on the board",
-   "body": "..."},
-])
+append_decision(slice_id=<id>, body="""
+**Chose a text field on Slice.**
+
+One field, no new vocabulary, and a migration is the whole cost.
+
+Turned down: a separate model -- queryable, but a fourth noun on the board,
+and nobody has asked to query it.
+
+**Leans on** -- nobody needing to search decisions across slices. Two teams
+asking for that and this is worth reopening.
+""")
 ```
 
-…the human picks `o1`, and **the next call hangs off the option that won** —
-not off `q1`:
+Four moves, and the fourth is the one people skip:
 
-```
-propose(slice_id=<id>, nodes=[
-  {"id": "d1", "parent": "o1", "kind": "note",
-   "title": "A JSON field it is",
-   "body": "Migration only. o2 lost on the fourth noun."},
-  {"id": "q2", "parent": "d1", "kind": "question",
-   "title": "Who may write to that field?"},
-  {"id": "p1", "parent": "q2", "kind": "option", "title": "Agents only", ...},
-])
-```
+1. **What was chosen** — one sentence, in bold.
+2. **Why** — what was true at the time that made it right.
+3. **What was turned down, and why.** Without this the next person
+   re-litigates the same options from scratch; it is most of the cost of
+   reopening a decision.
+4. **What it leans on** — the condition under which this stops being right.
+   "Why" is the reasoning of the moment; this is when that reasoning expires.
+   It is one sentence and it is what makes the record useful to somebody
+   deciding again in a changed world.
 
-### Where a node hangs
-
-- `id` is yours and must be unique on that canvas; `parent` is another node's
-  id, or `None` for the single root.
-- **A question's children are its options.** Nothing else hangs off a question:
-  not a note, not the next question.
-- **After a question is answered, everything that follows is a child of the
-  option that won.** This is not a convention you are asked to keep — those
-  nodes exist *because* of that choice, and hanging them anywhere else lets a
-  later re-answer silently re-read all of them as the result of a decision that
-  never produced them. The server refuses any other parent and names the id to
-  use, so getting it wrong costs you a round trip rather than the record.
-- **If the human rejects the question itself, put up a sibling question** and
-  leave the old one alone. Being told "that is the wrong question" and asking a
-  better one is ordinary design, not an error path — the board renders the
-  abandoned one as passed over rather than still waiting.
-- **Once `spec` is written the record is sealed.** A direction that changes
-  after that is a **new slice**, not an edit to this one: the record is the
-  snapshot of how this slice was decided, and re-answering it two days later
-  would rewrite work that has already been built on the old answer.
-- Call it **as each question comes up**, not once at the end. The point is that
-  the human sees the tree grow while you are still thinking.
-- It is append-only and accepted only while `spec` is empty. A branch that lost
-  stays on the canvas — that is the record of what was considered.
-- Keep talking in chat as well. The canvas is an addition, never the only way
-  to answer you.
-
-**They can answer by clicking.** When the batch contained a question, `propose()`
-also returns a `watch_url` — an unauthenticated URL, good for fifteen minutes,
-that says whether anyone has picked yet. Start polling it **in the background**
-so the conversation carries on while you wait:
-
-```bash
-for i in $(seq 1 450); do
-  r=$(curl -s --max-time 5 "<watch_url>" || true)
-  case "$r" in *chosen*) echo "$r"; break ;; *expired*) break ;; esac
-  sleep 2
-done
-```
-
-It prints one line and exits the moment a choice lands, so this is a single
-notification and not a stream — run it as a **background shell command**, not as
-an event monitor. The line carries the node id **you** authored, so you already
-know which option won and why the others were there.
-
-- **Ask the same question in chat, in the same message.** The click is an
-  addition. Someone who never opens the browser has to be able to answer you by
-  typing, and a design that only completes through the canvas is a broken one.
-- **When they answer by typing, write it down.** Pass
-  `answers={"q1": "o1"}` to `propose` — in the same call that hangs what
-  follows off the winner, which is why the two go together:
-
-  ```
-  propose(slice_id=<id>, answers={"q1": "o1"}, nodes=[
-    {"id": "d1", "parent": "o1", "kind": "note", "title": "A JSON field it is",
-     "body": "Migration only. o2 lost on the fourth noun."},
-  ])
-  ```
-
-  An answer you do not record is worse than an unasked question: writing the
-  spec seals the record, and `question_state` reads an unanswered question on a
-  sealed record as **passed over**. So a design settled entirely in the
-  terminal produces a record whose last word is that nobody decided.
-
-  It is stored as a relay — your report of what a human said — and the board
-  shows it as one, which is what keeps the record auditable now that you can
-  write to it. Never relay an answer you were not actually given.
-- **Never block on it.** Keep reading code, keep thinking, keep talking. If the
-  loop times out, just ask.
-- **A click chooses a direction and nothing more.** It arrives as a background
-  event, which is not the user speaking: writing the spec, shipping, and every
-  other irreversible step still needs a real answer in the terminal.
-- **The URL is the credential.** Put it in the shell command and nowhere else.
-  It needs no login — which is exactly why nothing should pass it around.
+- **Call it as each decision lands**, not once at the end. A record written
+  afterwards is a summary; one written as you go is a record.
+- **It is append-only and nothing seals it.** You cannot edit or delete an
+  entry — correcting something means appending a new one that says so, which
+  is the honest shape anyway. And unlike the design itself, it stays open
+  after the spec is written and after the work ships: a direction that turned
+  out wrong halfway through the implementation is exactly the entry nobody
+  ever records, and it belongs here.
+- **Say when your partner overrode your recommendation, and what they said.**
+  That disagreement is the highest-signal thing in the whole record.
+- The server stamps the date and who wrote it, so do not write those yourself.
+  A decision you are relaying from your partner is stamped as yours, because a
+  reader has to be able to tell an answer from a report of one.
 
 ## 4. Presenting the design
 
@@ -308,17 +249,10 @@ know which option won and why the others were there.
 `update_slice(slice_id=…, spec=<the design>)`. Markdown; headings and tables
 render.
 
-**The canvas outlives the spec, and closes to new writes.** The decision record
-and the spec answer different questions — how you got here, and where you
-arrived — so writing one never destroys the other. What the spec write does end
-is your ability to add to the record: after it, `propose()` is rejected and a
-recorded choice can no longer be corrected.
-
-So settle the record **before** you write. If a question was answered in chat
-rather than by a click, make sure the canvas says so now, while it still
-accepts writes. You do not need to copy the tree into the spec to keep it — the
-spec carries the *conclusion*, and the canvas keeps the reasoning that produced
-it.
+**Nothing seals when you write the spec.** The decision record and the spec
+answer different questions -- how you got here, and where you arrived -- so
+writing one never affects the other, and the record keeps accepting entries
+for as long as the work does.
 
 - **`spec`** answers *what we are building and why*.
 - **`constraints`** is a different field and a different reader: what a later
@@ -355,15 +289,53 @@ After the self-review passes, ask the user to review the spec **as it now reads
 on the board** — not as you described it in chat:
 
 > "Design written to `<ref>`. Please review it on the board and let me know if
-> you want to make any changes before we break it into steps."
+> you want to make any changes before I write down what would settle it."
 
 Wait for the user's response. If they request changes, make them and re-run the
 self-review. Only proceed once the user approves.
 
-## 8. Implementation
+## 8. Write the done_when
 
-- Invoke `breaking-down-a-slice` to turn the spec into steps on the board
-- Do NOT invoke any other skill. `breaking-down-a-slice` is the next step.
+`update_slice(slice_id=…, done_when=<what would settle this>)`. This is what
+moves the slice off `needs_done_when`, and it is the last thing you do before
+any code exists.
+
+**An observation, never a command.** `pytest -q` is a method: it says nothing
+about whether the thing works, and it exits 0 for a suite that asserts
+nothing. What belongs here is the sentence a method would have to produce:
+
+```
+An expired token returns HTTP 401, not a tool error inside a 200 --
+that status code is the only thing that makes a client refresh.
+```
+
+```
+Two shells, one with the modal open. After the other saves, the modal shows
+the new title within 5s and no skeleton flashes; a stale save is refused
+with a way to keep mine. pytest green does not show any of this.
+```
+
+Three things make one good, and they are all about the reader who runs it:
+
+- **It can fail.** If you cannot describe the observation that would say "no",
+  you have written a wish. "The code is cleaner" is a wish.
+- **It names the surface.** Browser, terminal, production, a second process --
+  this codebase has shipped bugs that every server-side test was green for.
+- **It says what would NOT settle it**, when there is an obvious wrong answer
+  waiting. Naming the trap is how the next reader avoids it.
+
+Write it BEFORE the work. One written afterwards is a description of what you
+did, which is the one thing it must not be — and it is the failure this whole
+stage exists to prevent.
+
+If the design surfaced landmines or invariants, those go in `constraints`
+instead: different field, different reader. `constraints` is what somebody
+must not get wrong; `done_when` is how anyone tells whether it is finished.
+
+## 9. Implementation
+
+- Invoke `executing-a-slice` to build it against that target
+- Do NOT invoke any other skill. `executing-a-slice` is the next step.
 
 ## Resuming a half-finished design
 

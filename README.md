@@ -27,13 +27,18 @@
 in a browser. Your agent reaches the same workspace over MCP. There is one
 database and no sync step, so whichever side you look at is current.
 
-The board has three nouns:
+The board has two nouns:
 
 - An **Area** is a long-lived responsibility, such as backend or billing.
 - A **Slice** is the one unit of work. It carries its spec (what we are building
-  and why), its constraints (what a later agent must not get wrong), and a
-  checklist. A slice that has no area yet is sitting in the Inbox.
-- A **Bite** is one step on that checklist.
+  and why), its constraints (what a later agent must not get wrong), its
+  decisions (how it was decided, in prose), and two fields that settle it: a
+  **done_when** — what somebody would have to observe to call it finished — and
+  the **evidence** of what was actually observed. A slice that has no area yet
+  is sitting in the Inbox.
+
+There is no step layer. Nobody read one, and a plan that nobody reads is a
+third copy of the spec.
 
 ## What this repository is
 
@@ -70,10 +75,10 @@ three others. Normally those live in a scrollback nobody reopens. The
 session-end hook turns them into Inbox slices, so a discovery outlives the
 window it was made in.
 
-**Losing context stops losing your place.** Bite status is the progress ledger
-and it lives on the server, not in the conversation. An agent that gets
-compacted mid-slice reads the board and picks up where it stopped, instead of
-redoing steps that are already done.
+**"Done" stops being an opinion.** The done_when is written before the code,
+so it is a target the work can miss. The board will not open the ship button
+until somebody has written down what they saw — it cannot run your tests, but it
+can refuse to let the claim go unmade.
 
 **You can see the project without reading a chat log.** What the agent did, what
 it decided, and what it is waiting on you for are all on a board with a web UI.
@@ -282,8 +287,9 @@ workflow skills are the other half: they make one unit of work move through
 tuckit end to end, so nothing about it ever lives only in a chat log.
 
 Each skill ends by naming the next one, so the chain runs itself. The payoff is
-**resumption**: a new session reads the slice's stage and knows where the work
-is, instead of hunting for the markdown file the last session left behind.
+**resumption**: a new session reads the slice's stage and knows what the work
+still needs, instead of hunting for the markdown file the last session left
+behind.
 
 ### Starting with tuckit
 
@@ -304,17 +310,19 @@ The slice's `stage` names the skill to use next, so there is nothing to choose.
 
 | Skill | Use it when | What it writes to the board |
 |---|---|---|
-| **`designing-a-slice`** | An idea, before any code | Resolves or creates the slice, then writes the approved design into its **spec** |
-| **`breaking-down-a-slice`** | The spec is approved (`needs_steps`) | The **constraints**, then an ordered **bite** checklist |
-| **`executing-a-slice`** | There are bites to do (`executing`) | Each bite's status as it happens. Deferrals become new slices. |
-| **`delegating-a-slice`** | Same, but the bites are mostly independent and you have subagents | Same, driven by a fresh implementer and reviewer per bite |
-| **`shipping-a-slice`** | The checklist is empty (`ready_to_ship`) | A note with what shipped and, after asking, `status: shipped` |
+| **`designing-a-slice`** | An idea, before any code | Each decision as prose in **decisions**, the approved design in the **spec**, the **constraints**, and the **done_when** (`needs_design` → `needs_done_when` → `executing`) |
+| **`executing-a-slice`** | There is a target to meet (`executing`) | Decisions made while building, landmines as constraints, deferrals as new slices — and the **evidence** at the end |
+| **`delegating-a-slice`** | Same, but the work splits cleanly and you have subagents | Same, driven by a fresh implementer and reviewer per piece |
+| **`shipping-a-slice`** | Evidence has been recorded (`ready_to_ship`) | A note with what shipped and, after asking, `status: shipped` |
 
-`delegating-a-slice` is where the board pays off twice. A dispatched subagent
-gets a slice ref and a bite id and reads its own requirements, so there is no
-brief file to drift from the board. And because bite status *is* the progress
-ledger, a controller that lost its place after a compaction reads the board
-instead of re-dispatching work that is already done.
+The done_when is written before the work and the evidence after it, and the
+board derives the stage from which of the two is missing. That is the whole
+mechanism: the middle of the pipeline asks *how will we know* rather than *how
+many steps are left*.
+
+`delegating-a-slice` is where the board pays off. A dispatched subagent gets a
+slice ref and reads its own requirements — including the target the branch has
+to meet — so there is no brief file to drift from the board.
 
 ### Called from inside a step
 
@@ -324,10 +332,10 @@ are already in. You can also invoke any of them directly.
 
 | Skill | Use it when | What it writes to the board |
 |---|---|---|
-| **`requesting-a-review`** | Work needs a reviewer's eyes: one bite, a whole branch before merge, or any range you ask about | Nothing directly. It produces findings. |
+| **`requesting-a-review`** | Work needs a reviewer's eyes: one piece of a slice mid-flight, a whole branch before merge, or any range you ask about | Nothing directly. It produces findings. |
 | **`receiving-a-review`** | Review feedback has arrived, before you implement any of it | Deferred findings are proposed as Inbox slices and created once your partner approves the batch, rulings become a note, landmines become constraints |
 | **`writing-tests-first`** | Before writing implementation code for a feature or a fix | An agreed exception becomes a line in the slice's constraints |
-| **`verifying-before-claiming`** | Before saying anything is done, including before ticking a bite | Nothing new. It decides whether the tick is honest. |
+| **`verifying-before-claiming`** | Before saying anything is done, and to meet the slice's done_when | The **evidence**, which is what opens the ship gate. It also decides whether that claim is honest. |
 | **`debugging-systematically`** | A bug, a test failure, anything unexpected, before proposing a fix | The rule becomes a constraint, the session becomes one note, an unrelated bug becomes an Inbox slice, and after three failed fixes the architecture conclusion becomes its own slice |
 | **`explain-change`** | Someone needs to actually understand a change an agent wrote | Nothing new. It turns a branch, PR or commit range into a self-contained HTML walkthrough that links each slice's recorded intent and ends in a quiz. |
 
@@ -354,7 +362,7 @@ what you file stops being a candidate for closing.
 
 | Skill | What it is |
 |---|---|
-| **`tuckit-domain`** | The domain reference: the Area / Slice / Bite model, how to read project state, and how work moves from idea to shipped |
+| **`tuckit-domain`** | The domain reference: the Area / Slice model, how to read project state, and how work moves from idea to shipped |
 
 ### Relationship to Superpowers
 

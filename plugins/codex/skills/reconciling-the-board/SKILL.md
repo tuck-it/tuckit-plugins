@@ -34,9 +34,15 @@ readable; only the claim that someone is going to do it goes away.
 
 ## 2. What you actually did
 
-Check off completed Bites and leave a note on the Slice — what you did, what
-blocked you, PR links. Checking off the last Bite moves its stage to
-`ready_to_ship` on its own; nothing else to set there.
+Record what you actually observed with `record_verification`, and leave a note
+on the Slice — what you did, what blocked you, PR links. Recording evidence
+moves the stage to `ready_to_ship` on its own; nothing else to set there.
+
+Write what you SAW, not what you ran, and name what you did not check —
+`verifying-before-claiming` owns that standard. If the session ends without you
+meeting the slice's `done_when`, do not record evidence for it: the note is the
+honest artifact, and an empty `evidence` field is what correctly leaves the
+slice at `executing` for whoever picks it up.
 
 If a Slice is genuinely finished (stage already reads `ready_to_ship`), mark it
 shipped. That status change is the one decision on this list that is yours to

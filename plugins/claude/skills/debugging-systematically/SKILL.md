@@ -238,12 +238,12 @@ the session unless it is routed somewhere the next session can find it.
    Left in the chat, the next person hits the same wall three more times.
    Phase 4, step 5 opens that discussion; this is where its conclusion lands.
 
-While the investigation is open, leave the bite at `doing`. Marking it
-`done` because the bug is fixed is exactly the unverified completion claim
-`verifying-before-claiming` exists to stop — the fix still needs the
-verification that bite's body specifies, run and read. If the session ends
-mid-investigation, `doing` plus the note above is the only state the next
-session can actually pick up from.
+While the investigation is open, do not record evidence on the slice.
+Calling `record_verification` because the bug is fixed is exactly the
+unverified completion claim `verifying-before-claiming` exists to stop — the fix
+still has to meet the slice's `done_when`, run and read. If the session ends
+mid-investigation, the note above is the only state the next session can
+actually pick up from, so write it before you stop.
 
 ## Red Flags - STOP and Follow Process
 

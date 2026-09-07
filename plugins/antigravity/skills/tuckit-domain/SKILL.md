@@ -1,6 +1,6 @@
 ---
 name: tuckit-domain
-description: Use when working in a tuckit-tracked workspace and you need tuckit's model (Area/Slice/Bite), how to read project state, or the idea→slice→execute→ship workflow.
+description: Use when working in a tuckit-tracked workspace and you need tuckit's model (Area/Slice), how to read project state, or the idea→slice→verify→ship workflow.
 ---
 
 Read `~/.gemini/config/plugins/tuckit/content/domain.md` for the full tuckit domain reference, then

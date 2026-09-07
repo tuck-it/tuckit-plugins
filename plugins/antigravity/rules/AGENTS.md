@@ -47,7 +47,7 @@ first through **`designing-a-slice`**.
 If live state has no Areas, use **`starting-with-tuckit`**. When the session
 ends, use **`reconciling-the-board`**.
 
-The model (Area / Slice / Bite) and the workflow are in the **`tuckit-domain`**
+The model (Area / Slice) and the workflow are in the **`tuckit-domain`**
 skill.
 
 ---

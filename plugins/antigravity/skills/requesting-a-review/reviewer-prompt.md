@@ -11,7 +11,7 @@ common except the blocks marked below, which differ by what is under review.
 
 | Scope | Under review | Requirements come from | Implementer report |
 |---|---|---|---|
-| `bite` | one bite of a slice's checklist | the bite's body | yes |
+| `piece` | one piece of a slice's work, as the controller split it | what that dispatch asked for | yes |
 | `branch` | every commit on the branch, before merge | the slice's spec | no |
 | `ad-hoc` | whatever range the requester named | whatever was stated, if anything | no |
 
@@ -33,9 +33,9 @@ Subagent (general-purpose):
     You are reviewing an implementation: first whether it matches what was
     requested, then whether it is well-built.
 
-    <!-- SCOPE: bite -->
-    This is a bite-scoped gate, not a merge review — a broad whole-branch
-    review happens separately after every bite is complete.
+    <!-- SCOPE: piece -->
+    This is a piece-scoped gate, not a merge review — a broad whole-branch
+    review happens separately once the branch is complete.
 
     <!-- SCOPE: branch -->
     This is the merge gate. No broader review follows this one.
@@ -46,14 +46,17 @@ Subagent (general-purpose):
 
     ## What Was Requested
 
-    <!-- SCOPE: bite -->
-    Call get_slice("<REF>") and list_bites(<SLICE_ID>). The bite under review is
-    id <BITE_ID>; its body is the requirements.
+    <!-- SCOPE: piece -->
+    Call get_slice("<REF>"). The slice's spec and constraints bind this work,
+    and [REQUESTED] is what this particular dispatch was asked to build. Judge
+    against both: a piece that meets its own brief while breaking the slice's
+    constraints has not passed.
 
     <!-- SCOPE: branch -->
     Call get_slice("<REF>"). The slice's spec is the requirements for this whole
-    branch; its Constraints section is binding. Individual bites are how the work
-    was divided, not the standard — judge the branch against the spec.
+    branch; its Constraints section is binding. How the work was split into
+    dispatches is not the standard — judge the branch against the spec, and
+    against the slice's done_when.
 
     <!-- SCOPE: ad-hoc -->
     [REQUIREMENTS] — the slice's spec if this work has one, otherwise what the
@@ -64,15 +67,15 @@ Subagent (general-purpose):
     Constraints from the slice that bind this work:
     [GLOBAL_CONSTRAINTS]
 
-    <!-- SCOPE: bite -->
+    <!-- SCOPE: piece -->
     ## What the Implementer Claims They Built
 
     Read the implementer's report: [REPORT_FILE]
 
     <!-- SCOPE: branch, OPTIONAL -->
-    ## Deferred Minors From the Bite Reviews
+    ## Deferred Minors From the Piece Reviews
 
-    [DEFERRED_MINORS] — minor findings the bite reviews parked. Triage which of
+    [DEFERRED_MINORS] — minor findings the piece reviews parked. Triage which of
     them must be fixed before merge. If this section is empty or absent, there
     were none; proceed without comment. Do not go looking for the list.
 
@@ -82,13 +85,13 @@ Subagent (general-purpose):
     **Head:** [HEAD_SHA]
     **Diff file:** [DIFF_FILE]
 
-    <!-- SCOPE: bite -->
-    The base is the commit recorded before this bite was dispatched, so the
-    range is this bite's work and nothing else.
+    <!-- SCOPE: piece -->
+    The base is the commit recorded before this piece was dispatched, so the
+    range is this piece's work and nothing else.
 
     <!-- SCOPE: branch -->
     The base is where this branch left its base branch, so the range is every
-    commit on the branch — all the bites at once, not one of them.
+    commit on the branch — every piece at once, not one of them.
 
     <!-- SCOPE: ad-hoc -->
     The range is what the requester asked about. If it is uncommitted work, the
@@ -113,7 +116,7 @@ Subagent (general-purpose):
     Your review is read-only on this checkout. Do not mutate the working tree,
     the index, HEAD, or branch state in any way. Do not write to the board.
 
-    <!-- SCOPE: bite -->
+    <!-- SCOPE: piece -->
     ## Do Not Trust the Report
 
     Treat the implementer's report as unverified claims about the code. It may
@@ -125,7 +128,7 @@ Subagent (general-purpose):
 
     ## Tests
 
-    <!-- SCOPE: bite -->
+    <!-- SCOPE: piece -->
     The implementer already ran the tests and reported results with TDD evidence
     for exactly this code. Do not re-run the suite to confirm their report.
 
@@ -153,12 +156,12 @@ Subagent (general-purpose):
     - **Misunderstood:** right feature built the wrong way, wrong problem solved
 
     If a requirement cannot be verified from this diff alone (it lives in
-    unchanged code or spans bites), report it as a ⚠️ item instead of
+    unchanged code or spans pieces), report it as a ⚠️ item instead of
     broadening your search.
 
     <!-- SCOPE: branch -->
-    Also look for what no single bite-scoped review could see: integration
-    between the bites, duplication across them, and requirements that fell
+    Also look for what no single piece-scoped review could see: integration
+    between the pieces, duplication across them, and requirements that fell
     between two of them and were implemented by neither.
 
     ## Part 2: Code Quality
@@ -255,24 +258,28 @@ Subagent (general-purpose):
 **Placeholders:**
 - `[MODEL]` — REQUIRED: reviewer model per SKILL.md Model selection
 - `[SCOPE_LABEL]` — REQUIRED: what is under review, for the dispatch line —
-  `bite 88`, `branch`, or what the requester named
-- `<REF>` / `<SLICE_ID>` / `<BITE_ID>` — how the reviewer reads the requirements
-  itself, from the same source the implementer used. All three are REQUIRED in
-  `bite` scope; `branch` scope needs `<REF>` only; `ad-hoc` may have no slice at
-  all
+  `piece 2`, `branch`, or what the requester named
+- `<REF>` — how the reviewer reads the requirements itself, from the same source
+  the implementer used. REQUIRED in `piece` and `branch` scope; `ad-hoc` may
+  have no slice at all
+- `[REQUESTED]` — REQUIRED in `piece` scope: what this dispatch was asked to
+  build — the same text you gave the implementer as its assignment, copied
+  verbatim. The board does not carry the split, so nothing else can supply it,
+  and a reviewer given different words than the implementer grades a different
+  brief
 - `[REQUIREMENTS]` — `ad-hoc` scope: what the requester asked for, if anything
   was stated
 - `[GLOBAL_CONSTRAINTS]` — the slice's `constraints` field, copied verbatim:
   exact values, formats, and stated relationships between components (not
   process rules — those are already in this template). Drop the block when
   there is no slice
-- `[REPORT_FILE]` — REQUIRED in `bite` scope: the file the implementer wrote its
+- `[REPORT_FILE]` — REQUIRED in `piece` scope: the file the implementer wrote its
   detailed report to. The other scopes have no report — delete both that section
   and Do Not Trust the Report
 - `[DEFERRED_MINORS]` — optional, `branch` scope only: the minor findings the
-  bite reviews parked. Delete the section when there is no such list
+  piece reviews parked. Delete the section when there is no such list
 - `[BASE_SHA]` — the commit the review range starts at: the one recorded before
-  the bite was dispatched, or the branch's merge-base with its base branch
+  the piece was dispatched, or the branch's merge-base with its base branch
 - `[HEAD_SHA]` — current commit
 - `[DIFF_FILE]` — REQUIRED: the review package the controller wrote. Never
   dispatch a reviewer without one.

@@ -1,6 +1,6 @@
 ---
 name: requesting-a-review
-description: "Use when work needs a reviewer's eyes before it goes further — one bite in a checklist, a whole branch before merge, or any range someone asks about. Dispatches a reviewer subagent with precisely crafted context and hands the findings to receiving-a-review."
+description: "Use when work needs a reviewer's eyes before it goes further — one piece of a slice mid-flight, a whole branch before merge, or any range someone asks about. Dispatches a reviewer subagent with precisely crafted context and hands the findings to receiving-a-review."
 ---
 
 # Requesting a Review
@@ -27,19 +27,20 @@ against, and how wide its judgment reaches.
 
 | Scope | Under review | Requirements | Verdict it answers |
 |---|---|---|---|
-| `bite` | one bite of a slice's checklist, with the implementer's report | the bite's body, plus the slice's constraints | may the next bite be built on this? |
+| `piece` | one piece of a slice's work, with the implementer's report | what that dispatch asked for, plus the slice's constraints | may the next piece be built on this? |
 | `branch` | every commit on the branch, before it lands | the slice's spec, its Constraints binding | may this merge? |
 | `ad-hoc` | whatever range someone asks about | whatever was stated, if anything | what is wrong with this? |
 
-**Who calls which.** `bite` and `branch` are called by the skill running the
-work — a bite gate after each bite, a merge gate once the branch is complete.
+**Who calls which.** `piece` and `branch` are called by the skill running the
+work — a piece gate after each dispatch, a merge gate once the branch is
+complete.
 `ad-hoc` is nobody's pipeline: it is the scope for "review this for me," and it
 is why this skill works with no slice at all.
 
 A `branch` review is the last gate. Nothing broader follows it, so it carries
-what a bite-scoped review structurally cannot see: integration between the
-bites, duplication across them, and requirements that fell between two of them.
-Do not weaken it into a bigger bite review.
+what a piece-scoped review structurally cannot see: integration between the
+pieces, duplication across them, and requirements that fell between two of them.
+Do not weaken it into a bigger piece review.
 
 Both prompt templates carry these scope names in `<!-- SCOPE: … -->` blocks. Keep
 the blocks for your scope, delete the others, and delete the markers — the
@@ -87,7 +88,9 @@ reviewer still reads one file, and the rules below are unchanged.
 
 Hand it, alongside the diff path: the slice ref (so it reads the requirements
 itself, from the same source the implementer used), the slice's `constraints`
-copied verbatim, and — in `bite` scope only — the implementer's report file.
+copied verbatim, and — in `piece` scope only — the implementer's report file
+and what that dispatch was asked to build. The board does not carry the split,
+so if you do not write that down nothing else will supply it.
 Copy constraints exactly: exact values, exact formats, the stated relationships
 between components. That block is the reviewer's attention lens; the template
 already carries the process rules.
@@ -130,4 +133,4 @@ has not decided what happens to this branch; you and your human partner do.
 ---
 
 Forked from superpowers (MIT, © 2025 Jesse Vincent) — `requesting-code-review`,
-rewritten so one rubric serves a bite, a branch, and an ad-hoc review.
+rewritten so one rubric serves a piece, a branch, and an ad-hoc review.

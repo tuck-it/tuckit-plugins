@@ -23,11 +23,15 @@ The standard for what counts as evidence here — and what does not — is
 `verifying-before-claiming`. Landing is where it matters most: this is the
 last gate before the board says shipped.
 
+- **Re-read the slice's `done_when` and meet it again, now, on what is about to
+  land.** The `evidence` on the board was recorded against an earlier state of
+  this branch; review fixes have happened since. Evidence about a branch that
+  changed afterwards is evidence about something that no longer exists.
 - Run the project's **full** test suite (`npm test` / `cargo test` / `pytest` /
   `go test ./...`) — not the scoped subset you were iterating on.
 - Re-read the slice's `constraints` and check the work against them literally.
-  That field is where "done" was defined, by someone who had more context than
-  you do now.
+  That field is where the landmines were written down by someone who had more
+  context than you do now.
 - If the change has a surface a person uses, open it and look.
 - If production runs a different database or runtime than your local one, run
   the check there too.
@@ -46,16 +50,24 @@ failure this step exists to prevent.
 
 **If tests pass:** continue to Step 2.
 
-## Step 2: Reconcile the Checklist With Reality
+## Step 2: Reconcile the Board With Reality
 
 Before landing anything, make the board match what happened:
 
-- Work that is done but still shows `todo` → mark it `done`.
-- Work you decided **not** to do → `dropped`, with a note saying why. Leaving it
-  `todo` makes the slice look unfinished forever; deleting it hides the
-  decision.
-- Anything discovered and deferred → new slices now, in the Inbox. "We should
-  also…" said in chat and nowhere else does not survive this session.
+- **The evidence must describe what is landing.** If Step 1 turned up anything
+  the recorded evidence does not cover, call `record_verification` again with
+  what you just saw. It replaces the old claim and re-stamps when.
+- **If you could not meet the `done_when`, do not land on the old evidence.**
+  Either fix the work, or — if the target itself turned out to be wrong —
+  `update_slice(done_when=…)`, say so out loud, and re-verify against the new
+  one. Withdrawing is a normal move: `record_verification(evidence="")` takes
+  the slice back to `executing` and nothing is lost.
+- **Work you decided not to do** → say so in the note at Step 8, and if it is
+  worth doing later, file it. Silence here makes the slice look complete when
+  part of it was dropped on purpose.
+- **Anything discovered and deferred** → new slices now, in the Inbox. "We
+  should also…" said in chat and nowhere else does not survive this session.
+- **Any decision you made while landing** → `append_decision`.
 
 ## Step 3: Detect Environment
 
@@ -225,8 +237,9 @@ person must not repeat.
 ## Step 9: Ask Before Marking It Shipped
 
 `status` is the one field nothing derives — it records a decision a human made.
-The stage reading `ready_to_ship` means the checklist is empty, which is not the
-same as someone deciding this is done and out.
+The stage reading `ready_to_ship` means somebody wrote down evidence, which is
+not the same as someone deciding this is done and out. The board never judged
+that evidence; it only refused to proceed without it.
 
 Ask. On a yes, `update_slice(slice_id=…, status="shipped")`. On a no, say what
 is still missing and leave it open — an open slice with a clear note is honest;
@@ -260,7 +273,7 @@ shipped, and which slices this session created for later.
 | "The merged-result failure is probably flaky" | A failing merged result stops everything. Branch and worktree stay put while you investigate. |
 | "The base branch is obviously main" | Confirm the fork point or ask. Merging into the wrong base is expensive to undo. |
 | "The push was rejected — force-push will fix it" | A rejected push means the remote moved. Investigate; force-push only on your human partner's explicit request. |
-| "I'll check the bites off at the end, all at once" | Then the checklist was a report, not a board. Reconcile in Step 2, before anything lands. |
+| "I'll write the evidence up after the merge" | Then it is a description of what you did, not a check you ran. Evidence is recorded before the branch lands, in Step 2. |
 | "The stage already reads ready_to_ship, so it is shipped" | Stage is derived; status is decided. Ask before setting it. |
 | "I'll mention the follow-up in my closing message" | The board cannot see your closing message. It is a slice or it does not exist. |
 | "The constraints were written before the work — they are stale now" | Then say so and update the field. Skipping the check is not the same as disagreeing with it. |
