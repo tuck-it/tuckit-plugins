@@ -135,7 +135,7 @@ sitting in.
 - Do not summarize the unchecked thing as if it were checked — that is exactly
   the lie this skill exists to prevent.
 - If the gap is not one-off — nobody working in this environment can ever run
-  that check — file it: `create_slice`, no area (Inbox), so the gap gets fixed
+  that check — file it: `save_slice`, no area (Inbox), so the gap gets fixed
   once instead of rediscovered every time.
 
 Three things commonly turn out to be unverifiable that look verifiable at
@@ -188,7 +188,7 @@ one sentence and it is the most useful sentence in the field.
 
 **If you cannot meet the done_when, do not write evidence that you did.** Say
 so in the terminal and either fix the work or — if the target itself turned
-out to be wrong — change it with `update_slice(done_when=…)` and say that you
+out to be wrong — change it with `save_slice(done_when=…)` and say that you
 did. Revising a target you have understood better is the work; quietly
 lowering one you could not meet is the failure this whole field exists to
 prevent.

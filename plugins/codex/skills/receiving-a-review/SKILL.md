@@ -180,7 +180,7 @@ Five rules govern the routing:
    unsure about and present them together. No per-item interruptions — asking is
    not a fifth destination, it just tells you which of the four to use.
 4. **What the next person must not step on goes in `constraints`**
-   (`update_slice`). Notes say what happened to you; constraints say what the
+   (`save_slice`). Notes say what happened to you; constraints say what the
    next person must not repeat. If you hit the landmine yourself, write both.
 5. **④ demotes to ③ by default once the board is already full.** When
    `inbox.open_count` is **20 or more**, or `totals.drop_ratio` is **0.5 or

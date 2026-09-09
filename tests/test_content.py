@@ -3,7 +3,7 @@ from pathlib import Path
 CONTENT = Path(__file__).resolve().parent.parent / "shared" / "content"
 # MCP tool names that must NOT be hardcoded in content (they drift over time).
 FORBIDDEN_TOOL_NAMES = [
-    "list_areas", "create_area", "list_slices", "create_slice", "update_slice",
+    "list_areas", "create_area", "list_slices", "save_slice",
     "add_note", "create_plan", "list_plans", "update_plan", "list_bites",
     "add_bites", "update_bite", "list_tickets", "create_ticket", "get_ticket",
     "update_ticket", "promote_ticket", "absorb_ticket", "release_ticket",

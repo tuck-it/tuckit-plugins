@@ -59,7 +59,7 @@ Before landing anything, make the board match what happened:
   what you just saw. It replaces the old claim and re-stamps when.
 - **If you could not meet the `done_when`, do not land on the old evidence.**
   Either fix the work, or — if the target itself turned out to be wrong —
-  `update_slice(done_when=…)`, say so out loud, and re-verify against the new
+  `save_slice(done_when=…)`, say so out loud, and re-verify against the new
   one. Withdrawing is a normal move: `record_verification(evidence="")` takes
   the slice back to `executing` and nothing is lost.
 - **Work you decided not to do** → say so in the note at Step 8, and if it is
@@ -241,7 +241,7 @@ The stage reading `ready_to_ship` means somebody wrote down evidence, which is
 not the same as someone deciding this is done and out. The board never judged
 that evidence; it only refused to proceed without it.
 
-Ask. On a yes, `update_slice(slice_id=…, status="shipped")`. On a no, say what
+Ask. On a yes, `save_slice(slice_id=…, status="shipped")`. On a no, say what
 is still missing and leave it open — an open slice with a clear note is honest;
 a shipped slice with unfinished work is not.
 

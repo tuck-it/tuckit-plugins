@@ -132,7 +132,7 @@ Then present two visibly separate blocks:
 
 Ask for one approval covering both blocks. If the human changes anything,
 revise and present the complete proposal again. Do not call `create_area`,
-`create_slice`, or `add_note` before approval.
+`save_slice`, or `add_note` before approval.
 
 ## 5. Create after approval
 
@@ -140,7 +140,7 @@ Create in dependency order:
 
 1. `create_area(name, description)` for each approved Area. Describe the
    responsibility in the human's language, not as a directory inventory.
-2. `create_slice(title, area_id=...)` for each approved piece of work, with the
+2. `save_slice(title, area_id=...)` for each approved piece of work, with the
    spec left empty so its stage is truthfully `needs_design`.
 3. `add_note(...)` to an in-flight Slice with its branch, PR, or working-tree
    evidence. Observations belong in notes; design never comes from commit

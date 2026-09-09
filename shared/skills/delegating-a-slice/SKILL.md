@@ -248,7 +248,7 @@ cap — append a line to `$WORK/progress.md` and dispatch the next piece.
 **Never start the next piece while a review has open Critical/Important issues
 that are neither fixed nor parked-with-ruling at the cap.**
 
-Along the way: anything you are not doing now becomes a slice (`create_slice`,
+Along the way: anything you are not doing now becomes a slice (`save_slice`,
 no area, so it lands in the Inbox) — not a `TODO` comment, not a line in your
 closing message. Any decision you had to make becomes `append_decision`. Any
 landmine becomes a `constraints` append.
@@ -272,7 +272,7 @@ three:
 
 1. **Rulings** — consolidate `$WORK/rulings.md` into **one** `add_note`. One
    note, not one per finding.
-2. **Deferred minors that survived triage** — `create_slice` with no area, one
+2. **Deferred minors that survived triage** — `save_slice` with no area, one
    per surviving item. The ones the final review said nobody will do are dropped
    explicitly in the same note, not silently.
 3. **Constraints you discovered** — appended to `constraints`. Notes say what
