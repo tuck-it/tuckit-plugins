@@ -225,14 +225,14 @@ understanding, not just the changed lines — and understanding evaporates with
 the session unless it is routed somewhere the next session can find it.
 
 1. **A rule the next person must not step on** → the slice's `constraints`
-   (`update_slice`). Not a note — a note is what happened to you; a
+   (`save_slice`). Not a note — a note is what happened to you; a
    constraint is what the next person must not repeat.
 2. **What you tried, what broke, what it cost** → one `add_note`, written
    after the investigation is over. A note per hypothesis drowns the
    activity thread — write the one that survives the investigation, not a
    diary of it.
 3. **A bug the investigation turned up that belongs to no slice here** →
-   `create_slice`, no area (Inbox). A TODO comment or a closing-message
+   `save_slice`, no area (Inbox). A TODO comment or a closing-message
    aside is not a destination.
 4. **The conclusion of a 3+-failure architecture discussion** → a slice.
    Left in the chat, the next person hits the same wall three more times.

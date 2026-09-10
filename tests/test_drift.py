@@ -29,4 +29,4 @@ def test_known_tools_from_server_matches_all_decorators():
     assert len(known) == text.count("@mcp.tool()")
     # sanity check: these have multi-line signatures (ctx on the next line)
     # and were previously missed by the single-line-only regex.
-    assert {"create_slice", "list_slices", "update_slice"} <= known
+    assert {"save_slice", "list_slices", "get_project_state"} <= known

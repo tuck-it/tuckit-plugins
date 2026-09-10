@@ -105,7 +105,7 @@ where an agent filing on its own would be making the judgement the human keeps.
 
 ## 5. Apply it in one call
 
-`update_slice` takes a **list** of ids and sets `area_id`, `status` and
+`save_slice` takes a **list** of ids and sets `area_id`, `status` and
 `priority` across them — the reversible decisions, and only those. Tidying a
 board should not cost more per slice than filling it did.
 

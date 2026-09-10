@@ -13,7 +13,7 @@ call_mcp_tool(ServerName="tuckit", ToolName="get_project_state", Arguments={})
 ```
 
 That is how you call every tool a tuckit skill names — `get_project_state`,
-`list_areas`, `list_slices`, `create_slice`, `update_slice`, `add_note`, and the
+`list_areas`, `list_slices`, `save_slice`, `add_note`, and the
 rest. Each tool's argument schema is cached at
 `~/.gemini/antigravity-cli/mcp/tuckit/<tool>.json`; read one when you need the
 exact parameters.

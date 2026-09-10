@@ -94,7 +94,7 @@ person reading it next month. The board hears from you when something *changed*
 
 ## Step 4: Things The Design Did Not Predict
 
-- **A bug, an idea, a follow-up you are not doing now** → `create_slice` with no
+- **A bug, an idea, a follow-up you are not doing now** → `save_slice` with no
   area, so it lands in the Inbox. Not a `TODO` comment, not a bullet in your
   closing message — both of those are places the board cannot see.
 - **A landmine the next agent could hit** → append it to the slice's
@@ -104,7 +104,7 @@ person reading it next month. The board hears from you when something *changed*
   not stop when implementation starts, and a choice made at the keyboard is
   exactly as expensive to rediscover as one made in the design conversation.
 - **The done_when turns out to be wrong** → change it with
-  `update_slice(done_when=…)` and **say out loud that you did, and why.**
+  `save_slice(done_when=…)` and **say out loud that you did, and why.**
   Revising a target you have understood better is the work. Quietly lowering one
   you could not meet is the single failure this whole axis exists to prevent,
   and the two look identical afterwards unless you said which one happened.

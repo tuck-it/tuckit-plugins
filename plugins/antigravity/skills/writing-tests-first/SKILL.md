@@ -32,7 +32,7 @@ Vocabulary and stages: `~/.gemini/config/plugins/tuckit/content/domain.md`.
 
 When your human partner agrees to skip test-first for one of those three, that
 agreement is not a memory — write one line into the slice's `constraints`
-(`update_slice`) saying what was skipped and why. Otherwise the next session
+(`save_slice`) saying what was skipped and why. Otherwise the next session
 re-litigates it, or worse, reads the missing tests as an oversight.
 
 **Not applicable — no request needed:**

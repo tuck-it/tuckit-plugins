@@ -39,7 +39,7 @@ def test_state_reads_precede_creation_instructions():
     )
     first_creation = min(
         text.index("`create_area`"),
-        text.index("`create_slice`"),
+        text.index("`save_slice`"),
     )
     assert reads_complete_at < first_creation
 

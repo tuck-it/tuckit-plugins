@@ -67,7 +67,7 @@ You MUST create a task for each of these items and complete them in order:
    recording each decision as you reach it with `append_decision()`
 5. **Present design** — in sections scaled to their complexity, get user
    approval after each section
-6. **Write the design into the slice** — `update_slice(spec=…)`
+6. **Write the design into the slice** — `save_slice(spec=…)`
 7. **Spec self-review** — read it back and check for placeholders,
    contradictions, ambiguity, scope
 8. **User reviews the spec on the board** — as it now renders, not as you
@@ -85,7 +85,7 @@ digraph designing {
     "Propose 2-3 approaches" [shape=box];
     "Present design sections" [shape=box];
     "User approves design?" [shape=diamond];
-    "update_slice(spec=…)" [shape=box];
+    "save_slice(spec=…)" [shape=box];
     "Spec self-review\n(fix inline)" [shape=box];
     "User reviews spec on board?" [shape=diamond];
     "Write the done_when" [shape=box];
@@ -97,10 +97,10 @@ digraph designing {
     "Propose 2-3 approaches" -> "Present design sections";
     "Present design sections" -> "User approves design?";
     "User approves design?" -> "Present design sections" [label="no, revise"];
-    "User approves design?" -> "update_slice(spec=…)" [label="yes"];
-    "update_slice(spec=…)" -> "Spec self-review\n(fix inline)";
+    "User approves design?" -> "save_slice(spec=…)" [label="yes"];
+    "save_slice(spec=…)" -> "Spec self-review\n(fix inline)";
     "Spec self-review\n(fix inline)" -> "User reviews spec on board?";
-    "User reviews spec on board?" -> "update_slice(spec=…)" [label="changes requested"];
+    "User reviews spec on board?" -> "save_slice(spec=…)" [label="changes requested"];
     "User reviews spec on board?" -> "Write the done_when" [label="approved"];
     "Write the done_when" -> "Invoke executing-a-slice";
 }
@@ -118,7 +118,7 @@ The ONLY skill you invoke after this one is `executing-a-slice`.
    both: unfiled captures are the easiest to miss and usually the oldest.
 2. If a slice covers this, use it. Say which one, by ref and title — a bare
    ref makes your partner open the board to follow you.
-3. If none does, `create_slice(title=…)` **now**, with an **empty spec**.
+3. If none does, `save_slice(title=…)` **now**, with an **empty spec**.
    - An empty spec is not laziness — it reads back as stage `needs_design`,
      which is the board saying *someone is designing this right now*.
    - Do not pre-fill the spec with the raw request. Undesigned work that looks
@@ -246,7 +246,7 @@ Four moves, and the fourth is the one people skip:
 
 ## 5. Write the approved design into the slice
 
-`update_slice(slice_id=…, spec=<the design>)`. Markdown; headings and tables
+`save_slice(slice_id=…, spec=<the design>)`. Markdown; headings and tables
 render.
 
 **Nothing seals when you write the spec.** The decision record and the spec
@@ -296,7 +296,7 @@ self-review. Only proceed once the user approves.
 
 ## 8. Write the done_when
 
-`update_slice(slice_id=…, done_when=<what would settle this>)`. This is what
+`save_slice(slice_id=…, done_when=<what would settle this>)`. This is what
 moves the slice off `needs_done_when`, and it is the last thing you do before
 any code exists.
 
