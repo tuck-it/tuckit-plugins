@@ -1,12 +1,12 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.schema.json",
   "name": "dev.tuckit/tuckit",
-  "description": "A project board that people and coding agents share. Areas, slices and bites over MCP, with the same workspace open in a browser.",
+  "description": "A project board that people and coding agents share. Areas and slices over MCP, with the same workspace open in a browser.",
   "repository": {
     "url": "https://github.com/tuck-it/tuckit-plugins",
     "source": "github"
   },
-  "version": "0.24.0",
+  "version": "0.29.0",
   "websiteUrl": "https://tuckit.dev",
   "remotes": [
     {
