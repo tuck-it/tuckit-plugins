@@ -176,9 +176,8 @@ you wrong. "It would be more natural to do that first", "they touch the same
 files", and "this is the follow-up to that" are not blocks.
 
 The `note` is required, and `content/domain.md` says why it matters here: the
-link takes this slice off the roadmap until the blocker moves, no screen shows
-that yet, and a link that does not say why it exists is one nobody dares
-delete.
+link takes this slice off the roadmap until the blocker moves, and a link that
+does not say why it exists is one nobody dares delete.
 
 ## 3. Exploring approaches
 

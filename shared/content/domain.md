@@ -64,10 +64,11 @@ current, so keeping your writes on the board is what keeps it honest.
   the next thing to do, and it comes back on its own the moment the blocker
   ships or is dropped — nothing stores "blocked", it is worked out on every
   read. Shipping is refused while something still blocks the slice. A link is
-  reversible — unlinking removes it — so it needs nobody's approval to create;
-  but a wrong one hides real work from the roadmap until the blocker ships,
-  and the web does not yet show blocked-ness on screen. That is why the reason
-  is not optional.
+  reversible — unlinking removes it, and the web renders every link on the
+  slice with a control to delete it — so it needs nobody's approval to create.
+  What a wrong one costs is the time the blocked slice spends off the roadmap,
+  and the reason you wrote is the whole of what the next reader has to judge
+  it by. That is why it is not optional.
 
 There is no Ticket, no Plan and no step layer. An untriaged capture is a
 **Capture**, not a slice with something missing — a different object, which is

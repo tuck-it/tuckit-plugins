@@ -36,8 +36,9 @@ relied on this session, and ask whether the blocked slice can now meet its own
 `done_when` without the other one shipping. If it can, the link is untrue —
 remove it with `link_slices(…, unlink=True)`. A stale link costs more than a
 stale slice: while it stands, the blocked slice is listed apart from the
-roadmap so nobody picks it up, and no screen shows blocked-ness yet, so nothing
-will tell you it is wrong.
+roadmap so nobody picks it up. The web does show the link on both slices, so it
+is not invisible — but being visible is not the same as being known to have
+gone stale, and your note is the only thing a reader can judge that by.
 
 ## 2. What you actually did
 
@@ -163,7 +164,7 @@ If they corrected nothing, there is nothing to harvest. Say nothing.
 |---|---|
 | Create a slice the moment you notice something | Collect it. The list goes to your partner at the end |
 | Write a spec into something nobody agreed to do | It is a capture: a title and what you saw |
-| Leave a `blocks` link standing after its note stopped being true | Unlink it. It is holding the blocked slice off the roadmap and no screen says so |
+| Leave a `blocks` link standing after its note stopped being true | Unlink it. It is holding the blocked slice off the roadmap, and nothing goes stale on its own |
 | Present the list without the numbers | The human is sizing a pile they cannot see |
 | Treat silence as approval | It is not. Ask again, or leave it out |
 | Skip step 1 because nothing obviously died | It is the only step that shrinks the board, so it is the one that never happens |

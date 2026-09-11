@@ -109,7 +109,8 @@ person reading it next month. The board hears from you when something *changed*
   `done_when`** until the other one ships. "It would be more natural to do that
   first" and "they touch the same files" are not blocks. The `note` is
   required; `content/domain.md` says what the link then does to the roadmap,
-  and why a wrong one is expensive while no screen shows blocked-ness.
+  and why a wrong one is expensive: the blocked slice sits off the roadmap
+  until somebody reads your reason and disagrees with it.
 - **A landmine the next agent could hit** → append it to the slice's
   `constraints`. If it cost you real time, `add_note` as well: constraints say
   what the rule is, notes say what happened.
