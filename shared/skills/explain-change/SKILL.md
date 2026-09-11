@@ -201,8 +201,8 @@ by a reader who trusted it.
   Specs that turned out **wrong** are the best material in it.
 - **What you can no longer assume** — whenever the reader has seen this code
   before. Sentences that were true before this range and are false after, stated
-  as beliefs rather than diffs: *"a Ticket's permissions always matched its
-  Slice's"* — no longer true, here is the new rule and its one exception. A
+  as beliefs rather than diffs: *"every job inherited the caller's database
+  connection"* — no longer true, here is the new rule and its one exception. A
   returning reader's problem is stale knowledge, not missing knowledge, and a
   Background written for a newcomer never corrects it. Skip for a first-time
   reader.

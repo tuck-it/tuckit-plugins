@@ -12,9 +12,11 @@ goes through the generic dispatcher:
 call_mcp_tool(ServerName="tuckit", ToolName="get_project_state", Arguments={})
 ```
 
-That is how you call every tool a tuckit skill names — `get_project_state`,
-`list_areas`, `list_slices`, `save_slice`, `add_note`, and the
-rest. Each tool's argument schema is cached at
+That is how you call every tool a tuckit skill names: put the tool name the
+skill gives you into `ToolName`. The catalog this rule file must not carry is
+the one the server itself advertises in this session — treat that list as
+authoritative rather than a list written down here, which cannot stay current
+when the product renames a tool. Each tool's argument schema is cached at
 `~/.gemini/antigravity-cli/mcp/tuckit/<tool>.json`; read one when you need the
 exact parameters.
 
@@ -41,20 +43,20 @@ For "what's the state / what are we working on / what's next", call
 `get_project_state` first and answer from it.
 
 Work enters through the board. Before you change code, find the slice this
-belongs to or create one, and take anything you would have to think about
-first through **`designing-a-slice`**.
+belongs to or create one in an Area, and take anything you would have to think
+about first through **`designing-a-slice`**.
 
 If live state has no Areas, use **`starting-with-tuckit`**. When the session
 ends, use **`reconciling-the-board`**.
 
-The model (Area / Slice) and the workflow are in the **`tuckit-domain`**
-skill.
+The model (Area / Slice / Capture) and the workflow are in the
+**`tuckit-domain`** skill.
 
 ---
 
-Board check: find the tuckit slice this belongs to, or create one, before you
-change code. Undesigned work goes through **`designing-a-slice`** first; a
-one-line spec is enough for a small fix. Ignore this if the request is not work.
+Board check: find the slice this belongs to, or create one in an Area, before
+you change code. Undesigned work goes through **`designing-a-slice`** first; a
+one-line spec is enough for a small fix. Ignore this if it is not work.
 
 A ref never reaches your partner without its title, and a question they
 cannot answer from the message is unfinished.

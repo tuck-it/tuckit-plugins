@@ -94,9 +94,22 @@ person reading it next month. The board hears from you when something *changed*
 
 ## Step 4: Things The Design Did Not Predict
 
-- **A bug, an idea, a follow-up you are not doing now** → `save_slice` with no
-  area, so it lands in the Inbox. Not a `TODO` comment, not a bullet in your
-  closing message — both of those are places the board cannot see.
+- **A bug, an idea, a follow-up you are not doing now** → `create_capture(title=…,
+  context=…)`: the title in the words you would say it, and what you saw in the
+  context. Not a `TODO` comment, not a bullet in your closing message — both of
+  those are places the board cannot see. Do not write a design into it and do
+  not make it a slice: nobody has agreed to do it yet, and a capture is the
+  object that says so.
+- **You cannot finish until another slice lands** → record it:
+  `link_slices([{"from": <the blocker>, "to": <this slice>, "kind": "blocks",
+  "note": "why"}])`. Otherwise the dependency lives in this session's chat log
+  and goes with it. Nobody has to approve the link — `link_slices(…,
+  unlink=True)` takes it back — but the bar is checkable, so use it instead of
+  your instinct: record a block only when this slice cannot meet its **own
+  `done_when`** until the other one ships. "It would be more natural to do that
+  first" and "they touch the same files" are not blocks. The `note` is
+  required; `content/domain.md` says what the link then does to the roadmap,
+  and why a wrong one is expensive while no screen shows blocked-ness.
 - **A landmine the next agent could hit** → append it to the slice's
   `constraints`. If it cost you real time, `add_note` as well: constraints say
   what the rule is, notes say what happened.
@@ -122,7 +135,9 @@ person reading it next month. The board hears from you when something *changed*
   hypothesis, is wrong.
 
 `add_note` what you hit before you stop — that turns a dead session into one the
-next agent can resume.
+next agent can resume. If what you hit is another slice, link it as well (Step
+4): the note is prose someone has to read, the link is what keeps this slice off
+the roadmap until the blocker moves.
 
 **Ask for clarification rather than guessing.**
 
@@ -166,7 +181,8 @@ Then: `shipping-a-slice`.
 - Read the done_when first, and doubt it once, before you build
 - Your step breakdown is yours; the board gets decisions, landmines and evidence
 - Don't skip the real check for the fast one
-- Anything you defer becomes a slice, not a sentence in chat
+- Anything you defer becomes a capture, not a sentence in chat
+- A dependency on another slice is a link with a note, also not a sentence in chat
 - Changing the target is fine — changing it silently is not
 - Stop when blocked, don't guess
 - Never start implementation on main/master without explicit consent
@@ -179,9 +195,9 @@ target and reviews what comes back. Execute inline as above when the work is
 one indivisible piece, or when you have no subagents.
 
 Either way the division is the same: **files keep the process; tuckit keeps the
-decisions.** Reports and review packages stay on disk. Four things cross to the
-board — decisions, deferred work (as new slices), constraints you discovered,
-and the evidence at the end.
+decisions.** Reports and review packages stay on disk. What crosses to the
+board: decisions, deferred work (as captures), dependencies you found (as
+links), constraints you discovered, and the evidence at the end.
 
 ---
 

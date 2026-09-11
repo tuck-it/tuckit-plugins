@@ -232,9 +232,12 @@ the session unless it is routed somewhere the next session can find it.
    activity thread — write the one that survives the investigation, not a
    diary of it.
 3. **A bug the investigation turned up that belongs to no slice here** →
-   `save_slice`, no area (Inbox). A TODO comment or a closing-message
-   aside is not a destination.
-4. **The conclusion of a 3+-failure architecture discussion** → a slice.
+   `create_capture`: the bug in one line, what you saw as the context.
+   Nobody has decided it is work yet, so it does not get a spec or an area.
+   A TODO comment or a closing-message aside is not a destination.
+4. **The conclusion of a 3+-failure architecture discussion** → a slice in an
+   Area (`save_slice`, `area_id` required). Your partner was in that
+   discussion, so this one is already decided work rather than a capture.
    Left in the chat, the next person hits the same wall three more times.
    Phase 4, step 5 opens that discussion; this is where its conclusion lands.
 

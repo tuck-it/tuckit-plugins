@@ -114,7 +114,7 @@ trusts it instead of re-checking.
 
 **Requirements:**
 ```
-✅ Re-read plan → Create checklist → Verify each → Report gaps or completion
+✅ Re-read spec and done_when → Check each line → Report gaps or completion
 ❌ "Tests pass, phase complete"
 ```
 
@@ -135,8 +135,9 @@ sitting in.
 - Do not summarize the unchecked thing as if it were checked — that is exactly
   the lie this skill exists to prevent.
 - If the gap is not one-off — nobody working in this environment can ever run
-  that check — file it: `save_slice`, no area (Inbox), so the gap gets fixed
-  once instead of rediscovered every time.
+  that check — write it to the Inbox with `create_capture`: the title in the
+  words you would say it, and what you ran into as the context. The gap gets
+  fixed once instead of rediscovered every time.
 
 Three things commonly turn out to be unverifiable that look verifiable at
 first glance: a suite run scoped to the directory you touched skips the wiring
@@ -181,6 +182,21 @@ showed the new title in 4.1s and no skeleton flashed.
 409 on a stale save, with the "keep mine" button rendered.
 pytest -q at the repo root: 2491 passed.
 ```
+
+**When the screen is the only witness, put the picture in the evidence.** A
+render, a layout, a visual state — prose paraphrases those badly. Upload it with
+`create_image_upload` — two calls, and `tuckit-domain` carries the shapes, the
+accepted formats and the size ceiling — then reference the url it hands back
+inside `evidence` as markdown. That upload stamps nothing; `record_verification`
+is still the call that moves the slice.
+
+This is not an instruction to attach a picture to every verification. Do that
+and agents start screenshotting pytest output: the signal in evidence drops,
+because a picture of a terminal says less than the same lines pasted as text.
+Attach one only where the claim cannot be shown any other way.
+
+The image outlives a slice that gets tidied away, so the same shot can be
+evidence on one slice and context on another.
 
 **Name what you did NOT check.** A gap you write down is a gap the next reader
 can close; a gap you leave out is one they discover in production. This costs

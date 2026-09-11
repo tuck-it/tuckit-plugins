@@ -135,11 +135,26 @@ def main(argv=None, stdin_text: str = "") -> int:
     except json.JSONDecodeError:
         hook_input = {}
     session_id = extract_session_id(hook_input)
-    text = load_content(args.content)
 
     if args.event == "start":
-        print(json.dumps(build_start_payload(text, args.agent)))
+        # SessionStart fires on every source: startup, resume, clear AND
+        # compact. Ungated, a long session gets the whole primer pushed back
+        # into the context compaction has just freed. Gate on the session id,
+        # not on a source matcher in hooks.json: a mistyped matcher string
+        # matches no source at all, so the primer would never be injected and
+        # nothing would say so. first_time fails the other way -- its worst
+        # case is one extra injection, which is the behaviour it replaces.
+        # This is inside the start branch, so it covers claude-code and codex
+        # alike; antigravity is oriented by rules/AGENTS.md and never gets here.
+        if not first_time(session_id, "primer"):
+            # Same empty envelope the stop path prints when it has already
+            # reminded. Nothing is loaded, because nothing is emitted.
+            print(json.dumps({}))
+            return 0
+        print(json.dumps(build_start_payload(load_content(args.content), args.agent)))
         return 0
+
+    text = load_content(args.content)
 
     if args.event == "prompt":
         # Every prompt, deliberately. Once per session is what SessionStart

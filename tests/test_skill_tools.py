@@ -6,7 +6,7 @@ agent to "discover the tools yourself" cannot drive a pipeline, so they name
 them outright.
 
 The trade for that is this test. Every tool the skills name must exist in the
-sibling tuckit checkout's live catalog, and every live tool the skills name must
+sibling tuckit-saas checkout's live catalog, and every live tool the skills name must
 be listed here first. When tuckit renames or drops a tool, this goes red instead
 of the skills quietly instructing agents to call something that is gone — which
 is exactly what happened to `create_plan`.
@@ -34,11 +34,16 @@ SKILL_TOOLS = {
     "record_verification",
     "add_note",
     "append_priority_policy",
+    "create_capture",
+    "list_captures",
+    "triage_capture",
+    "link_slices",
+    "create_image_upload",
 }
 
 requires_tuckit = pytest.mark.skipif(
     not check_drift.SERVER_PY.exists(),
-    reason="../tuckit sibling repo not checked out",
+    reason="../tuckit-saas sibling repo not checked out",
 )
 
 
@@ -73,3 +78,20 @@ def test_unlisted_tools_do_not_leak_into_skills():
     known = check_drift.known_tools_from_server()
     leaked = check_drift.find_leaked_tool_names(_skills_text(), known - SKILL_TOOLS)
     assert leaked == [], f"skills name tools that are not in SKILL_TOOLS: {leaked}"
+
+
+# Names that are not in the live catalog, so the three tests above cannot see
+# them: those are all derived from what the server exposes, and a name absent
+# from it passes every one of them. Two kinds live here. Some never existed --
+# `unlink_slices` is the obvious guess for undoing a link, and the real call is
+# `link_slices(unlink=True)`; `create_slice`/`update_slice` are guesses at
+# `save_slice`. Some did exist and were removed -- `add_bites` went with the
+# step layer, and a skill that still names it would instruct an agent to call
+# something gone.
+INVENTED_TOOLS = ("unlink_slices", "create_slice", "update_slice", "add_bites")
+
+
+def test_skills_do_not_name_tools_that_never_existed():
+    text = _skills_text()
+    named = [t for t in INVENTED_TOOLS if re.search(rf"\b{t}\b", text)]
+    assert named == [], f"skills name tools tuckit has never exposed: {named}"

@@ -1,6 +1,6 @@
 ---
 name: clearing-the-board
-description: "Use when a tuckit board has more open slices than anyone reads — the Inbox has piled up, a roadmap is capped, or nobody can say what is actually next. Reads the board's own numbers, proposes what to close and why, and closes the approved set in one call. Run it on a schedule, not only in a crisis."
+description: "Use when a tuckit board has more open slices than anyone reads — a roadmap is capped, rows have sat for months, or nobody can say what is actually next. Reads the board's own numbers, proposes what to close and why, and closes the approved set in one pass. Run it on a schedule, not only in a crisis."
 ---
 
 # Clearing the Board
@@ -19,15 +19,18 @@ dead*, never *how old it is*.
 Vocabulary and stages: `${PLUGIN_ROOT}/content/domain.md`.
 
 **Announce at start:** "I'm using clearing-the-board to go through the open
-slices."
+slices and what is sitting in the Inbox."
 
 ## When to run this
 
 - The board's own numbers say so: an area's roadmap reports `roadmap_omitted`
-  above zero, or the Inbox has more than ~20 open, or `oldest_idle_days` is
-  past a month.
+  above zero, or a roadmap has rows whose `idle_days` is past a month.
 - Someone asks what is next and the honest answer is "I can't tell from this."
 - On the schedule the last run left behind (see step 6).
+
+Not this skill: an Inbox that piled up on its own. Judging captures is
+`filing-the-inbox`, and it runs before this one. Step 2 is where you tell the
+two cases apart.
 
 Do not run it because a session felt untidy. This skill is the one that makes
 the board smaller, which means it is also the one that can quietly delete a
@@ -43,22 +46,31 @@ rest of the pass:
 | number | why you need it |
 |---|---|
 | `totals.open` | the size of what you are about to review |
-| `totals.drop_ratio` | how much of what this board captures has historically turned out not to be work |
-| `inbox.open_count` / `oldest_idle_days` | how deep the unfiled pile is and how long it has waited |
+| `totals.drop_ratio` | how much of what this board decided *was* work later turned out not to be. Slices only — a dismissed capture never enters it |
+| `inbox.open_count` / `inbox.oldest_idle_days` | how deep the unjudged pile is and how long it has waited. **It counts captures, not slices.** None of them are inside `totals.open`, so the whole board is the two added; reading either as the other counts one pile twice |
 | `totals.by_source` | whether this board is filled by people or by agents |
 
 A high `drop_ratio` is not a reason to close more. It is evidence that the
 *capture* side is miscalibrated, which is a different repair — see step 7.
 
-### 2. List everything open, with its age
+### 2. Read both piles, with their ages
 
-List the open slices, including the unfiled ones. Each row carries `age_days`
-and `idle_days`. Read `stage` too: a slice at `executing` with recent activity
-is someone's work in progress and is not a candidate, whatever its age.
+`list_slices` for the open slices. Each row carries `age_days` and `idle_days`.
+Read `stage` too: a slice at `executing` with recent activity is someone's work
+in progress and is not a candidate, whatever its age.
 
 Read `priority` as well. A row with none is simply unranked — that is the
 normal state and says nothing either way. A row that *has* one is a decision
 somebody made, and it changes what its age means.
+
+Then `list_captures()` for the Inbox. It is a different set from `list_slices`,
+not a filter on it, and its rows carry `title`, `context`, `state`, `source` and
+`age_days` — no priority, no stage, no `done_when`, because nobody has decided
+any of it is work. Read it before you decide this is the right pass: 30 open
+slices and 40 captures is a different board from 70 open slices. The second is
+a board nobody closes, which is this skill. The first is a board nobody judges,
+and that is `filing-the-inbox` — run it first, since what it promotes becomes
+an open slice you would then be reading here.
 
 ### 3. Sort each one into three piles
 
@@ -103,6 +115,13 @@ a duplicate.
 irreversible damage (data, security, money) · it is in someone's hands right
 now · it is the fix for why this board filled up.
 
+**Captures sort the same way, on less.** One has no priority, no stage and no
+`done_when`, so most of the reading above has nothing to work with — you have a
+title, prose and an age. Take only the ones you can say what killed them; the
+rest stay in the Inbox for `filing-the-inbox`. Nothing gets promoted in this pass. A
+promotion puts a new row on somebody's roadmap, which is the opposite of what
+you are here to do, and it is a judgement that deserves its own reading.
+
 ### 4. Present the proposal
 
 One list. Every proposed close gets **one line saying what killed it** — and
@@ -110,7 +129,9 @@ One list. Every proposed close gets **one line saying what killed it** — and
 in **Ask**, not in the close list.
 
 Group them so the human can scan and veto in blocks (by area, or by the reason
-they are dying), and state the totals: closing N of M, leaving K.
+they are dying), and state the totals: closing N of M, leaving K. Keep the
+captures as their own block with their own count — they are not slices, and a
+single merged number tells the reader nothing about which pile is the problem.
 
 Every row carries its title. This list exists to be scanned, and a row that is
 only a number cannot be.
@@ -118,16 +139,23 @@ only a number cannot be.
 Then stop and wait. Nothing is closed before approval, and "no objection" is
 not approval.
 
-### 5. Close the approved set in one call
+### 5. Close the approved set
 
-The slice-update tool takes a list of ids, so the whole approved set is a
-single call. `dropped`, never deleted — the slice and its reasoning stay
-readable, and only the claim that someone is going to do it goes away.
+`save_slice` takes a list of ids, so the approved slices are a single call.
+`dropped`, never deleted — the slice and its reasoning stay readable, and only
+the claim that someone is going to do it goes away.
 
-Record the list and the reasons on **one** slice, not on each closed one. A
-note per closed slice is a second job that nobody will ever read; a single
-record of what was closed and why is the artifact that makes the next pass
-possible.
+The captures are not in that call. Each one is
+`triage_capture(<capture_id>, "dismiss")`, one call per capture. Dismissal is
+soft the same way dropping is: the row survives, stays readable, and
+`decision="restore"` brings it back if the judgement was wrong. Worth saying in
+step 4 while the list is still a proposal: bulk closing stalls on the fear of
+losing something, and neither exit here loses anything.
+
+Record the list and the reasons — dropped slices and dismissed captures
+together — on **one** slice, not on each closed one. A note per closed slice is
+a second job that nobody will ever read; a single record of what was closed and
+why is the artifact that makes the next pass possible.
 
 ### 6. Leave the next run behind you
 
@@ -138,8 +166,11 @@ trigger runs once, and then the board refills for a year.
 
 If `drop_ratio` is high, or `by_source` shows agents writing most of the board,
 closing things is treating a symptom. The repair lives on the capture side —
-the review-routing gate, and the end-of-session approval batch. Name that in
-your closing message rather than scheduling another cleanup.
+the review-routing gate, and the end-of-session approval batch. And an unjudged
+observation now has the Inbox to sit in, so a dropped slice is one somebody
+wrote as work before anyone agreed it was — that is the gap the ratio is
+pointing at. Name it in your closing message rather than scheduling another
+cleanup.
 
 The same goes for a pile of stalled high priorities: that is not a cleanup
 problem either. It means the ranking and the doing have come apart, and the
@@ -158,3 +189,5 @@ them. Name it instead of closing the rows.
 | Delete instead of dropping | The record survives. That is the product's whole claim |
 | Schedule another cleanup after a high `drop_ratio` | Fix the capture gate instead |
 | Close a high priority because it has not moved | That is the strongest signal on the board. It goes to Ask |
+| Count `inbox.open_count` as part of `totals.open` | Two piles. One is captures, one is slices, and neither is inside the other |
+| Promote a capture while you are here | Promoting adds a roadmap row. That pass is `filing-the-inbox` |

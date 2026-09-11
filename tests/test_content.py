@@ -2,12 +2,18 @@ from pathlib import Path
 
 CONTENT = Path(__file__).resolve().parent.parent / "shared" / "content"
 # MCP tool names that must NOT be hardcoded in content (they drift over time).
+# Dead names stay on the list: content that resurrects one is as wrong as
+# content that pins a live one.
 FORBIDDEN_TOOL_NAMES = [
-    "list_areas", "create_area", "list_slices", "save_slice",
-    "add_note", "create_plan", "list_plans", "update_plan", "list_bites",
+    # live catalog
+    "list_areas", "create_area", "list_slices", "get_slice", "save_slice",
+    "add_note", "append_decision", "append_priority_policy",
+    "record_verification", "link_slices", "create_image_upload",
+    "create_capture", "list_captures", "triage_capture",
+    # removed with the plan/step/ticket layers
+    "create_plan", "list_plans", "update_plan", "list_bites",
     "add_bites", "update_bite", "list_tickets", "create_ticket", "get_ticket",
     "update_ticket", "promote_ticket", "absorb_ticket", "release_ticket",
-    "get_slice",
 ]
 
 def _all_text():

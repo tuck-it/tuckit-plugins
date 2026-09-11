@@ -101,6 +101,38 @@ def test_main_codex_start_injects_primer_on_the_wire_codex_reads(monkeypatch, tm
     assert "get_project_state" in out["hookSpecificOutput"]["additionalContext"]
 
 
+@pytest.mark.parametrize("agent", ["claude-code", "codex"])
+def test_start_injects_the_primer_once_per_session(monkeypatch, tmp_path, agent):
+    """SessionStart fires on startup, resume, clear AND compact, so an ungated
+    primer is re-injected into the context that compaction has just freed. The
+    second start of the same session prints the empty envelope; a different
+    session still gets the primer. Both agents share this branch."""
+    same = json.dumps({"session_id": f"START-{agent}"})
+    _, first = _run(monkeypatch, tmp_path,
+                    ["--agent", agent, "--event", "start", "--content", "primer"], same)
+    _, again = _run(monkeypatch, tmp_path,
+                    ["--agent", agent, "--event", "start", "--content", "primer"], same)
+    _, other = _run(monkeypatch, tmp_path,
+                    ["--agent", agent, "--event", "start", "--content", "primer"],
+                    json.dumps({"session_id": f"OTHER-{agent}"}))
+
+    assert "get_project_state" in first["hookSpecificOutput"]["additionalContext"]
+    assert again == {}
+    assert "get_project_state" in other["hookSpecificOutput"]["additionalContext"]
+
+
+def test_start_and_stop_are_gated_separately(monkeypatch, tmp_path):
+    """One tag per hook. Sharing a marker would let whichever fired first
+    silence the other for the rest of the session."""
+    stdin = json.dumps({"session_id": "S12"})
+    _, start = _run(monkeypatch, tmp_path,
+                    ["--agent", "claude-code", "--event", "start", "--content", "primer"], stdin)
+    _, stop = _run(monkeypatch, tmp_path,
+                   ["--agent", "claude-code", "--event", "stop", "--content", "writeback"], stdin)
+    assert start["hookSpecificOutput"]["hookEventName"] == "SessionStart"
+    assert stop["hookSpecificOutput"]["hookEventName"] == "Stop"
+
+
 def test_main_codex_stop_uses_the_stop_command_output_wire(monkeypatch, tmp_path):
     """Codex's StopCommandOutputWire is {continue, stopReason, suppressOutput,
     systemMessage}. Unlike SessionStart it is NOT the Claude Code shape, so the

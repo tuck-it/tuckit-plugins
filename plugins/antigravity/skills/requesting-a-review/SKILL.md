@@ -118,8 +118,9 @@ every line above.
 
 Hand the findings to `receiving-a-review` and work them there. Do not act on
 them straight out of the report: that skill decides, item by item, whether a
-finding is fixed, pushed back on, noted, or turned into a slice — and it is what
-keeps the ones you are not fixing from evaporating into the chat log.
+finding is fixed, pushed back on, noted, or written to the Inbox as a capture —
+and it is what keeps the ones you are not fixing from evaporating into the chat
+log.
 
 The verdict is a verdict, not an instruction. A reviewer that says "Needs fixes"
 has not decided what happens to this branch; you and your human partner do.

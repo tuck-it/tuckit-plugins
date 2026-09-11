@@ -129,14 +129,14 @@ digraph routing {
     "Fixing it on this branch now?" [shape=diamond];
     "① Fix it" [shape=box];
     "Will anyone actually do it later?" [shape=diamond];
-    "④ propose a slice (Inbox), in the approval batch" [shape=box];
+    "④ propose a capture, in the approval batch" [shape=box];
     "③ One line in a note, why not" [shape=box];
 
     "Technically wrong for this codebase?" -> "② Push back with reasoning" [label="yes"];
     "Technically wrong for this codebase?" -> "Fixing it on this branch now?" [label="no"];
     "Fixing it on this branch now?" -> "① Fix it" [label="yes"];
     "Fixing it on this branch now?" -> "Will anyone actually do it later?" [label="no"];
-    "Will anyone actually do it later?" -> "④ propose a slice (Inbox), in the approval batch" [label="yes, and it clears rule 5"];
+    "Will anyone actually do it later?" -> "④ propose a capture, in the approval batch" [label="yes, and it clears rule 5"];
     "Will anyone actually do it later?" -> "③ One line in a note, why not" [label="no"];
 }
 ```
@@ -162,8 +162,8 @@ digraph routing {
 
   | field | what it tells you |
   |---|---|
-  | `totals.drop_ratio` | the share of everything ever captured here that a human later decided was not work |
-  | `inbox.open_count` | how many captures are already waiting, unfiled |
+  | `totals.drop_ratio` | of the things this board decided *were* work, the share a human later dropped. Slices only — a dismissed capture never enters it |
+  | `inbox.open_count` | how many captures the Inbox is holding — nobody has judged any of them to be work yet |
   | `inbox.oldest_idle_days` | how long the oldest of them has sat untouched |
 
   Then apply the bar in rule 5.
@@ -204,9 +204,9 @@ up every one of them drowns the note that makes the rest findable.
 
 The question that separates ③ from ④ is **"will anyone actually do it"** — not
 severity. A genuinely Important finding nobody will ever pick up is a note; a
-trivial one the next person fixes in five minutes is a slice. Filing everything
-as a slice fails the same way as filing nothing: an Inbox full of items nobody
-reads stops being read at all.
+trivial one the next person fixes in five minutes is a capture. Capturing
+everything fails the same way as capturing nothing: an Inbox full of items
+nobody reads stops being read at all.
 
 This is not hypothetical, and knowing it was not enough. That paragraph was
 already in this skill on 2026-08-22, when a board reached 140 open slices and
@@ -220,27 +220,30 @@ prediction with no evidence attached. Rule 5 is that evidence, made binding.
 
 **④ does not create anything by itself.** Collect the items that clear the bar
 and hand them to your closing batch-confirm — the list your human partner
-approves before anything is written. A gate that is wrong is survivable when a
-person sees the list; it is not when the slices are already there.
+approves before anything is written. Each approved item is one `create_capture`:
+the finding as the title, what you actually saw as the context. A capture carries
+no spec and no area, so writing one claims only that you saw the thing, not that
+anybody agreed to do it. A gate that is wrong is survivable when a person sees
+the list; it is not when the captures are already there.
 
 ### When there is no slice
 
 An `ad-hoc` review or a PR comment can arrive with no slice behind it. The
 routes still hold:
 
-- **④ works unchanged.** A slice with no area needs no parent slice — that is
-  what the Inbox is. Name the repo and the PR in the body, because there is no
-  slice context for it to inherit. It still goes into the approval batch rather
-  than being created on the spot.
-- **③ has nowhere to land**, since a note needs a slice to sit on. Promote the
-  item to ④, or put the batch to your human partner and let them say which are
-  worth a slice. Do not drop it because the convenient destination is missing.
+- **④ works unchanged.** A capture never had a slice behind it — a title and
+  prose is the whole object. Name the repo and the PR in the context, because
+  there is no slice for it to inherit that from. It still goes into the approval
+  batch rather than being created on the spot.
+- **③ has nowhere to land**, since a note needs a slice to sit on. Route the
+  item to ④ instead, or put the batch to your human partner and let them say
+  which are worth keeping. Do not drop it because the convenient destination is
+  missing.
 
 ① and ④ are unaffected, and ② is still delivered to whoever raised it. The one
 part of ② that needs a home — a ruling worth recording, which would have joined
-the ③ batch — travels with ③ above: promoted to a slice, or put to your human
-partner. The absence of a slice narrows the routes to three; it never adds a way
-out.
+the ③ batch — travels with ③ above: routed to ④, or put to your human partner.
+The absence of a slice narrows the routes to three; it never adds a way out.
 
 ## Common Mistakes
 
@@ -254,7 +257,7 @@ out.
 | Implementing the clear half | Clarify every item before starting any |
 | Proceeding when you could not verify | State the limit, ask for direction |
 | Ending a finding with "I'll look at that later" | Not a destination. ③ or ④ |
-| Ten findings, so all ten become slices | Split them on "will anyone do it." An Inbox full of noise is one nobody reads |
+| Ten findings, so all ten become captures | Split them on "will anyone do it." An Inbox full of noise is one nobody reads |
 | A finding that only appears in your closing message | The board cannot see your closing message |
 
 ## GitHub thread replies

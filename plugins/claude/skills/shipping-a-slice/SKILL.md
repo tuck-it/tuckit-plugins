@@ -63,10 +63,12 @@ Before landing anything, make the board match what happened:
   one. Withdrawing is a normal move: `record_verification(evidence="")` takes
   the slice back to `executing` and nothing is lost.
 - **Work you decided not to do** → say so in the note at Step 8, and if it is
-  worth doing later, file it. Silence here makes the slice look complete when
-  part of it was dropped on purpose.
-- **Anything discovered and deferred** → new slices now, in the Inbox. "We
-  should also…" said in chat and nowhere else does not survive this session.
+  worth doing later, capture it. Silence here makes the slice look complete
+  when part of it was dropped on purpose.
+- **Anything discovered and deferred** → `create_capture` now, one per thing.
+  Nobody has agreed to do them yet, so they go to the Inbox as captures, not as
+  slices with a spec written in. "We should also…" said in chat and nowhere
+  else does not survive this session.
 - **Any decision you made while landing** → `append_decision`.
 
 ## Step 3: Detect Environment
@@ -245,10 +247,19 @@ Ask. On a yes, `save_slice(slice_id=…, status="shipped")`. On a no, say what
 is still missing and leave it open — an open slice with a clear note is honest;
 a shipped slice with unfinished work is not.
 
-Shipping does not need an area. A slice can ship straight out of the Inbox.
+Two things refuse that call, and neither is a bug: no evidence recorded, and
+another slice still blocking this one. The second refusal names the blockers.
+Read the note on each link before doing anything else, and hold it against the
+bar the link was written under: this slice cannot meet its **own `done_when`**
+until the blocker ships. If that has stopped being so, the link is untrue —
+`link_slices(…, unlink=True)` removes it and the ship goes through.
+`over_block` and `over_unverified` push past the matching refusal, and each
+lands on the activity thread as itself, so a ship over a block never reads as an
+ordinary one. They are for the case where your human partner has looked and
+decided to ship anyway, not for getting the call to succeed.
 
 Then close with one line about the board, not about your process: which slice is
-shipped, and which slices this session created for later.
+shipped, and what this session left in the Inbox for later.
 
 ## Quick Reference
 
@@ -275,7 +286,8 @@ shipped, and which slices this session created for later.
 | "The push was rejected — force-push will fix it" | A rejected push means the remote moved. Investigate; force-push only on your human partner's explicit request. |
 | "I'll write the evidence up after the merge" | Then it is a description of what you did, not a check you ran. Evidence is recorded before the branch lands, in Step 2. |
 | "The stage already reads ready_to_ship, so it is shipped" | Stage is derived; status is decided. Ask before setting it. |
-| "I'll mention the follow-up in my closing message" | The board cannot see your closing message. It is a slice or it does not exist. |
+| "I'll mention the follow-up in my closing message" | The board cannot see your closing message. It is a capture or it does not exist. |
+| "The ship was refused because something blocks it — pass over_block" | Read the link's note first. If it is still true the work is not done; if it is not, unlink it. The override is for a decision your human partner made, not for clearing an error. |
 | "The constraints were written before the work — they are stale now" | Then say so and update the field. Skipping the check is not the same as disagreeing with it. |
 
 ---

@@ -25,15 +25,29 @@ ROOT = Path(__file__).resolve().parent.parent
 # - bite (TP-343): the step layer. Nobody read a bite body, and counting them
 #   let a slice reach ready_to_ship with nobody having said what done meant.
 #   Replaced by done_when and recorded evidence.
-# - ticket (TP-227 / the two-layer model): an untriaged capture is a slice
-#   with no area now. promote_ticket was the last irreversible operation in
-#   the product.
-# - plan: a slice's own spec and constraints hold what a plan used to.
+# - ticket (TP-227 / the two-layer model): promote_ticket was the last
+#   irreversible operation in the product.
+# - plan: a slice's own spec and constraints hold what a plan used to. This
+#   one is unenforced English, not a pattern: "a plan that nobody reads is a
+#   third copy of the spec" is a true sentence about why the object is gone.
 # - org (TP-338): renamed to workspace everywhere.
+# - the area-less slice: a Slice always lives in an Area (area is required to
+#   create one), and the Inbox holds Captures instead -- an unjudged title and
+#   prose, promoted into an Area keeping its number, or dismissed, both
+#   reversible. One verb for both "I noticed something" and "this is work" got
+#   picked wrong constantly: 10 of the 16 things in one production Inbox had a
+#   full spec written into them, so the board reported unjudged notes at stage
+#   needs_done_when. "An Inbox slice" names what that fix removed. The regex is
+#   short-range on purpose: "there is no Area for that first slice to live
+#   under" is a true sentence about creating an Area first and must not fail.
 DEAD_NOUNS = {
     "bite": r"\bbites?\b",
     "ticket": r"\btickets?\b",
     "promote_ticket": r"\bpromote_ticket\b",
+    "the area-less slice": (r"\binbox\s+slices?\b"
+                            r"|\bslices?\b[^.\n]{0,20}\bno area\b"
+                            r"|\bareas?-?less\s+slices?\b"
+                            r"|\bslices?\s+without\s+an?\s+area\b"),
     # The layer, not the English word: "there is no step layer" is a true
     # sentence the README is allowed to keep, while an arrow chain through
     # ->steps-> is the old workflow being advertised.

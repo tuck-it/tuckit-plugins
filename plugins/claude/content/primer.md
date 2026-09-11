@@ -14,11 +14,11 @@ For "what's the state / what are we working on / what's next", call
 `get_project_state` first and answer from it.
 
 Work enters through the board. Before you change code, find the slice this
-belongs to or create one, and take anything you would have to think about
-first through **`designing-a-slice`**.
+belongs to or create one in an Area, and take anything you would have to think
+about first through **`designing-a-slice`**.
 
 If live state has no Areas, use **`starting-with-tuckit`**. When the session
 ends, use **`reconciling-the-board`**.
 
-The model (Area / Slice) and the workflow are in the **`tuckit-domain`**
-skill.
+The model (Area / Slice / Capture) and the workflow are in the
+**`tuckit-domain`** skill.

@@ -114,19 +114,29 @@ The ONLY skill you invoke after this one is `executing-a-slice`.
 
 1. Search the board — the idea may already be captured, often months ago and
    better phrased than the request you just got. `list_slices(query=…)` searches
-   the whole workspace; `list_slices(area_id='')` is the Inbox specifically. Look at
-   both: unfiled captures are the easiest to miss and usually the oldest.
+   the whole workspace; `list_captures()` is the Inbox, which is a different set
+   of rows and not a filter on `list_slices`. Look at both: an unjudged capture
+   is the easiest thing to miss and usually the oldest thing on the board, and
+   the `age_days` on each row shows you that.
 2. If a slice covers this, use it. Say which one, by ref and title — a bare
    ref makes your partner open the board to follow you.
-3. If none does, `save_slice(title=…)` **now**, with an **empty spec**.
+3. If a **capture** covers it, promote it into an area:
+   `triage_capture(<capture_id>, "promote", area_id=<area>)`. It becomes a slice
+   and keeps its number, and its spec starts empty, so the design you are about
+   to write replaces nothing.
+4. If nothing covers it, `save_slice(title=…, area_id=…)` **now**, with an
+   **empty spec**.
    - An empty spec is not laziness — it reads back as stage `needs_design`,
      which is the board saying *someone is designing this right now*.
    - Do not pre-fill the spec with the raw request. Undesigned work that looks
      designed is worse than an empty field.
-   - File it into an area if it obviously belongs to one; otherwise leave the
-     area empty and it waits in the Inbox. Filing is the board's way of saying
-     someone means to do this, so it is a real judgement — but a reversible
-     one in both directions, so do not stall on it here. Working through a
+   - **`area_id` is required and `area_id=""` is refused** — every slice lives
+     in an area. Read `list_areas()` and pick the one whose responsibility this
+     falls under. It is a real judgement, but a reversible one, so do not stall
+     on it here.
+   - If you cannot name an area because nobody has decided this is work yet,
+     it is not a slice: `create_capture(title=…, context=…)` puts the
+     observation in the Inbox, where it can be promoted later. Working through a
      whole Inbox is `filing-the-inbox`, not this skill.
 
 This is first because a design conversation that dies before step 6 leaves
@@ -146,13 +156,29 @@ exactly what makes the board stale.
 - If the project is too large for a single spec, help the user decompose it into
   sibling slices: what are the independent pieces, how do they relate, what
   order should they be built? Then design the first one through the normal flow.
-  Each sibling gets its own spec → steps → implementation cycle, and each spec
-  names the others by ref.
+  Each sibling gets its own spec → done_when → implementation cycle, and each
+  spec names the others by ref.
 - For appropriately-scoped work, ask questions one at a time to refine the idea
 - Prefer multiple choice questions when possible, but open-ended is fine too
 - Only one question per message — if a topic needs more exploration, break it
   into multiple questions
 - Focus on understanding: purpose, constraints, success criteria
+
+**If you discover this work cannot land until another slice does**, record it
+as you find it: `link_slices([{"from": <blocker>, "to": <this one>, "kind":
+"blocks", "note": "…"}])`. Nobody has to approve it — `link_slices(…,
+unlink=True)` takes it back.
+
+The bar is checkable, so use it instead of your instinct: record a block only
+when this slice cannot meet its **own `done_when`** until the other one ships.
+That points at a field the slice already has, so anyone can open it and prove
+you wrong. "It would be more natural to do that first", "they touch the same
+files", and "this is the follow-up to that" are not blocks.
+
+The `note` is required, and `content/domain.md` says why it matters here: the
+link takes this slice off the roadmap until the blocker moves, no screen shows
+that yet, and a link that does not say why it exists is one nobody dares
+delete.
 
 ## 3. Exploring approaches
 

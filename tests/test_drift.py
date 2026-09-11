@@ -21,7 +21,7 @@ def test_clean_content_has_no_leaks():
 
 @pytest.mark.skipif(
     not check_drift.SERVER_PY.exists(),
-    reason="../tuckit sibling repo not checked out",
+    reason="../tuckit-saas sibling repo not checked out",
 )
 def test_known_tools_from_server_matches_all_decorators():
     text = check_drift.SERVER_PY.read_text(encoding="utf-8")

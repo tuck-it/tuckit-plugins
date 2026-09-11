@@ -27,15 +27,20 @@
 in a browser. Your agent reaches the same workspace over MCP. There is one
 database and no sync step, so whichever side you look at is current.
 
-The board has two nouns:
+The board has three nouns:
 
 - An **Area** is a long-lived responsibility, such as backend or billing.
-- A **Slice** is the one unit of work. It carries its spec (what we are building
-  and why), its constraints (what a later agent must not get wrong), its
-  decisions (how it was decided, in prose), and two fields that settle it: a
-  **done_when** — what somebody would have to observe to call it finished — and
-  the **evidence** of what was actually observed. A slice that has no area yet
-  is sitting in the Inbox.
+- A **Slice** is the one unit of work, and it always lives in an Area. It
+  carries its spec (what we are building and why), its constraints (what a
+  later agent must not get wrong), its decisions (how it was decided, in
+  prose), and two fields that settle it: a **done_when** — what somebody would
+  have to observe to call it finished — and the **evidence** of what was
+  actually observed.
+- A **Capture** is an unjudged note: a title and prose, and nothing else, and
+  it is what the Inbox holds. Nobody has decided it is work yet, so it has no
+  done_when to miss and no stage to be behind on. It leaves the Inbox one of
+  two ways and they cost the same: promote it into an Area, where it becomes a
+  Slice keeping its number, or dismiss it. Neither one deletes anything.
 
 There is no step layer. Nobody read one, and a plan that nobody reads is a
 third copy of the spec.
@@ -72,8 +77,9 @@ session left unfinished.
 
 **Discoveries stop dying in the transcript.** An agent fixing one thing notices
 three others. Normally those live in a scrollback nobody reopens. The
-session-end hook turns them into Inbox slices, so a discovery outlives the
-window it was made in.
+session-end hook turns each one into a capture in the Inbox, so a discovery
+outlives the window it was made in — and it lands there as a note, not as work
+somebody has to pretend was decided.
 
 **"Done" stops being an opinion.** The done_when is written before the code,
 so it is a target the work can miss. The board will not open the ship button
@@ -333,10 +339,10 @@ are already in. You can also invoke any of them directly.
 | Skill | Use it when | What it writes to the board |
 |---|---|---|
 | **`requesting-a-review`** | Work needs a reviewer's eyes: one piece of a slice mid-flight, a whole branch before merge, or any range you ask about | Nothing directly. It produces findings. |
-| **`receiving-a-review`** | Review feedback has arrived, before you implement any of it | Deferred findings are proposed as Inbox slices and created once your partner approves the batch, rulings become a note, landmines become constraints |
+| **`receiving-a-review`** | Review feedback has arrived, before you implement any of it | Deferred findings are proposed as captures and created once your partner approves the batch, rulings become a note, landmines become constraints |
 | **`writing-tests-first`** | Before writing implementation code for a feature or a fix | An agreed exception becomes a line in the slice's constraints |
 | **`verifying-before-claiming`** | Before saying anything is done, and to meet the slice's done_when | The **evidence**, which is what opens the ship gate. It also decides whether that claim is honest. |
-| **`debugging-systematically`** | A bug, a test failure, anything unexpected, before proposing a fix | The rule becomes a constraint, the session becomes one note, an unrelated bug becomes an Inbox slice, and after three failed fixes the architecture conclusion becomes its own slice |
+| **`debugging-systematically`** | A bug, a test failure, anything unexpected, before proposing a fix | The rule becomes a constraint, the session becomes one note, an unrelated bug becomes a capture, and after three failed fixes the architecture conclusion becomes its own slice |
 | **`explain-change`** | Someone needs to actually understand a change an agent wrote | Nothing new. It turns a branch, PR or commit range into a self-contained HTML walkthrough that links each slice's recorded intent and ends in a quiz. |
 
 ### Keeping the board honest
