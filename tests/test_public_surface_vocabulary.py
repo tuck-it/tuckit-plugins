@@ -80,6 +80,23 @@ def _manifest_descriptions():
             out[rel] = json.loads(p.read_text(encoding="utf-8")).get("description", "")
     out["server.json"] = json.loads(
         (ROOT / "server.json").read_text(encoding="utf-8")).get("description", "")
+    # The marketplace manifest is the listing itself -- the sentence rendered
+    # next to the install button, and for most visitors the first line of the
+    # product they ever read. It was left out of this list and drifted two
+    # releases behind because of it: it still advertised "design->steps->
+    # execute->review->ship" after the step layer was deleted, while every
+    # manifest above had already been corrected. Its shape is different (the
+    # description hangs off each entry in `plugins`), which is exactly why it
+    # got skipped, so read that shape rather than assuming a top-level key.
+    for rel in (".claude-plugin/marketplace.json", ".agents/plugins/marketplace.json"):
+        p = ROOT / rel
+        if not p.is_file():
+            continue
+        listing = json.loads(p.read_text(encoding="utf-8"))
+        for entry in listing.get("plugins", []):
+            described = entry.get("description", "")
+            if described:
+                out[f"{rel}:{entry.get('name', '?')}"] = described
     return out
 
 
