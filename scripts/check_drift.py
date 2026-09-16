@@ -58,12 +58,31 @@ def find_leaked_tool_names(content_text: str, known_tools: set) -> list:
     return leaked
 
 
+# A tool is `@mcp.tool(...)` immediately followed by `async def <name>(`. The
+# signature itself may continue on the next line (e.g. `ctx: Context,` below
+# it), so anchor on the decorator rather than matching the parameter list.
+#
+# The parentheses take arguments. `@mcp.tool(structured_output=False)` is one
+# of them, and a pattern requiring EMPTY parens silently dropped that tool from
+# the catalog for five days -- which means the leak check could not have
+# flagged its name, because it only searches for names it was handed.
+TOOL_DECL = re.compile(r"@mcp\.tool\([^)]*\)\s+async def (\w+)\(")
+
+# Counts declarations without reusing TOOL_DECL, so the two can disagree. The
+# assertion this feeds used to compare TOOL_DECL's result against
+# `text.count("@mcp.tool()")` -- the same spelling on both sides, so when the
+# spelling was what had gone wrong, both sides were wrong by the same tool and
+# the comparison read 14 == 14.
+DECORATOR = "@mcp.tool("
+
+
 def known_tools_from_server() -> set:
-    text = SERVER_PY.read_text(encoding="utf-8")
-    # tools are decorated with @mcp.tool() immediately followed by `async def <name>(`;
-    # the signature itself may continue on the next line (e.g. `ctx: Context,` below it),
-    # so we anchor on the decorator rather than trying to match the full parameter list.
-    return set(re.findall(r"@mcp\.tool\(\)\s+async def (\w+)\(", text))
+    return set(TOOL_DECL.findall(SERVER_PY.read_text(encoding="utf-8")))
+
+
+def declared_tool_count() -> int:
+    """How many tools the server declares, counted independently of TOOL_DECL."""
+    return SERVER_PY.read_text(encoding="utf-8").count(DECORATOR)
 
 
 def main() -> int:
