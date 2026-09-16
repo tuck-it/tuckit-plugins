@@ -19,16 +19,6 @@
           }
         ]
       }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 \"${PLUGIN_ROOT}/scripts/emit.py\" --agent codex --event stop --content writeback"
-          }
-        ]
-      }
     ]
   }
 }

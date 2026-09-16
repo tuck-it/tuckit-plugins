@@ -54,8 +54,10 @@ A single install gives you three things:
 
 1. **A live MCP connection** to your tuckit workspace, wired up for you. There
    is no separate server to register.
-2. **Two hooks.** One orients the agent at the start of every session. The other
-   reminds it to write back before it stops.
+2. **Ambient hooks.** They orient the agent at the start of every session and
+   remind it, as each request arrives, that work goes on the board before it
+   goes in the code. Which events an agent supports differs — see its install
+   section.
 3. **A set of workflow skills** that carry one piece of work from idea to
    shipped, writing each artifact onto the board rather than into a markdown
    file the next session will never find.
@@ -77,7 +79,7 @@ session left unfinished.
 
 **Discoveries stop dying in the transcript.** An agent fixing one thing notices
 three others. Normally those live in a scrollback nobody reopens. The
-session-end hook turns each one into a capture in the Inbox, so a discovery
+write-back step turns each one into a capture in the Inbox, so a discovery
 outlives the window it was made in — and it lands there as a note, not as work
 somebody has to pretend was decided.
 
@@ -104,10 +106,14 @@ workspace. This is shared project state, not per-agent memory.
 
 **Every install ships the same payload:** the session-start primer, a one-line
 reminder on each request that work goes on the board before it goes in the
-code, the session-end write-back reminder, the `tuckit-domain` reference skill,
-and all of the workflow skills described below. Claude Code additionally gets a
-`reconciling-the-board` skill, which you can also invoke by name to reconcile
-mid-session.
+code, the `tuckit-domain` reference skill, and all of the workflow skills
+described below. Claude Code additionally gets a `reconciling-the-board` skill,
+which you can also invoke by name to reconcile mid-session.
+
+The write-back reminder is the one piece that is not uniform, because the
+session-end hook is not uniform. Claude Code and Antigravity fire one; Codex's
+`Stop` event cannot inject anything a model reads, so on Codex the primer
+carries that sentence instead.
 
 The per-request reminder is what makes the rest of it fire. A session-start
 primer lands once and then competes, thirty turns later, with an instruction
@@ -179,9 +185,14 @@ codex plugin marketplace add tuck-it/tuckit-plugins
 /plugins      -> select "tuckit" -> install -> enable
 ```
 
-This wires the primer, the write-back reminder, the `tuckit-domain` skill,
-**every workflow skill in this repository**, and the tuckit MCP server. There is
-no `~/.codex/config.toml` edit to make.
+This wires the primer, the per-request board reminder, the `tuckit-domain`
+skill, **every workflow skill in this repository**, and the tuckit MCP server.
+There is no `~/.codex/config.toml` edit to make.
+
+There is no session-end hook here, deliberately. Codex's `Stop` event is the
+one event with no way to inject context — the only field on it a model reads
+is `decision: "block"`, which costs a turn every session — so the primer tells
+Codex to reconcile when the session ends.
 
 Codex does not prompt during install, so give it your token through the
 environment variable the bundled server reads:
@@ -202,11 +213,11 @@ export TUCKIT_MCP_TOKEN="<YOUR_TOKEN>"    # add to your shell profile to keep it
 - Want a standing nudge in every session? Paste
   `plugins/codex/AGENTS.snippet.md` into your `AGENTS.md`.
 
-> **Heads-up:** the Codex plugin (its hooks and bundled `.mcp.json`) follows
-> Codex's documented format but has not been verified against a live Codex
-> install yet. If the primer, the write-back, or the MCP do not come up, check
-> your Codex version's docs and adjust `plugins/codex/hooks/hooks.json` or
-> `plugins/codex/.mcp.json`.
+> **Heads-up:** the hooks were verified against codex-cli 0.154.0 — the
+> primer and the per-request reminder both reach the model. The bundled
+> `.mcp.json` follows Codex's documented format but has not been checked the
+> same way. If the MCP does not come up, check your Codex version's docs and
+> adjust `plugins/codex/.mcp.json`.
 </details>
 
 ### Antigravity CLI
@@ -280,10 +291,9 @@ why the agent takes one extra turn the first time it tries to finish.
 
 ## The workflow skills
 
-The hooks are ambient, and deliberately thin. Between them the session-start
-primer and the session-end nudge are about 170 words, because that text is
-injected into **every** session whether or not it touches the board — a session
-that never opens tuckit still pays for it. So the hooks say what is true with no
+The hooks are ambient, and deliberately thin. The text they inject is short
+because it lands in **every** session whether or not it touches the board — a
+session that never opens tuckit still pays for it. So the hooks say what is true with no
 skill loaded (this workspace is tuckit-tracked, read state from tuckit, here is
 the skill to use) and nothing else. The substance lives in the skills below,
 which load only when they are needed.
@@ -356,8 +366,8 @@ session; the other two every so often.
 | **`filing-the-inbox`** | Captures are piling up unfiled, or nobody can say what is in the Inbox | Nothing without approval. It proposes, in one batch, which captures are worth doing and where they go, which stay put, and which are dead |
 | **`clearing-the-board`** | More open slices than anyone reads: a capped roadmap, or nobody can say what is next | Nothing without approval. It proposes what to close and why, then closes the approved set as `dropped` and records the list and reasons on one slice |
 
-`reconciling-the-board` is what the session-end hook points at — the hook is the
-nudge, this is the checklist.
+`reconciling-the-board` is what the primer, and the session-end hook where
+there is one, point at — those are the nudge, this is the checklist.
 
 The other two both make a board smaller, so they propose and wait for the same
 reason `starting-with-tuckit` does. Run `filing-the-inbox` before
