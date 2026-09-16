@@ -44,8 +44,28 @@ def test_build_start_payload_per_agent():
 def test_build_stop_payload_per_agent():
     assert emit.build_stop_payload("WB", "claude-code") == {
         "hookSpecificOutput": {"hookEventName": "Stop", "additionalContext": "WB"}}
-    assert emit.build_stop_payload("WB", "codex") == {"continue": True, "systemMessage": "WB"}
     assert emit.build_stop_payload("WB", "antigravity") == {"decision": "continue", "reason": "WB"}
+
+
+def test_codex_has_no_stop_payload():
+    """Codex ships no Stop hook, so asking for its payload is a bug, not a case.
+
+    The branch this replaces returned {"continue": True, "systemMessage": ...}.
+    Codex accepts that and shows the text to the human; the model never sees
+    it. Stop is the one Codex event with no `additionalContext`, and the only
+    field on it that reaches the model is `decision: "block"` with a `reason`.
+    Measured against codex-cli 0.154.0: `block` yields `hook: Stop Blocked` and
+    one more model turn, `systemMessage` yields `hook: Stop Completed` and the
+    turn ends.
+
+    Blocking was the available fix and was turned down -- it costs a model turn
+    every session, and a session that changed nothing follows the write-back
+    text's own instruction to say nothing, which lands as an empty assistant
+    turn and an empty --output-last-message. The primer already tells Codex to
+    reconcile when the session ends.
+    """
+    with pytest.raises(ValueError, match="primer"):
+        emit.build_stop_payload("WB", "codex")
 
 def test_allow_stop_payload_is_empty():
     for agent in emit.AGENTS:
@@ -133,16 +153,22 @@ def test_start_and_stop_are_gated_separately(monkeypatch, tmp_path):
     assert stop["hookSpecificOutput"]["hookEventName"] == "Stop"
 
 
-def test_main_codex_stop_uses_the_stop_command_output_wire(monkeypatch, tmp_path):
-    """Codex's StopCommandOutputWire is {continue, stopReason, suppressOutput,
-    systemMessage}. Unlike SessionStart it is NOT the Claude Code shape, so the
-    two must not be "unified" into one payload."""
-    stdin = json.dumps({"session_id": "S11"})
-    _, payload = _run(monkeypatch, tmp_path,
-                      ["--agent", "codex", "--event", "stop", "--content", "writeback"], stdin)
-    assert payload["continue"] is True
-    assert "board" in payload["systemMessage"].lower()
-    assert set(payload) <= {"continue", "stopReason", "suppressOutput", "systemMessage"}
+def test_the_codex_stop_wire_is_read_off_the_binary_not_guessed():
+    """What let the wrong Stop payload ship for weeks was a subset assertion
+    over our own dict: the test named four of the six fields Codex accepts and
+    passed, while the two it omitted -- `decision` and `reason` -- were the
+    only ones that reach the model.
+
+    So assert the wire itself, from the source that settles it. Codex embeds
+    its hook JSON schemas in the binary; `strings <codex> | grep -A40
+    'stop.command.output'` prints this one. The web docs do not carry it.
+    """
+    stop_wire = {"continue", "decision", "reason",
+                 "stopReason", "suppressOutput", "systemMessage"}
+    injecting = {"decision", "reason"}      # the only fields the model sees
+    assert injecting < stop_wire
+    assert "hookSpecificOutput" not in stop_wire   # unlike SessionStart
+    assert "additionalContext" not in stop_wire    # unlike UserPromptSubmit
 
 
 def test_main_stop_reminds_once_then_allows(monkeypatch, tmp_path):

@@ -98,7 +98,13 @@ def build_stop_payload(text: str, agent: str) -> dict:
         return {"hookSpecificOutput": {"hookEventName": "Stop",
                                        "additionalContext": text}}
     if agent == "codex":
-        return {"continue": True, "systemMessage": text}
+        # Codex's Stop wire has no `additionalContext` -- unlike SessionStart
+        # and UserPromptSubmit, which have one and are why the primer and the
+        # door work. The only Stop field that reaches the model is
+        # `decision: "block"` with a `reason`, and blocking costs a model turn
+        # every session. Codex is reminded by the primer sentence instead, so
+        # nothing calls this.
+        raise ValueError("codex has no stop hook; the primer carries the reminder")
     if agent == "antigravity":
         return {"decision": "continue", "reason": text}
     raise ValueError(f"unknown agent: {agent}")
