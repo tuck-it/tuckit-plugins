@@ -353,7 +353,6 @@ are already in. You can also invoke any of them directly.
 | **`writing-tests-first`** | Before writing implementation code for a feature or a fix | An agreed exception becomes a line in the slice's constraints |
 | **`verifying-before-claiming`** | Before saying anything is done, and to meet the slice's done_when | The **evidence**, which is what opens the ship gate. It also decides whether that claim is honest. |
 | **`debugging-systematically`** | A bug, a test failure, anything unexpected, before proposing a fix | The rule becomes a constraint, the session becomes one note, an unrelated bug becomes a capture, and after three failed fixes the architecture conclusion becomes its own slice |
-| **`explain-change`** | Someone needs to actually understand a change an agent wrote | Nothing new. It turns a branch, PR or commit range into a self-contained HTML walkthrough that links each slice's recorded intent and ends in a quiz. |
 
 ### Keeping the board honest
 
