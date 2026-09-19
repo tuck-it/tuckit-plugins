@@ -188,14 +188,9 @@ Then: `shipping-a-slice`.
 - Stop when blocked, don't guess
 - Never start implementation on main/master without explicit consent
 
-## Subagent execution
+## What goes where
 
-When the work splits into parts that can be built and judged separately, hand
-it out instead: `delegating-a-slice` runs implementers against this same
-target and reviews what comes back. Execute inline as above when the work is
-one indivisible piece, or when you have no subagents.
-
-Either way the division is the same: **files keep the process; tuckit keeps the
+**Files keep the process; tuckit keeps the
 decisions.** Reports and review packages stay on disk. What crosses to the
 board: decisions, deferred work (as captures), dependencies you found (as
 links), constraints you discovered, and the evidence at the end.

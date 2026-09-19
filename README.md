@@ -326,17 +326,12 @@ The slice's `stage` names the skill to use next, so there is nothing to choose.
 |---|---|---|
 | **`designing-a-slice`** | An idea, before any code | Each decision as prose in **decisions**, the approved design in the **spec**, the **constraints**, and the **done_when** (`needs_design` → `needs_done_when` → `executing`) |
 | **`executing-a-slice`** | There is a target to meet (`executing`) | Decisions made while building, landmines as constraints, deferrals as new slices — and the **evidence** at the end |
-| **`delegating-a-slice`** | Same, but the work splits cleanly and you have subagents | Same, driven by a fresh implementer and reviewer per piece |
 | **`shipping-a-slice`** | Evidence has been recorded (`ready_to_ship`) | A note with what shipped and, after asking, `status: shipped` |
 
 The done_when is written before the work and the evidence after it, and the
 board derives the stage from which of the two is missing. That is the whole
 mechanism: the middle of the pipeline asks *how will we know* rather than *how
 many steps are left*.
-
-`delegating-a-slice` is where the board pays off. A dispatched subagent gets a
-slice ref and reads its own requirements — including the target the branch has
-to meet — so there is no brief file to drift from the board.
 
 ### Called from inside a step
 

@@ -11,9 +11,7 @@ the forks that produce no artifact of their own govern what the others may
 claim.
 
   shared/skills/designing-a-slice/      <- skills/brainstorming
-  shared/skills/breaking-down-a-slice/  <- skills/writing-plans
   shared/skills/executing-a-slice/      <- skills/executing-plans
-  shared/skills/delegating-a-slice/     <- skills/subagent-driven-development
   shared/skills/shipping-a-slice/       <- skills/finishing-a-development-branch
   shared/skills/requesting-a-review/    <- skills/requesting-code-review
   shared/skills/receiving-a-review/     <- skills/receiving-code-review
@@ -21,10 +19,9 @@ claim.
   shared/skills/writing-tests-first/        <- skills/test-driven-development
   shared/skills/debugging-systematically/   <- skills/systematic-debugging
 
-The prompt templates forked from subagent-driven-development are split across
-two of those directories: delegating-a-slice carries implementer-prompt.md,
-and requesting-a-review carries the two review prompts
-(task-reviewer-prompt.md -> reviewer-prompt.md, and re-review-prompt.md).
+requesting-a-review carries two review prompts forked from Superpowers'
+skills/subagent-driven-development (task-reviewer-prompt.md ->
+reviewer-prompt.md, and re-review-prompt.md).
 
 Two of those forks brought their upstream supporting documents along:
 writing-tests-first carries writing-good-tests.md, and

@@ -126,8 +126,7 @@ it — the skills carry the parts that go wrong.
    write the **done_when**: what would settle that this is finished. Writing
    it before you build is the whole point — one written afterwards is a
    description of what you did, which is the one thing it must not be.
-4. **Do it** — **`executing-a-slice`**, or **`delegating-a-slice`** for work
-   that splits cleanly. Treat the done_when as the target you have to meet,
+4. **Do it** — **`executing-a-slice`**. Treat the done_when as the target you have to meet,
    and put the slice's ref in the commit message: that ref is the only thread
    running from a line of code back to the reason it exists.
 5. **Show it was met** — **`verifying-before-claiming`**, after a reviewer has
