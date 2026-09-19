@@ -378,8 +378,7 @@ Several of these skills are forks of
 explains what the fork changed rather than repeating the list.
 
 The forks keep upstream's form: the checklists you must materialise as tasks,
-the task template, the placeholder ban, the self-reviews, the fix loop and its
-breaker, the rationalization tables. They change one thing. **The board replaces
+the task template, the placeholder ban, the self-reviews, the rationalization tables. They change one thing. **The board replaces
 the markdown files.** Whatever upstream would have written into `docs/`, whether
 a design, a plan, task briefs or a progress ledger, lands on a slice instead.
 The forks that produce no artifact of their own decide what the others are
@@ -390,10 +389,7 @@ Superpowers, not alongside it. With both enabled, `designing-a-slice` and
 `brainstorming` compete for the same trigger, and whichever wins decides whether
 your design ends up somewhere the next session can find it.
 
-Some upstream layers have no counterpart here. `using-git-worktrees` and
-`dispatching-parallel-agents` are being forked next. `using-superpowers` and
-`writing-skills` are Superpowers' own meta-tooling for finding and authoring
-skills; nothing here corresponds to them and nothing is planned.
+The other upstream skills have no counterpart here, and none are planned.
 
 ---
 

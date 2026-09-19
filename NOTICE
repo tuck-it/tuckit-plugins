@@ -21,9 +21,6 @@ requesting-a-review carries two review prompts forked from Superpowers'
 skills/subagent-driven-development (task-reviewer-prompt.md ->
 reviewer-prompt.md, and re-review-prompt.md).
 
-Superpowers' four remaining skills are not forked here: using-git-worktrees and
-dispatching-parallel-agents, which are being forked next, and using-superpowers
-and writing-skills, which are Superpowers' own meta-tooling for finding and
-authoring skills and have no counterpart here. This plugin is meant to replace
-Superpowers rather than run alongside it, so it does not defer to them by name;
-until the first two are forked, the layers they cover are simply absent.
+The other Superpowers skills are not forked here. This plugin is meant to
+replace Superpowers rather than run alongside it, so it does not defer to them
+by name.
