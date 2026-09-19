@@ -16,21 +16,10 @@ claim.
   shared/skills/requesting-a-review/    <- skills/requesting-code-review
   shared/skills/receiving-a-review/     <- skills/receiving-code-review
   shared/skills/verifying-before-claiming/  <- skills/verification-before-completion
-  shared/skills/writing-tests-first/        <- skills/test-driven-development
-  shared/skills/debugging-systematically/   <- skills/systematic-debugging
 
 requesting-a-review carries two review prompts forked from Superpowers'
 skills/subagent-driven-development (task-reviewer-prompt.md ->
 reviewer-prompt.md, and re-review-prompt.md).
-
-Two of those forks brought their upstream supporting documents along:
-writing-tests-first carries writing-good-tests.md, and
-debugging-systematically carries root-cause-tracing.md, defense-in-depth.md
-and condition-based-waiting.md. Two upstream supporting files were not
-ported: find-polluter.sh (build.py does not preserve executable bits, so a
-shipped copy would not run) and condition-based-waiting-example.ts (no
-precedent in this family for a code-example file, and it was jest-specific).
-Their content is folded into the .md files that referenced them instead.
 
 Superpowers' four remaining skills are not forked here: using-git-worktrees and
 dispatching-parallel-agents, which are being forked next, and using-superpowers

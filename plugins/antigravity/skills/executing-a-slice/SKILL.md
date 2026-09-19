@@ -76,11 +76,8 @@ board is for what outlives the session.
 
 While you build:
 
-- If the work has a test-first shape, follow `writing-tests-first`.
 - Run the project's real check, not the subset that happens to be fast. A
   suite scoped to the directory you touched skips the wiring guards above it.
-- When something fails and the cause is not obvious, use
-  `debugging-systematically` rather than guessing at fixes.
 - Commit as you go, with the slice's ref in the subject line (`TUC-42: …`).
   That ref is the only thread running from a line of code back to the reason it
   exists: git says what changed, and following the ref is what turns that into
@@ -131,9 +128,8 @@ person reading it next month. The board hears from you when something *changed*
   cannot satisfy)
 - You don't understand something in the spec
 - A verification keeps failing — that is a bug to investigate, not a blocker to
-  report. Use `debugging-systematically`. Stop and ask only once three fixes
-  have failed, which is that skill's own signal that the architecture, not the
-  hypothesis, is wrong.
+  report. Stop and ask only once three fixes have failed: by then the
+  architecture, not the hypothesis, is the likelier thing that is wrong.
 
 `add_note` what you hit before you stop — that turns a dead session into one the
 next agent can resume. If what you hit is another slice, link it as well (Step

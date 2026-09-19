@@ -336,16 +336,14 @@ many steps are left*.
 ### Called from inside a step
 
 These have no stage of their own. The review pair is called by a pipeline skill
-when it needs a reviewer, while the rest govern *how* you carry out a step you
-are already in. You can also invoke any of them directly.
+when it needs a reviewer, and `verifying-before-claiming` governs how you meet
+the done_when. You can also invoke any of them directly.
 
 | Skill | Use it when | What it writes to the board |
 |---|---|---|
 | **`requesting-a-review`** | Work needs a reviewer's eyes: one piece of a slice mid-flight, a whole branch before merge, or any range you ask about | Nothing directly. It produces findings. |
 | **`receiving-a-review`** | Review feedback has arrived, before you implement any of it | Deferred findings are proposed as captures and created once your partner approves the batch, rulings become a note, landmines become constraints |
-| **`writing-tests-first`** | Before writing implementation code for a feature or a fix | An agreed exception becomes a line in the slice's constraints |
 | **`verifying-before-claiming`** | Before saying anything is done, and to meet the slice's done_when | The **evidence**, which is what opens the ship gate. It also decides whether that claim is honest. |
-| **`debugging-systematically`** | A bug, a test failure, anything unexpected, before proposing a fix | The rule becomes a constraint, the session becomes one note, an unrelated bug becomes a capture, and after three failed fixes the architecture conclusion becomes its own slice |
 
 ### Keeping the board honest
 
