@@ -72,10 +72,17 @@ along the way, and hands back the decision that was never its to make.
 
 ## What changes once it is installed
 
-**You stop re-briefing.** A session opens with the agent reading live project
-state instead of inferring it from `git log`. You give it the goal. It already
-knows which slice covers that goal, what was decided about it, and what the last
-session left unfinished.
+**Your agents stop disagreeing about the state.** Claude Code on your laptop,
+Codex in another terminal, and a teammate's session all read and write one
+workspace. A session opens with the agent reading that live state instead of
+inferring it from `git log`: which slice covers the goal, what was decided about
+it, and what the last session left unfinished. This is shared project state
+that people can read and correct, not per-agent memory.
+
+**"Done" stops being an opinion.** The done_when is written before the code,
+so it is a target the work can miss. The board will not open the ship button
+until somebody has written down what they saw — it cannot run your tests, but it
+can refuse to let the claim go unmade.
 
 **Discoveries stop dying in the transcript.** An agent fixing one thing notices
 three others. Normally those live in a scrollback nobody reopens. The
@@ -83,18 +90,9 @@ write-back step turns each one into a capture in the Inbox, so a discovery
 outlives the window it was made in — and it lands there as a note, not as work
 somebody has to pretend was decided.
 
-**"Done" stops being an opinion.** The done_when is written before the code,
-so it is a target the work can miss. The board will not open the ship button
-until somebody has written down what they saw — it cannot run your tests, but it
-can refuse to let the claim go unmade.
-
 **You can see the project without reading a chat log.** What the agent did, what
 it decided, and what it is waiting on you for are all on a board with a web UI.
 Checking progress stops meaning reading transcripts.
-
-**Your agents stop disagreeing about the state.** Claude Code on your laptop,
-Codex in another terminal, and a teammate's session all read and write one
-workspace. This is shared project state, not per-agent memory.
 
 ## At a glance
 
