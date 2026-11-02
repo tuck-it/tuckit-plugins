@@ -19,17 +19,6 @@ skill. If the board is empty, do not create anything until the human has seen
 and approved the complete Area and Slice proposal.
 </HARD-GATE>
 
-## Checklist
-
-Create a task for each item and complete them in order:
-
-1. **Confirm the board is unstarted** — read state and stop safely if it is not
-2. **Read and form a draft** — intent, project evidence, candidate Areas and Slices
-3. **Interview only consequential gaps** — one question at a time
-4. **Present the whole proposal** — Areas and Slices as separate blocks
-5. **Create after approval** — Areas, then Slices, then evidence notes
-6. **Hand back** — the human reads the board before choosing a Slice to design
-
 ## 1. Confirm the board is unstarted
 
 Call `get_project_state` and `list_areas` before reading the repo or asking the
@@ -157,8 +146,8 @@ stale view of the board; a later recovery must read current state first.
 ## 6. Hand back
 
 Ask the human to inspect the board that now exists. Explain that empty specs are
-intentional: the board knows what is real, but the design has not been agreed
-yet.
+intentional: the board knows what is real, but nobody has agreed a promise for
+it yet.
 
 Do not chain onward without that review. When the human chooses the first Slice,
 use `designing-a-slice`.

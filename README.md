@@ -318,51 +318,45 @@ to know what to do, and at this moment there is no Area for that first slice to
 live under. It proposes and waits, because anything it creates unasked is
 cleanup somebody does by hand.
 
+### Who decides what
+
+The workflow stops for a person in three places and nowhere else:
+
+- **Direction**: which work exists and how much it matters. Slices, captures
+  and priorities, mostly set on the web.
+- **The promise**: a slice's `spec` (what and why) and its `done_when` (how
+  anyone would know). A vague request is questioned until both can be written,
+  and the developer who designs the slice approves them once and owns them.
+- **Confirmation**: a teammate reviews the pull request. Once it merges, the
+  slice is shipped.
+
+How to build it is the agent's call. Each choice is recorded as a decision and
+summarised before the code is written, so anyone can object, but nothing waits
+for a yes. On a shared board, an agent takes a slice by assigning it to its
+person, and leaves slices someone else holds alone.
+
 ### The pipeline
 
 The slice's `stage` names the skill to use next, so there is nothing to choose.
 
 | Skill | Use it when | What it writes to the board |
 |---|---|---|
-| **`designing-a-slice`** | An idea, before any code | Each decision as prose in **decisions**, the approved design in the **spec**, the **constraints**, and the **done_when** (`needs_design` → `needs_done_when` → `executing`) |
-| **`executing-a-slice`** | There is a target to meet (`executing`) | Decisions made while building, landmines as constraints, deferrals as new slices — and the **evidence** at the end |
-| **`shipping-a-slice`** | Evidence has been recorded (`ready_to_ship`) | A note with what shipped and, after asking, `status: shipped` |
+| **`designing-a-slice`** | A request with no agreed promise yet, before any code | The approved **spec** and **done_when**, then each design choice as a **decision** (`needs_design` → `executing`) |
+| **`building-a-slice`** | There is a promise to meet (`executing`) | Decisions made while building, landmines as constraints, the **evidence**, the PR link, and `status: shipped` once the PR has merged |
+| **`reviewing-a-change`** | A branch needs a reviewer before its PR, or feedback has arrived from a reviewer or a PR comment | Findings routed so none is lost: fixed, pushed back, noted on the slice, or proposed as captures |
 
 The done_when is written before the work and the evidence after it, and the
-board derives the stage from which of the two is missing. That is the whole
-mechanism: the middle of the pipeline asks *how will we know* rather than *how
-many steps are left*.
-
-### Called from inside a step
-
-These have no stage of their own. The review pair is called by a pipeline skill
-when it needs a reviewer, and `verifying-before-claiming` governs how you meet
-the done_when. You can also invoke any of them directly.
-
-| Skill | Use it when | What it writes to the board |
-|---|---|---|
-| **`requesting-a-review`** | Work needs a reviewer's eyes: one piece of a slice mid-flight, a whole branch before merge, or any range you ask about | Nothing directly. It produces findings. |
-| **`receiving-a-review`** | Review feedback has arrived, before you implement any of it | Deferred findings are proposed as captures and created once your partner approves the batch, rulings become a note, landmines become constraints |
-| **`verifying-before-claiming`** | Before saying anything is done, and to meet the slice's done_when | The **evidence**, which is what opens the ship gate. It also decides whether that claim is honest. |
+board derives the stage from which of the two is missing.
 
 ### Keeping the board honest
 
-None of these belongs to one piece of work. The first runs at the end of a
-session; the other two every so often.
-
 | Skill | Use it when | What it writes to the board |
 |---|---|---|
-| **`reconciling-the-board`** | A session that touched the board is ending, or you want the board reconciled right now | Closes what became untrue, notes what you did, and proposes anything new for approval before creating it |
-| **`filing-the-inbox`** | Captures are piling up unfiled, or nobody can say what is in the Inbox | Nothing without approval. It proposes, in one batch, which captures are worth doing and where they go, which stay put, and which are dead |
-| **`clearing-the-board`** | More open slices than anyone reads: a capped roadmap, or nobody can say what is next | Nothing without approval. It proposes what to close and why, then closes the approved set as `dropped` and records the list and reasons on one slice |
+| **`reconciling-the-board`** | A session that touched the board is ending, or you want it reconciled now | Closes what became untrue on the slices you hold, notes what you did, and proposes anything new for approval |
+| **`tending-the-board`** | Captures are waiting, or more slices are open than anyone reads | Nothing without approval. One batch proposing what to promote, leave, dismiss or close, and why |
 
 `reconciling-the-board` is what the primer, and the session-end hook where
-there is one, point at — those are the nudge, this is the checklist.
-
-The other two both make a board smaller, so they propose and wait for the same
-reason `starting-with-tuckit` does. Run `filing-the-inbox` before
-`clearing-the-board`: filing is the judgement that something is worth doing, and
-what you file stops being a candidate for closing.
+there is one, point at.
 
 ### Reference
 
@@ -377,12 +371,11 @@ Several of these skills are forks of
 [NOTICE](NOTICE) lists exactly which ones and is the file to trust; this section
 explains what the fork changed rather than repeating the list.
 
-The forks keep upstream's form: the checklists you must materialise as tasks,
-the task template, the placeholder ban, the self-reviews, the rationalization tables. They change one thing. **The board replaces
-the markdown files.** Whatever upstream would have written into `docs/`, whether
-a design, a plan, task briefs or a progress ledger, lands on a slice instead.
-The forks that produce no artifact of their own decide what the others are
-allowed to claim.
+The forks change two things. **The board replaces the markdown files**:
+whatever upstream would have written into `docs/` lands on a slice instead.
+And **the person is asked less**: upstream's checklists, rationalization tables
+and section-by-section design approvals are gone, replaced by one approval of
+the promise and a teammate's review of the pull request.
 
 **They are a replacement, not a supplement.** Run this plugin *instead of*
 Superpowers, not alongside it. With both enabled, `designing-a-slice` and

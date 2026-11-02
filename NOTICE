@@ -7,19 +7,18 @@ licensed under the MIT License.
 
 The following skills are forks of Superpowers skills, rewritten around a tuckit
 board: what upstream writes into markdown files lands on a slice instead, and
-the forks that produce no artifact of their own govern what the others may
-claim.
+a person is asked to approve only the promise and the pull request.
 
-  shared/skills/designing-a-slice/      <- skills/brainstorming
-  shared/skills/executing-a-slice/      <- skills/executing-plans
-  shared/skills/shipping-a-slice/       <- skills/finishing-a-development-branch
-  shared/skills/requesting-a-review/    <- skills/requesting-code-review
-  shared/skills/receiving-a-review/     <- skills/receiving-code-review
-  shared/skills/verifying-before-claiming/  <- skills/verification-before-completion
+  shared/skills/designing-a-slice/   <- skills/brainstorming
+  shared/skills/building-a-slice/    <- skills/executing-plans,
+                                        skills/finishing-a-development-branch,
+                                        skills/verification-before-completion
+  shared/skills/reviewing-a-change/  <- skills/requesting-code-review,
+                                        skills/receiving-code-review
 
-requesting-a-review carries two review prompts forked from Superpowers'
+reviewing-a-change carries a review prompt forked from Superpowers'
 skills/subagent-driven-development (task-reviewer-prompt.md ->
-reviewer-prompt.md, and re-review-prompt.md).
+reviewer-prompt.md).
 
 The other Superpowers skills are not forked here. This plugin is meant to
 replace Superpowers rather than run alongside it, so it does not defer to them

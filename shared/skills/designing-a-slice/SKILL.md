@@ -1,374 +1,135 @@
 ---
 name: designing-a-slice
-description: "Use before any creative work in a tuckit-tracked workspace — a new feature, a component, a behavior change, anything not yet designed. Explores intent, requirements and design before implementation, and writes the approved design into the slice's spec rather than a markdown file."
+description: "Use before building anything in a tuckit-tracked workspace that has no agreed promise yet — a new feature, a behavior change, a vague request like 'build login'. Questions the request until it can be written as a spec (what and why) and a done_when, gets the designer's one approval on that promise, then designs the work itself and records each choice as a decision."
 ---
 
 # Designing a Slice
 
-Help turn ideas into fully formed designs through natural collaborative
-dialogue.
+The person agrees **what** and **how anyone would know it is done**. You decide
+**how**. This skill gets the first two out of them with as few questions as
+possible, puts them in front of them once, and then gets out of their way.
 
-Start by resolving which slice this is and understanding the current project
-context, then ask questions one at a time to refine the idea. Once you
-understand what you're building, present the design and get user approval.
+Vocabulary: `{{ROOT}}/content/domain.md`.
 
-The dialogue is the one you would have anyway; what changes is where it lands —
-the slice's `spec`, not a file under `docs/`. A file is read by whoever knows to
-look for it. A spec is read by anyone who opens the board, and by every agent
-that reads the slice before touching the code.
+Nothing is built before the work exists on the board and its promise is
+approved. The small lane below is the one exception to the approval, never to
+the board.
 
-Vocabulary and stages: `{{ROOT}}/content/domain.md`.
+## 1. Find or take the slice
 
-<HARD-GATE>
-Do NOT write code, scaffold a project, or invoke any implementation skill until
-**the work exists on the board**, and — unless it is in the small lane defined
-below — until you have presented a design and the user has approved it.
+Search before creating: `list_slices(query=…)` for slices and `list_captures()`
+for the Inbox, which is a different set. The idea may already be on the board.
 
-The board half has no exception. The design half has exactly one, and you take
-it by naming it out loud, not by deciding privately that this one is obvious.
-</HARD-GATE>
+- **A slice covers it.** Read who holds it. If someone else does, say who and
+  stop: it is theirs. Otherwise take it with `save_slice(assignee="me")`.
+- **A capture covers it.** `triage_capture(<capture_id>, "promote",
+  area_id=<area>)`, then take the new slice.
+- **Nothing covers it.** `save_slice(title=…, area_id=…, assignee="me")` with
+  an empty spec. Pick the Area from `list_areas()`; it is a reversible choice,
+  so do not stall on it.
 
-## Which lane this is in
+Name the slice to the person by ref and title.
 
-Two lanes, and the split is whether there is a decision in the work.
+## 2. Look before you ask
 
-**The small lane** — a typo, a version bump, a copy fix, a one-line change with
-one obvious way to do it. Create the slice, write the one line of spec that
-says what it is, do the work, and say which slice it was. That is the whole
-ceremony, and running the checklist below on it would be theatre.
+`get_project_state`, then the code the work would touch, its recent commits and
+any slice that already owns part of it. Many questions answer themselves here,
+and the rest get sharper. Investigation is not design and needs nobody's yes.
 
-**Everything else — this skill.** If you can name a choice you would be making
-on the reader's behalf, it is not in the small lane. Neither is anything where
-you catch yourself writing "I'll just" or reaching for a second file.
+If the request covers several independent pieces, say so now and split it into
+sibling slices; design the first one.
 
-Two things this split is not.
+## 3. Question the request until it is a promise
 
-- It is not a size estimate. A four-line change that picks between two shapes
-  of an interface is in the second lane; a two-hundred-line mechanical rename
-  is in the first.
-- **It is not a licence to skip the board.** Both lanes create a slice. What
-  the small lane skips is the design, not the record — a change nobody can
-  trace back to a reason is the failure this whole model exists to prevent,
-  and it is much more common than an over-designed typo fix.
+A vague request ("build login", "make the board faster") cannot be written as a
+done_when, so it has to be questioned first. Ask only what would change the
+promise:
 
-When you are unsure which lane you are in, you are in the second one. But say
-which lane you picked, in one line, so a human can put you back.
+- **Scope** — what is in, what is explicitly out.
+- **Who it is for** — which user, in which situation.
+- **What success looks like** — the observation that would settle it, on which
+  surface (browser, terminal, production).
 
-## Checklist
+Do not ask how to build it. Which library, which table, which component split:
+those are yours.
 
-You MUST create a task for each of these items and complete them in order:
+Ask one or two questions at a time, with your best guess attached so a "yes" is
+a full answer. Stop as soon as you can write both halves of the promise. A
+request that is already specific may need no questions at all.
 
-1. **Resolve the slice** — find it on the board or create it, before the first
-   question
-2. **Explore project context** — project state, files, recent commits
-3. **Ask clarifying questions** — one at a time, understand purpose /
-   constraints / success criteria
-4. **Propose 2-3 approaches** — with trade-offs and your recommendation,
-   recording each decision as you reach it with `append_decision()`
-5. **Present design** — in sections scaled to their complexity, get user
-   approval after each section
-6. **Write the design into the slice** — `save_slice(spec=…)`
-7. **Spec self-review** — read it back and check for placeholders,
-   contradictions, ambiguity, scope
-8. **User reviews the spec on the board** — as it now renders, not as you
-   described it in chat
-9. **Write the done_when** — what would settle that this is finished
-10. **Transition to implementation** — invoke `executing-a-slice`
+## 4. Write the promise and get it approved
 
-## Process Flow
+Write it to the slice first, so the person approves what the board will hold:
 
-```dot
-digraph designing {
-    "Resolve the slice" [shape=box];
-    "Explore project context" [shape=box];
-    "Ask clarifying questions" [shape=box];
-    "Propose 2-3 approaches" [shape=box];
-    "Present design sections" [shape=box];
-    "User approves design?" [shape=diamond];
-    "save_slice(spec=…)" [shape=box];
-    "Spec self-review\n(fix inline)" [shape=box];
-    "User reviews spec on board?" [shape=diamond];
-    "Write the done_when" [shape=box];
-    "Invoke executing-a-slice" [shape=doublecircle];
+- `spec` — what is being built and why, including what is out of scope. No
+  implementation detail.
+- `done_when` — the observation that settles it. Good ones can fail, name the
+  surface, and say what would NOT settle it when there is an obvious wrong
+  answer waiting:
 
-    "Resolve the slice" -> "Explore project context";
-    "Explore project context" -> "Ask clarifying questions";
-    "Ask clarifying questions" -> "Propose 2-3 approaches";
-    "Propose 2-3 approaches" -> "Present design sections";
-    "Present design sections" -> "User approves design?";
-    "User approves design?" -> "Present design sections" [label="no, revise"];
-    "User approves design?" -> "save_slice(spec=…)" [label="yes"];
-    "save_slice(spec=…)" -> "Spec self-review\n(fix inline)";
-    "Spec self-review\n(fix inline)" -> "User reviews spec on board?";
-    "User reviews spec on board?" -> "save_slice(spec=…)" [label="changes requested"];
-    "User reviews spec on board?" -> "Write the done_when" [label="approved"];
-    "Write the done_when" -> "Invoke executing-a-slice";
-}
-```
+  ```
+  An expired token returns HTTP 401, not a tool error inside a 200 --
+  that status code is the only thing that makes a client refresh.
+  ```
 
-**The terminal state is invoking `executing-a-slice`.** Do NOT invoke a
-frontend-design skill, an MCP-builder skill, or any other implementation skill.
-The ONLY skill you invoke after this one is `executing-a-slice`.
+Then show both in the conversation and ask for one approval. This is the only
+place this skill waits for an answer. The person who approves it owns the
+promise.
 
-## 1. Resolve the slice before you ask the first question
+After approval the spec is not edited again. If the promise has to change
+later, that is a new approval, not a quiet edit.
 
-1. Search the board — the idea may already be captured, often months ago and
-   better phrased than the request you just got. `list_slices(query=…)` searches
-   the whole workspace; `list_captures()` is the Inbox, which is a different set
-   of rows and not a filter on `list_slices`. Look at both: an unjudged capture
-   is the easiest thing to miss and usually the oldest thing on the board, and
-   the `age_days` on each row shows you that.
-2. If a slice covers this, use it. Say which one, by ref and title — a bare
-   ref makes your partner open the board to follow you.
-3. If a **capture** covers it, promote it into an area:
-   `triage_capture(<capture_id>, "promote", area_id=<area>)`. It becomes a slice
-   and keeps its number, and its spec starts empty, so the design you are about
-   to write replaces nothing.
-4. If nothing covers it, `save_slice(title=…, area_id=…)` **now**, with an
-   **empty spec**.
-   - An empty spec is not laziness — it reads back as stage `needs_design`,
-     which is the board saying *someone is designing this right now*.
-   - Do not pre-fill the spec with the raw request. Undesigned work that looks
-     designed is worse than an empty field.
-   - **`area_id` is required and `area_id=""` is refused** — every slice lives
-     in an area. Read `list_areas()` and pick the one whose responsibility this
-     falls under. It is a real judgement, but a reversible one, so do not stall
-     on it here.
-   - If you cannot name an area because nobody has decided this is work yet,
-     it is not a slice: `create_capture(title=…, context=…)` puts the
-     observation in the Inbox, where it can be promoted later. Working through a
-     whole Inbox is `filing-the-inbox`, not this skill.
+## 5. Design it, show it, keep going
 
-This is first because a design conversation that dies before step 6 leaves
-nothing behind otherwise — and because work the board does not know about is
-exactly what makes the board stale.
-
-## 2. Understanding the idea
-
-- Read project state from tuckit (`get_project_state`), then the code: the files
-  this would touch, recent commits in that area, existing conventions. Check
-  whether a neighbouring slice already owns part of this — overlapping designs
-  are cheaper to find now than to merge later.
-- Before asking detailed questions, assess scope: if the request describes
-  multiple independent subsystems (e.g., "build a platform with chat, file
-  storage, billing, and analytics"), flag this immediately. Don't spend
-  questions refining details of a project that needs to be decomposed first.
-- If the project is too large for a single spec, help the user decompose it into
-  sibling slices: what are the independent pieces, how do they relate, what
-  order should they be built? Then design the first one through the normal flow.
-  Each sibling gets its own spec → done_when → implementation cycle, and each
-  spec names the others by ref.
-- For appropriately-scoped work, ask questions one at a time to refine the idea
-- Prefer multiple choice questions when possible, but open-ended is fine too
-- Only one question per message — if a topic needs more exploration, break it
-  into multiple questions
-- Focus on understanding: purpose, constraints, success criteria
-
-**If you discover this work cannot land until another slice does**, record it
-as you find it: `link_slices([{"from": <blocker>, "to": <this one>, "kind":
-"blocks", "note": "…"}])`. Nobody has to approve it — `link_slices(…,
-unlink=True)` takes it back.
-
-The bar is checkable, so use it instead of your instinct: record a block only
-when this slice cannot meet its **own `done_when`** until the other one ships.
-That points at a field the slice already has, so anyone can open it and prove
-you wrong. "It would be more natural to do that first", "they touch the same
-files", and "this is the follow-up to that" are not blocks.
-
-The `note` is required, and `content/domain.md` says why it matters here: the
-link takes this slice off the roadmap until the blocker moves, and a link that
-does not say why it exists is one nobody dares delete.
-
-## 3. Exploring approaches
-
-- Propose 2-3 different approaches with trade-offs
-- Present options conversationally with your recommendation and reasoning
-- Lead with your recommended option and explain why
-- YAGNI ruthlessly — remove unnecessary features from every approach and design
-
-**Write each decision down as you reach it.** Chat is a bad surface for
-judgement: the option you considered and dropped scrolls away, and the person
-deciding is the most expensive resource in the room. `append_decision()` puts
-it on the slice, where the next reader -- a person in six months, or the agent
-that opens the slice before touching the code -- actually looks.
+Read the code and decide how to build it. For each real choice,
+`append_decision(slice_id, body)`:
 
 ```
-append_decision(slice_id=<id>, body="""
 **Chose a text field on Slice.**
 
-One field, no new vocabulary, and a migration is the whole cost.
+One field, no new vocabulary; a migration is the whole cost.
 
 Turned down: a separate model -- queryable, but a fourth noun on the board,
 and nobody has asked to query it.
 
-**Leans on** -- nobody needing to search decisions across slices. Two teams
-asking for that and this is worth reopening.
-""")
+**Leans on** nobody needing to search decisions across slices.
 ```
 
-Four moves, and the fourth is the one people skip:
+Record decisions as you reach them, not as a summary afterwards.
 
-1. **What was chosen** — one sentence, in bold.
-2. **Why** — what was true at the time that made it right.
-3. **What was turned down, and why.** Without this the next person
-   re-litigates the same options from scratch; it is most of the cost of
-   reopening a decision.
-4. **What it leans on** — the condition under which this stops being right.
-   "Why" is the reasoning of the moment; this is when that reasoning expires.
-   It is one sentence and it is what makes the record useful to somebody
-   deciding again in a changed world.
+Then post a short design summary in the conversation — the shape of the change,
+the files it touches, the choices that were close calls — and **go straight on
+to `building-a-slice` without waiting.** The summary exists so the person can
+object, not so they have to approve.
 
-- **Call it as each decision lands**, not once at the end. A record written
-  afterwards is a summary; one written as you go is a record.
-- **It is append-only and nothing seals it.** You cannot edit or delete an
-  entry — correcting something means appending a new one that says so, which
-  is the honest shape anyway. And unlike the design itself, it stays open
-  after the spec is written and after the work ships: a direction that turned
-  out wrong halfway through the implementation is exactly the entry nobody
-  ever records, and it belongs here.
-- **Say when your partner overrode your recommendation, and what they said.**
-  That disagreement is the highest-signal thing in the whole record.
-- The server stamps the date and who wrote it, so do not write those yourself.
-  A decision you are relaying from your partner is stamped as yours, because a
-  reader has to be able to tell an answer from a report of one.
+If they object at any point, stop, follow them, and append a decision that says
+what they overrode and why. That disagreement is the most useful entry in the
+record.
 
-## 4. Presenting the design
+Landmines and invariants you found go in `constraints`.
 
-- Once you believe you understand what you're building, present the design
-- Scale each section to its complexity: a few sentences if straightforward, up
-  to 200-300 words if nuanced
-- Ask after each section whether it looks right so far
-- Cover: architecture, components, data flow, error handling, testing
-- Be ready to go back and clarify if something doesn't make sense
-- Revise and re-present until the user approves — no silent redesign after a
-  "yes"
+## 6. Dependencies
 
-**Design for isolation and clarity:**
+If this slice cannot meet its own done_when until another one ships, record it:
+`link_slices([{"from": <blocker>, "to": <this>, "kind": "blocks", "note":
+"why"}])`. "It would be more natural first" and "they touch the same files" are
+not blocks.
 
-- Break the system into smaller units that each have one clear purpose,
-  communicate through well-defined interfaces, and can be understood and tested
-  independently
-- For each unit, you should be able to answer: what does it do, how do you use
-  it, and what does it depend on?
-- Can someone understand what a unit does without reading its internals? Can you
-  change the internals without breaking consumers? If not, the boundaries need
-  work.
-- Smaller, well-bounded units are also easier for you to work with — you reason
-  better about code you can hold in context at once, and your edits are more
-  reliable when files are focused. When a file grows large, that's often a
-  signal that it's doing too much.
+## The small lane
 
-**Working in existing codebases:**
+A typo, a version bump, a copy fix, a one-line change with one obvious way to
+do it. Create and take the slice, write a one-line spec and a done_when
+yourself, say in one line which slice it is and that you are taking the small
+lane, and build it. No approval; the pull request review is the human step.
 
-- Explore the current structure before proposing changes. Follow existing
-  patterns.
-- Where existing code has problems that affect the work (e.g., a file that's
-  grown too large, unclear boundaries, tangled responsibilities), include
-  targeted improvements as part of the design — the way a good developer
-  improves code they're working in.
-- Don't propose unrelated refactoring. Stay focused on what serves the current
-  goal.
+If you can name a choice you would be making on the person's behalf, it is not
+the small lane.
 
-## 5. Write the approved design into the slice
+## Resuming
 
-`save_slice(slice_id=…, spec=<the design>)`. Markdown; headings and tables
-render.
-
-**Nothing seals when you write the spec.** The decision record and the spec
-answer different questions -- how you got here, and where you arrived -- so
-writing one never affects the other, and the record keeps accepting entries
-for as long as the work does.
-
-- **`spec`** answers *what we are building and why*.
-- **`constraints`** is a different field and a different reader: what a later
-  agent must not get wrong — landmines, invariants, and what "done" actually
-  means. If the design surfaced one of those, write it there, not buried in the
-  spec's prose. `constraints` is what gets read by someone who will not read the
-  whole design.
-- Keep out anything that should not live in a tracker (credentials, endpoints
-  with secrets in them).
-- **One home.** If a repo convention wants a design file in git, make that file
-  a pointer to the slice ref. A second copy of a design is a second thing to
-  keep true, and it is always the one that goes stale.
-
-## 6. Spec Self-Review
-
-`get_slice(<ref>)` and read what actually rendered, with fresh eyes:
-
-1. **Placeholder scan:** Any "TBD", "TODO", incomplete sections, or vague
-   requirements? Fix them.
-2. **Internal consistency:** Do any sections contradict each other? Does the
-   architecture match the feature descriptions?
-3. **Scope check:** Is this focused enough for a single implementation plan, or
-   does it need decomposition into sibling slices?
-4. **Ambiguity check:** Could any requirement be interpreted two different ways?
-   If so, pick one and make it explicit.
-5. **Constraint in disguise:** Is any of this prose really a landmine or a
-   definition of done? Move it to `constraints`.
-
-Fix any issues inline. No need to re-review — just fix and move on.
-
-## 7. User Review Gate
-
-After the self-review passes, ask the user to review the spec **as it now reads
-on the board** — not as you described it in chat:
-
-> "Design written to `<ref>`. Please review it on the board and let me know if
-> you want to make any changes before I write down what would settle it."
-
-Wait for the user's response. If they request changes, make them and re-run the
-self-review. Only proceed once the user approves.
-
-## 8. Write the done_when
-
-`save_slice(slice_id=…, done_when=<what would settle this>)`. This is what
-moves the slice off `needs_done_when`, and it is the last thing you do before
-any code exists.
-
-**An observation, never a command.** `pytest -q` is a method: it says nothing
-about whether the thing works, and it exits 0 for a suite that asserts
-nothing. What belongs here is the sentence a method would have to produce:
-
-```
-An expired token returns HTTP 401, not a tool error inside a 200 --
-that status code is the only thing that makes a client refresh.
-```
-
-```
-Two shells, one with the modal open. After the other saves, the modal shows
-the new title within 5s and no skeleton flashes; a stale save is refused
-with a way to keep mine. pytest green does not show any of this.
-```
-
-Three things make one good, and they are all about the reader who runs it:
-
-- **It can fail.** If you cannot describe the observation that would say "no",
-  you have written a wish. "The code is cleaner" is a wish.
-- **It names the surface.** Browser, terminal, production, a second process --
-  this codebase has shipped bugs that every server-side test was green for.
-- **It says what would NOT settle it**, when there is an obvious wrong answer
-  waiting. Naming the trap is how the next reader avoids it.
-
-Write it BEFORE the work. One written afterwards is a description of what you
-did, which is the one thing it must not be — and it is the failure this whole
-stage exists to prevent.
-
-If the design surfaced landmines or invariants, those go in `constraints`
-instead: different field, different reader. `constraints` is what somebody
-must not get wrong; `done_when` is how anyone tells whether it is finished.
-
-## 9. Implementation
-
-- Invoke `executing-a-slice` to build it against that target
-- Do NOT invoke any other skill. `executing-a-slice` is the next step.
-
-## Resuming a half-finished design
-
-A session that died mid-design left a slice at `needs_design` with whatever spec
-it had. Pick that slice up at step 2. Do not create a second one for the same
-idea.
+A slice at `needs_design` or `needs_done_when` that you hold is a design that
+stopped part way. Pick it up where it stopped; do not create a second slice.
 
 ---
 
-Forked from superpowers (MIT, © 2025 Jesse Vincent) — `brainstorming`, rewritten
-so the design lands on the board.
+Forked from superpowers (MIT, © 2025 Jesse Vincent) — `brainstorming`, rewritten so the person approves the promise and the agent owns the design.
