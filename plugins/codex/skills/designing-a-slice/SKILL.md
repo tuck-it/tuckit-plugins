@@ -20,8 +20,8 @@ the board.
 Search before creating: `list_slices(query=…)` for slices and `list_captures()`
 for the Inbox, which is a different set. The idea may already be on the board.
 
-- **A slice covers it.** Read who holds it. If someone else does, say who and
-  stop: it is theirs. Otherwise take it with `save_slice(assignee="me")`.
+- **A slice covers it.** Read who holds it: the `Assignee:` line of
+  `get_slice`. If someone else does, say who and stop: it is theirs. Otherwise take it with `save_slice(assignee="me")`.
 - **A capture covers it.** `triage_capture(<capture_id>, "promote",
   area_id=<area>)`, then take the new slice.
 - **Nothing covers it.** `save_slice(title=…, area_id=…, assignee="me")` with
@@ -57,9 +57,9 @@ Ask one or two questions at a time, with your best guess attached so a "yes" is
 a full answer. Stop as soon as you can write both halves of the promise. A
 request that is already specific may need no questions at all.
 
-## 4. Write the promise and get it approved
+## 4. Get the promise approved, then write it
 
-Write it to the slice first, so the person approves what the board will hold:
+Draft both halves:
 
 - `spec` — what is being built and why, including what is out of scope. No
   implementation detail.
@@ -72,9 +72,13 @@ Write it to the slice first, so the person approves what the board will hold:
   that status code is the only thing that makes a client refresh.
   ```
 
-Then show both in the conversation and ask for one approval. This is the only
-place this skill waits for an answer. The person who approves it owns the
-promise.
+Show both in the conversation and ask for one approval. This is the only place
+this skill waits for an answer. The person who approves it owns the promise.
+
+On approval, write exactly what they approved with `save_slice(spec=…,
+done_when=…)`. Not before: a done_when on the board moves the stage to
+`executing`, and the board would then report an unapproved promise as agreed.
+If the session ends while you wait, `add_note` the draft instead.
 
 After approval the spec is not edited again. If the promise has to change
 later, that is a new approval, not a quiet edit.
@@ -97,10 +101,15 @@ and nobody has asked to query it.
 
 Record decisions as you reach them, not as a summary afterwards.
 
-Then post a short design summary in the conversation — the shape of the change,
-the files it touches, the choices that were close calls — and **go straight on
-to `building-a-slice` without waiting.** The summary exists so the person can
-object, not so they have to approve.
+Then, in this order:
+
+1. **Send the design summary as its own message**: the shape of the change, the
+   files it touches, the close calls. Decisions on the board do not count as
+   showing it; the person is reading the conversation, not the board.
+2. **Only then start `building-a-slice`, without waiting for a reply.** The
+   summary is there so the person can object while objecting is still cheap. A
+   summary that arrives with the finished work is a report, not a chance to
+   object.
 
 If they object at any point, stop, follow them, and append a decision that says
 what they overrode and why. That disagreement is the most useful entry in the

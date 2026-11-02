@@ -16,7 +16,11 @@ Vocabulary: `${PLUGIN_ROOT}/content/domain.md`.
 `get_slice(<ref>, with_activity=true)`. Read the spec, the constraints (binding;
 they win over the spec), the done_when, the decisions, and the latest notes.
 
-- **Held by someone else** → say who holds it and stop. Do not build it.
+Its `Assignee:` line says who holds it; `get_project_state` says who you are.
+
+- **Held by someone else** → say who holds it and stop. Do not build it, even
+  if something else about the slice also looks wrong: the holder is the first
+  thing to report.
 - **Held by nobody** → `save_slice(assignee="me")`.
 - **No done_when** → the stage reads `needs_done_when`, not `executing`. Go back
   to `designing-a-slice`: a target written after the work is a description of
@@ -29,7 +33,15 @@ Refs in those subjects are decisions someone already made about this code;
 Then ask once whether you could meet the done_when and still have built the
 wrong thing. If yes, say so now.
 
-## 2. Build
+## 2. Show how you will build it
+
+Before the first edit, send one short message: the shape of the change, the
+files it touches, and the close calls, each close call also recorded with
+`append_decision`. Skip this only if this session already sent that message.
+Decisions on the board do not count; the person is reading the conversation.
+Do not wait for an answer.
+
+## 3. Build
 
 Work on a branch in its own worktree; parallel sessions are normal and the main
 checkout is not yours. Never build on main without the person's say-so.
@@ -55,7 +67,7 @@ Stop and ask when you are blocked, when the spec is unclear, or after three
 fixes for the same failure have not held — by then the approach is the likelier
 thing that is wrong. `add_note` what you hit before you stop.
 
-## 3. Review the branch
+## 4. Review the branch
 
 Use `reviewing-a-change` on the whole branch before writing evidence. Evidence
 recorded against a branch that then changes is evidence about something that no
@@ -65,10 +77,14 @@ If you cannot dispatch a reviewer, say so in one line: "No subagents here, so
 this branch goes to the PR without an agent review." The teammate's review still
 happens.
 
-## 4. Meet the done_when and write down what you saw
+## 5. Meet the done_when and write down what you saw
 
 Do the thing the done_when describes, on the surface it names, now, on the code
-that will land. Then `record_verification(slice_id, evidence)`.
+that will land. Then `record_verification(slice_id, evidence)` -- only if every
+part of it was observed. If part of it cannot be met yet, record nothing:
+`add_note` what was and was not met, and tell the person who approved the
+promise. Evidence for half a promise moves the slice to `ready_to_ship` and
+tells the next reader it is done.
 
 **Write what you saw, not what you ran.**
 
@@ -99,7 +115,7 @@ When the screen is the only witness, put a picture in the evidence with
 If the evidence stops being true, `record_verification(evidence="")` takes the
 slice back to `executing`.
 
-## 5. Open the pull request
+## 6. Open the pull request
 
 Push the branch and open a PR against the base it forked from, following the
 repo's PR template if there is one. In the body:
@@ -117,7 +133,7 @@ worktree; review fixes happen there.
 Review comments that come back go through `reviewing-a-change`. If a fix
 changes what the evidence describes, record it again.
 
-## 6. After the merge
+## 7. After the merge
 
 When the PR is merged — you see it merged, not that it was approved — run the
 full suite on the merged result if you can, then
