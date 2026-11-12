@@ -19,6 +19,9 @@ from pathlib import Path
 PAYLOAD_ROOT = Path(__file__).resolve().parent.parent
 CONTENT_DIR = PAYLOAD_ROOT / "content"
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import workspace  # noqa: E402  -- sibling module, shipped alongside this file
+
 
 def load_content(name: str) -> str:
     return (CONTENT_DIR / f"{name}.md").read_text(encoding="utf-8").strip()
@@ -114,6 +117,26 @@ def allow_stop_payload(agent: str) -> dict:
     return {}
 
 
+def session_folder(hook_input: dict) -> Path:
+    """The folder the agent session was opened in. Both Claude Code and Codex
+    put it in the hook input as `cwd`; the environment and the process cwd are
+    fallbacks for a caller that does not."""
+    folder = hook_input.get("cwd") or os.environ.get("CLAUDE_PROJECT_DIR") or os.getcwd()
+    return Path(folder)
+
+
+def primer_with_workspace(text: str, hook_input: dict) -> str:
+    """The primer, plus which board this session writes to and where that came
+    from (TP-331). The connection's header names the board without the model's
+    help; this line is what lets a person -- or the agent -- see it, and catch
+    a `.tuckit` copied from the wrong repository."""
+    try:
+        line = workspace.describe(session_folder(hook_input))
+    except OSError:
+        return text
+    return f"{text}\n\n{line}"
+
+
 def extract_session_id(hook_input: dict) -> str:
     for key in ("session_id", "sessionId", "conversationId", "conversation_id", "id"):
         value = hook_input.get(key)
@@ -157,7 +180,10 @@ def main(argv=None, stdin_text: str = "") -> int:
             # reminded. Nothing is loaded, because nothing is emitted.
             print(json.dumps({}))
             return 0
-        print(json.dumps(build_start_payload(load_content(args.content), args.agent)))
+        text = load_content(args.content)
+        if args.content == "primer":
+            text = primer_with_workspace(text, hook_input)
+        print(json.dumps(build_start_payload(text, args.agent)))
         return 0
 
     text = load_content(args.content)

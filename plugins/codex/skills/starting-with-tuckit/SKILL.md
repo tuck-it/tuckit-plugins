@@ -33,6 +33,16 @@ human anything.
 
 This state check, not memory or the skill description, is the safety boundary.
 
+**Which board is this?** A repository names its tuckit workspace in a
+`.tuckit` file at its root (`workspace = "<slug>"`), and the connection sends
+it with every call. The session primer says whether one was found. If none
+was, and the account has more than one workspace, the first call is refused
+with the list of workspaces; that is not an empty board. Ask the human which
+workspace this repository belongs to, write `.tuckit` with their approval, and
+have them reconnect (a new session, or `/mcp` reconnect) — the connection reads
+the file once, when it opens. Then start this step again. The briefing's first
+line names the workspace it read; check it against what the human said.
+
 ## 2. Read and form a draft
 
 Start with the user's first request: it is evidence of the project they mean

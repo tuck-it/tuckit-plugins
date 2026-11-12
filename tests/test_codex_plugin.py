@@ -63,17 +63,20 @@ def test_codex_manifest_references_bundled_mcp():
     assert data["mcpServers"] == "./.mcp.json"
 
 
-def test_codex_mcp_json_wires_token_from_env_not_hardcoded():
-    """Bundling the MCP removes the manual config.toml step. The public repo must
-    carry no token — Codex reads it from the named env var at connect time."""
+def test_codex_mcp_json_authorizes_by_oauth_and_names_the_board_by_header():
+    """TP-331. The workspace API token this file used to read from
+    TUCKIT_MCP_TOKEN reached exactly one workspace, so Codex was one board per
+    machine. OAuth (`codex mcp login`) gives a token that reaches every
+    workspace the user is in, and the header helper names which one per
+    repository. The public repo still carries no credential of any kind."""
     server = json.loads((PLUGIN / ".mcp.json").read_text())["mcpServers"]["tuckit"]
     assert server["type"] == "streamable_http"
     assert "://" in server["url"]                       # a real remote endpoint (public, not a secret)
-    assert server["bearer_token_env_var"] == "TUCKIT_MCP_TOKEN"
-    # No hardcoded credential anywhere in the server entry.
+    assert "bearer_token_env_var" not in server
+    assert "http_headers" not in server                 # would risk a committed token
+    assert isinstance(server["http_headers_helper"], str)  # Codex rejects a map here
     blob = json.dumps(server)
     assert "Bearer " not in blob
-    assert "http_headers" not in server                 # would risk a committed token
 
 
 def test_codex_skill_points_at_plugin_root_content():

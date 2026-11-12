@@ -115,12 +115,15 @@ def build_agent(agent: str) -> list:
 
     written += _mirror_files(SHARED / "content", dst / "content")
 
-    emit_src = SHARED / "scripts" / "emit.py"
-    emit_dst = dst / "scripts" / "emit.py"
-    emit_dst.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copyfile(emit_src, emit_dst)
-    shutil.copymode(emit_src, emit_dst)
-    written.append(emit_dst)
+    # emit.py and the modules it imports (workspace.py, TP-331) travel together:
+    # the hook runs emit.py from <plugin>/scripts/, and its imports resolve
+    # from that same folder.
+    for script_src in sorted((SHARED / "scripts").glob("*.py")):
+        script_dst = dst / "scripts" / script_src.name
+        script_dst.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(script_src, script_dst)
+        shutil.copymode(script_src, script_dst)
+        written.append(script_dst)
 
     written += _mirror_skills(dst / "skills", token)
 

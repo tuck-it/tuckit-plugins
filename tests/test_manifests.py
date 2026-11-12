@@ -210,3 +210,41 @@ def test_agy_mcp_config_is_a_separate_file_and_carries_no_credential():
     blob = json.dumps(servers).lower()
     for marker in ("bearer ", "authorization", "secret", "password", "token", "api_key"):
         assert marker not in blob, f"mcp_config must not carry {marker!r}"
+
+
+# --- which board: the URL never says, the repository does (TP-331) ----------
+
+
+def _committed_mcp_urls():
+    claude = json.loads((CLAUDE / ".claude-plugin" / "plugin.json").read_text())
+    yield "claude default", claude["userConfig"]["mcp_url"]["default"]
+    yield "codex", json.loads((CODEX / ".mcp.json").read_text())["mcpServers"]["tuckit"]["url"]
+    yield "antigravity", json.loads((ANTIGRAVITY / "mcp_config.json").read_text())["mcpServers"]["tuckit"]["serverUrl"]
+    for remote in json.loads((ROOT / "server.json").read_text()).get("remotes", []):
+        yield "server.json", remote["url"]
+
+
+@pytest.mark.parametrize("where,url", list(_committed_mcp_urls()))
+def test_no_committed_mcp_url_names_a_workspace(where, url):
+    """A workspace in the URL is what made one machine one board: Claude Code
+    stores plugin config per user, never per project, so whatever slug the URL
+    carried applied to every repository. The board is named by each
+    repository's `.tuckit` and travels as a header instead."""
+    assert re.fullmatch(r"https://[^/]+/mcp", url), f"{where}: {url}"
+
+
+def test_both_first_class_agents_send_the_same_header_helper():
+    """One rule, inlined into both manifests because neither agent can point
+    its helper at a file inside the plugin. Claude Code runs it in the plugin
+    folder, so it is handed the project folder; Codex runs it in the session
+    folder and substitutes nothing."""
+    import sys
+    sys.path.insert(0, str(ROOT / "shared" / "scripts"))
+    import workspace
+
+    claude = json.loads((CLAUDE / ".claude-plugin" / "plugin.json").read_text())
+    codex = json.loads((CODEX / ".mcp.json").read_text())
+    assert claude["mcpServers"]["tuckit"]["headersHelper"] == workspace.helper_command(
+        project_dir_arg='"${CLAUDE_PROJECT_DIR}"'
+    )
+    assert codex["mcpServers"]["tuckit"]["http_headers_helper"] == workspace.helper_command()

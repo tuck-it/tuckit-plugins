@@ -112,11 +112,11 @@ board, your browser opens to sign in. There is no token to paste.
 codex plugin marketplace add tuck-it/tuckit-plugins
 ```
 
-Then in a session, `/plugins` → **tuckit** → install → enable. Codex needs a
-token, which you create in tuckit under **Settings > Access tokens**:
+Then in a session, `/plugins` → **tuckit** → install → enable, and sign in
+once in your browser:
 
 ```bash
-export TUCKIT_MCP_TOKEN="<YOUR_TOKEN>"    # add to your shell profile to keep it
+codex mcp login tuckit
 ```
 
 ### Antigravity CLI
@@ -131,10 +131,28 @@ cannot see the board at all.
 Use the URL above as written. Pointing `agy` at the repository root installs
 the Claude Code plugin as well, and the two break each other's hooks.
 
+### Tell each repository which board it uses
+
+If you belong to more than one tuckit workspace, put a `.tuckit` file at the
+root of each repository:
+
+```
+workspace = "<your-workspace-slug>"
+```
+
+The plugin sends that name with every call, so sessions in different
+repositories write to different boards at the same time, all from one sign-in.
+Without the file, tuckit refuses to guess and says so. Commit it and your
+teammates land on the same board. With a single workspace you can skip this.
+
+The file is read when the connection opens. After changing it, start a new
+session.
+
 ### Check it works
 
 Start a new session and ask "what's the state of this project?". The agent
-should answer from your board.
+should answer from your board, and the first line of its briefing names the
+workspace.
 
 <details>
 <summary>Troubleshooting and other setups</summary>
@@ -144,11 +162,16 @@ should answer from your board.
 - Not picked up: `/reload-plugins`, then `/plugin list`.
 - Your own MCP URL, without the prompt:
   `claude plugin install tuckit@tuckit-plugins --scope user --config mcp_url="<YOUR_MCP_URL>"`.
+  Leave the workspace out of it: Claude Code keeps this setting for your whole
+  machine, so a workspace in the URL would put every repository on that one
+  board. An older install may have saved one; if calls from another
+  repository are refused, delete the `"tuckit@tuckit-plugins"` entry under
+  `"pluginConfigs"` in `~/.claude/settings.json` and restart Claude Code.
 - A server you added yourself with `claude mcp add tuckit` takes precedence
   over the plugin's.
 
 **Codex CLI**
-- A different workspace URL: edit `url` in `plugins/codex/.mcp.json`.
+- A self-hosted server: edit `url` in `plugins/codex/.mcp.json`.
 - Codex has no session-end hook that can reach the model, so the session-start
   text asks it to tidy the board when it finishes.
 - The hooks were checked against codex-cli 0.154.0; the bundled `.mcp.json` has
@@ -156,8 +179,11 @@ should answer from your board.
 
 **Antigravity CLI**
 - Working from a clone: `agy plugin install ./plugins/antigravity`.
-- A different workspace URL: edit `serverUrl` in
+- A self-hosted server: edit `serverUrl` in
   `plugins/antigravity/mcp_config.json` before installing.
+- Antigravity cannot send the `.tuckit` name with its calls. If you belong to
+  more than one workspace, connect it to one board by hand (below) with that
+  workspace's own URL.
 - The agent cannot find tuckit: run `/mcp`. `agy mcp list` does not show
   servers that come from a plugin, so it is no evidence either way.
 - A clean reinstall: `agy plugin uninstall tuckit`, then delete
@@ -167,7 +193,9 @@ should answer from your board.
 
 **Connecting the MCP by hand**
 - Claude Code: `claude mcp add --transport http tuckit <YOUR_MCP_URL>`
-- Codex, in `~/.codex/config.toml`:
+- Codex, in `~/.codex/config.toml`, with an access token from tuckit's
+  **Settings > Access tokens**. A token reaches the one workspace it was made
+  in:
   ```toml
   [mcp_servers.tuckit]
   url = "<YOUR_MCP_URL>"

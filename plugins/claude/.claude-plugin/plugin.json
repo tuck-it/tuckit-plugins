@@ -1,13 +1,13 @@
 {
   "name": "tuckit",
   "description": "Use tuckit as your project's single source of truth: domain knowledge, board-freshness hooks, and a design->execute->verify->ship workflow that writes every artifact to the board instead of to docs/. A replacement for Superpowers' planning skills, not a companion to them.",
-  "version": "0.32.0",
+  "version": "0.33.0",
   "license": "MIT",
   "userConfig": {
     "mcp_url": {
       "type": "string",
       "title": "tuckit MCP URL",
-      "description": "Your workspace's MCP endpoint. Leave the default for tuckit Cloud; set your own only if yours differs. Authorization happens in your browser on first use \u2014 no token to paste.",
+      "description": "tuckit's MCP endpoint. Leave the default for tuckit Cloud; set your own only if you self-host. Do not put a workspace in it: each repository names its board in a .tuckit file, so one login serves every project on this machine. Authorization happens in your browser on first use \u2014 no token to paste.",
       "required": false,
       "default": "https://app.tuckit.dev/mcp"
     }
@@ -15,7 +15,8 @@
   "mcpServers": {
     "tuckit": {
       "type": "http",
-      "url": "${user_config.mcp_url}"
+      "url": "${user_config.mcp_url}",
+      "headersHelper": "python3 -c \"import json,pathlib,re,sys;d=pathlib.Path(sys.argv[1] if len(sys.argv)>1 and sys.argv[1] else '.').resolve();f=next((p/'.tuckit' for p in [d,*d.parents] if (p/'.tuckit').is_file()),None);m=f and re.search(r'^\\s*workspace\\s*=\\s*\\x22([a-z0-9][a-z0-9-]{0,99})\\x22[ \\t]*(?:\\r?\\n|\\Z)',f.read_text(errors='replace'),re.M);print(json.dumps({} if f is None else {'X-Tuckit-Workspace':m.group(1) if m else '!unreadable '+str(f).encode('ascii','backslashreplace').decode()}))\" \"${CLAUDE_PROJECT_DIR}\""
     }
   }
 }
