@@ -21,37 +21,68 @@
 
 ---
 
-## What it does
-
 [tuckit](https://tuckit.dev) is a project board that you and your coding agents
 share. You use it in the browser; your agent uses the same board over MCP.
 
-This plugin teaches your agent to work through that board. You decide what gets
-built and what "done" means. The agent works out how, builds it, and hands you a
-pull request. Everything it decided along the way is written on the board, not
+This plugin changes how your agent takes on work. **You decide what gets built
+and what "done" means. The agent works out how, builds it, and hands you a pull
+request.** Everything it decided along the way is written on the board, not
 lost in a chat log.
 
-![One agent session: the agent reads project state, briefs you, finishes the launch blocker, saves a TODO it discovered, and raises the one decision it cannot make itself](docs/media/agent-session.gif)
+## Building one feature, start to finish
 
-## What a piece of work looks like
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/media/workflow-dark.svg">
+    <img src="docs/media/workflow.svg" alt="How one feature gets built: you ask, the agent asks what's in scope, you approve the promise once, the agent builds, reviews, checks and opens a pull request, a teammate merges, and the board marks it shipped" width="880">
+  </picture>
+</p>
 
-1. **You ask.** "Build login."
-2. **It asks back, only if the request is vague.** Who is it for, what is in and
-   out, what would count as working. Not which library to use.
-3. **You approve once.** It shows what it will build and why, and what you would
-   see when it is done. That is the only time it waits for you.
-4. **It builds.** Before writing code it tells you its plan and keeps going. Each
-   choice it makes is recorded on the board, so you can object at any point.
-5. **It checks and opens a PR.** It tests what it promised, writes down what it
-   actually saw, and opens a pull request.
-6. **A teammate reviews and merges.** The board marks the work shipped.
+Say your app has no login yet, and you type:
 
-Anything it notices along the way but does not do goes into the board's Inbox as
-a note, for you to file or dismiss later.
+> **You:** Add login.
 
-**Working in a team?** Each person installs the plugin and points it at the same
+**1. It asks before it guesses.** "Login" could mean a lot of things, so the
+agent reads your code and asks only what changes the outcome:
+
+> **Agent:** Should each user see only their own notes, or does everyone share
+> one list? And do people sign up themselves, or do you create the accounts?
+
+It does not ask which library to use or how to store passwords. That part is
+its job.
+
+**2. You approve one thing: the promise.** The agent writes down what it will
+build and why, and what you would see when it is done:
+
+> **What:** The notes API requires login. Accounts come from your config.
+> Everyone shares one list. Sign-up and password reset are out of scope.
+>
+> **Done when:** Calling the API without a valid token gets a 401 and changes
+> nothing. A wrong password gets a 401. The right one gets a token that works.
+
+You say yes. This is the only time the agent stops and waits for you.
+
+**3. It builds, and tells you how before it starts.** A short message with its
+plan, then it gets on with it on a branch. Each real choice it makes ("random
+tokens kept in memory, not signed ones, because...") is recorded on the board.
+If you disagree with any of them, say so and it changes course.
+
+**4. It checks its own work.** A second agent reviews the branch. Then it does
+what the promise describes against the running app and writes down what it
+actually saw, including anything it could not check.
+
+**5. It hands you a pull request.** A teammate reviews and merges it, and the
+board marks the work shipped.
+
+Anything the agent noticed along the way but did not do, say a flaky test,
+lands in the board's Inbox as a short note for you to file or throw away later.
+
+**In a team,** everyone installs the plugin and points it at the same
 workspace. An agent claims a piece of work before it starts, and leaves work
 someone else has claimed alone.
+
+**Small things skip step 2.** For a typo or a version bump, the agent writes
+the promise itself and goes straight to the pull request.
 
 ## Install
 
@@ -148,9 +179,9 @@ The agent picks the right one on its own. You can also call any of them by name.
 | Skill | When it runs |
 |---|---|
 | **`starting-with-tuckit`** | Once, when your board is empty. Proposes the first Areas and work for you to approve. |
-| **`designing-a-slice`** | A new request. Turns it into something you approve: what, why, and how you would know it is done. |
-| **`building-a-slice`** | Builds what you approved, checks it, and opens the PR. Marks it shipped after the merge. |
-| **`reviewing-a-change`** | Gets a second agent to review the branch, and handles review comments. |
+| **`designing-a-slice`** | Steps 1–2 above: turns a request into a promise you approve. |
+| **`building-a-slice`** | Steps 3–5: builds what you approved, checks it, opens the PR, marks it shipped after the merge. |
+| **`reviewing-a-change`** | The second-agent review in step 4, and handling review comments on the PR. |
 | **`reconciling-the-board`** | End of a session. Tidies the work you hold and asks before adding anything new. |
 | **`tending-the-board`** | When the Inbox or the board has piled up. Proposes what to file or close, in one list. |
 | **`tuckit-domain`** | Reference for how the board works. |
@@ -158,14 +189,6 @@ The agent picks the right one on its own. You can also call any of them by name.
 The plugin also adds short hooks: a note at the start of each session that this
 project is tracked in tuckit, and a one-line reminder on each request to put
 work on the board before changing code.
-
-## Coming from Superpowers?
-
-Some of these skills started as forks of
-[Superpowers](https://github.com/obra/superpowers) (MIT; see [NOTICE](NOTICE)).
-The difference is that designs and decisions go on the board instead of into
-markdown files, and you are asked to approve far less. Use this plugin instead
-of Superpowers, not alongside it: both try to handle the same requests.
 
 ## Contributing
 
@@ -183,4 +206,4 @@ time something is added.
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
