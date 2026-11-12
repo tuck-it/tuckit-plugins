@@ -3,7 +3,7 @@
     "tuckit": {
       "type": "streamable_http",
       "url": "https://app.tuckit.dev/mcp",
-      "http_headers_helper": "python3 -c \"import json,pathlib,re,sys;d=pathlib.Path(sys.argv[1] if len(sys.argv)>1 and sys.argv[1] else '.').resolve();f=next((p/'.tuckit' for p in [d,*d.parents] if (p/'.tuckit').is_file()),None);m=f and re.search(r'^\\s*workspace\\s*=\\s*\\x22([a-z0-9][a-z0-9-]{0,99})\\x22[ \\t]*(?:\\r?\\n|\\Z)',f.read_text(errors='replace'),re.M);print(json.dumps({} if f is None else {'X-Tuckit-Workspace':m.group(1) if m else '!unreadable '+str(f).encode('ascii','backslashreplace').decode()}))\""
+      "http_headers_helper": "python3 -c \"import json,os,pathlib,re,sys;d=pathlib.Path(sys.argv[1] if len(sys.argv)>1 and sys.argv[1] else '.').resolve();f=next((p/'.tuckit' for p in [d,*d.parents] if os.path.lexists(p/'.tuckit')),None);t=f.read_text(errors='replace') if f is not None and f.is_file() and os.access(f,os.R_OK) else '';m=re.search(r'^\\s*workspace\\s*=\\s*\\x22([a-z0-9][a-z0-9-]{0,99})\\x22[ \\t]*(?:\\r?\\n|\\Z)',t,re.M);print(json.dumps({} if f is None else {'X-Tuckit-Workspace':m.group(1) if m else '!unreadable '+str(f).encode('ascii','backslashreplace').decode()}))\""
     }
   }
 }

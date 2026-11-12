@@ -245,6 +245,6 @@ def test_both_first_class_agents_send_the_same_header_helper():
     claude = json.loads((CLAUDE / ".claude-plugin" / "plugin.json").read_text())
     codex = json.loads((CODEX / ".mcp.json").read_text())
     assert claude["mcpServers"]["tuckit"]["headersHelper"] == workspace.helper_command(
-        project_dir_arg='"${CLAUDE_PROJECT_DIR}"'
+        project_dir_arg=workspace.CLAUDE_PROJECT_DIR_ARG
     )
     assert codex["mcpServers"]["tuckit"]["http_headers_helper"] == workspace.helper_command()

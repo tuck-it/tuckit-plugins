@@ -25,6 +25,7 @@ Standard library only.
 """
 from __future__ import annotations
 
+import os
 import re
 from pathlib import Path
 
@@ -42,31 +43,55 @@ _LINE = re.compile(r'^\s*workspace\s*=\s*"([a-z0-9][a-z0-9-]{0,99})"[ \t]*(?:\r?
 # no backtick, and no doubled backslash. Claude Code passes the project folder
 # as argv[1] (its helper runs in the plugin folder); Codex passes nothing and
 # runs it in the session folder.
+#
+# It must not fail on a bad file, only describe it: when a helper exits
+# non-zero, Claude Code connects WITHOUT the header (measured on 2.1.319).
+# That is still safe -- no header is refused for anyone with two workspaces --
+# but it would hide which file was wrong.
 HELPER_SOURCE = (
-    "import json,pathlib,re,sys;"
+    "import json,os,pathlib,re,sys;"
     "d=pathlib.Path(sys.argv[1] if len(sys.argv)>1 and sys.argv[1] else '.').resolve();"
-    "f=next((p/'.tuckit' for p in [d,*d.parents] if (p/'.tuckit').is_file()),None);"
-    "m=f and re.search(r'^\\s*workspace\\s*=\\s*\\x22([a-z0-9][a-z0-9-]{0,99})\\x22[ \\t]*(?:\\r?\\n|\\Z)',"
-    "f.read_text(errors='replace'),re.M);"
+    "f=next((p/'.tuckit' for p in [d,*d.parents] if os.path.lexists(p/'.tuckit')),None);"
+    "t=f.read_text(errors='replace') if f is not None and f.is_file() and os.access(f,os.R_OK) else '';"
+    "m=re.search(r'^\\s*workspace\\s*=\\s*\\x22([a-z0-9][a-z0-9-]{0,99})\\x22[ \\t]*(?:\\r?\\n|\\Z)',t,re.M);"
     "print(json.dumps({} if f is None else {'X-Tuckit-Workspace':m.group(1) if m else "
     "'!unreadable '+str(f).encode('ascii','backslashreplace').decode()}))"
 )
 
 
+# Claude Code pastes the project path into the helper string as raw text and
+# hands the result to a shell (measured on 2.1.319: a folder named
+# `x$(touch y)` ran `touch y` when the variable sat in double quotes). Single
+# quotes stop that. A path that itself contains a single quote then breaks the
+# shell line, the helper fails, and the connection goes out with no header --
+# refused for anyone with two workspaces, never landed on a guessed board.
+CLAUDE_PROJECT_DIR_ARG = "'${CLAUDE_PROJECT_DIR}'"
+
+
 def helper_command(*, project_dir_arg: str = "") -> str:
     """The exact string a manifest carries. `project_dir_arg` is appended as
-    the script's argv[1] -- Claude Code's `"${CLAUDE_PROJECT_DIR}"`."""
+    the script's argv[1] -- Claude Code's CLAUDE_PROJECT_DIR_ARG."""
     command = f'python3 -c "{HELPER_SOURCE}"'
     return f"{command} {project_dir_arg}" if project_dir_arg else command
 
 
 def find_file(start: Path) -> Path | None:
+    """The nearest `.tuckit` entry of ANY kind -- a directory, a dangling
+    symlink, a file nobody can read. Stopping only at readable files would let
+    a broken one be skipped, and the walk would carry on up to some other
+    folder's board and succeed there."""
     start = start.resolve()
     for folder in (start, *start.parents):
         candidate = folder / FILENAME
-        if candidate.is_file():
+        if os.path.lexists(candidate):
             return candidate
     return None
+
+
+def _read(found: Path) -> str:
+    if found.is_file() and os.access(found, os.R_OK):
+        return found.read_text(errors="replace")
+    return ""
 
 
 def lookup(start: Path) -> tuple[str | None, Path | None]:
@@ -79,7 +104,7 @@ def lookup(start: Path) -> tuple[str | None, Path | None]:
     found = find_file(start)
     if found is None:
         return None, None
-    match = _LINE.search(found.read_text(errors="replace"))
+    match = _LINE.search(_read(found))
     return (match.group(1) if match else None), found
 
 

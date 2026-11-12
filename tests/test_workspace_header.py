@@ -138,3 +138,50 @@ def test_emit_appends_the_board_to_the_primer(repo, tmp_path, monkeypatch):
     text = json.loads(out.stdout)["hookSpecificOutput"]["additionalContext"]
     assert text.startswith(emit.load_content("primer"))
     assert "`acme`" in text
+
+
+# --- a broken .tuckit stops the walk (review of TP-331) ---------------------
+
+
+def _broken_entries(repo):
+    """Each a `.tuckit` that is there but cannot be read as a board name."""
+    yield "dangling symlink", lambda: (repo / ".tuckit").symlink_to(repo / "nowhere")
+    yield "directory", lambda: (repo / ".tuckit").mkdir()
+    yield "unreadable", lambda: ((repo / ".tuckit").write_text('workspace = "inner"\n'),
+                                 (repo / ".tuckit").chmod(0))
+
+
+@pytest.mark.parametrize("kind", ["dangling symlink", "directory", "unreadable"])
+@pytest.mark.parametrize("run", [_run_claude, _run_codex], ids=["claude", "codex"])
+def test_a_broken_file_is_not_skipped_for_a_parents_board(repo, kind, run):
+    """Skipping it would carry the walk up to the parent's `.tuckit`, and the
+    server would accept that board: a write that succeeds somewhere the
+    repository never named."""
+    (repo.parent / ".tuckit").write_text('workspace = "outer"\n')
+    dict(_broken_entries(repo))[kind]()
+    try:
+        got = run(repo / "src")
+        assert got == workspace.header(repo / "src")
+        assert got["X-Tuckit-Workspace"].startswith("!unreadable ")
+    finally:
+        if (repo / ".tuckit").is_file():
+            (repo / ".tuckit").chmod(0o644)
+
+
+def test_claude_passes_the_project_folder_in_single_quotes():
+    """Claude Code pastes the path into the string as raw text before a shell
+    runs it. In double quotes a folder named `x$(cmd)` runs `cmd`."""
+    helper = CLAUDE["mcpServers"]["tuckit"]["headersHelper"]
+    assert helper.endswith(" '${CLAUDE_PROJECT_DIR}'")
+
+
+def test_a_folder_name_cannot_run_a_command(tmp_path):
+    # The helper runs in the plugin folder, so a relative `touch` lands there.
+    marker = ROOT / "plugins" / "claude" / "tp331-injection-marker"
+    project = tmp_path / "proj$(touch tp331-injection-marker)"
+    project.mkdir()
+    try:
+        _run_claude(project)
+        assert not marker.exists()
+    finally:
+        marker.unlink(missing_ok=True)
