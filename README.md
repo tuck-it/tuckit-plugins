@@ -24,19 +24,20 @@
 [tuckit](https://tuckit.dev) is a project board that you and your coding agents
 share. You use it in the browser; your agent uses the same board over MCP.
 
-This plugin changes how your agent takes on work. **You decide what gets built
-and what "done" means. The agent works out how, builds it, and hands you a pull
-request.** Everything it decided along the way is written on the board, not
-lost in a chat log.
-
-## Building one feature, start to finish
+As agents get better at writing code, the part that stays yours is deciding
+what "done" means. This plugin is built around that. **You write down what
+would have to be true for the work to count as finished. The agent builds it,
+checks exactly those things, and writes down what it actually saw.** Both stay
+on the board, so anyone can see later what was promised and what was proven.
 
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/media/workflow-dark.svg">
-    <img src="docs/media/workflow.svg" alt="How one feature gets built: you ask, the agent asks what's in scope, you approve the promise once, the agent builds, reviews, checks and opens a pull request, a teammate merges, and the board marks it shipped" width="880">
+    <img src="docs/media/workflow.svg" alt="You write what done means as a checklist. The agent builds, checks each line, and records what it saw as evidence. When the evidence matches, the work ships. Both stay on the board." width="880">
   </picture>
 </p>
+
+## Building one feature, start to finish
 
 Say your app has no login yet, and you type:
 
@@ -67,9 +68,15 @@ plan, then it gets on with it on a branch. Each real choice it makes ("random
 tokens kept in memory, not signed ones, because...") is recorded on the board.
 If you disagree with any of them, say so and it changes course.
 
-**4. It checks its own work.** A second agent reviews the branch. Then it does
-what the promise describes against the running app and writes down what it
-actually saw, including anything it could not check.
+**4. It proves it.** A second agent reviews the branch. Then it checks each line
+of "done when" against the running app and writes down what it actually saw,
+including what it could not check:
+
+> **Evidence:** No token: 401, list unchanged. Wrong password: 401, no token.
+> Right password: token returned, notes load. Not checked: behaviour after a
+> server restart.
+
+The board will not let the work ship until this exists.
 
 **5. It hands you a pull request.** A teammate reviews and merges it, and the
 board marks the work shipped.

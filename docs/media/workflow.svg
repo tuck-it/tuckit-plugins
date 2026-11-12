@@ -1,106 +1,106 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="960" height="420" viewBox="0 0 960 420" role="img" aria-labelledby="title">
-  <title id="title">How one feature gets built with tuckit</title>
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="440" viewBox="0 0 960 440" role="img" aria-labelledby="title">
+  <title id="title">You define done. The agent proves it.</title>
   <defs>
-    <marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+    <marker id="arrow" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="7" markerHeight="7" orient="auto">
       <path d="M2 1 L6 4 L2 7" fill="none" stroke="#9aa3b0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
     </marker>
   </defs>
-  <g font-family="-apple-system, Segoe UI, Helvetica, Arial, sans-serif" text-anchor="middle">
-    <!-- Five scenes, with one highlighted decision. -->
-    <g fill="#f4f6f9" stroke="#d8dde5" stroke-width="1.5">
-      <rect x="8" y="74" width="176" height="208" rx="14"/>
-      <rect x="200" y="74" width="176" height="208" rx="14"/>
-      <rect x="584" y="74" width="176" height="208" rx="14"/>
-      <rect x="776" y="74" width="176" height="208" rx="14"/>
-    </g>
-    <rect x="392" y="74" width="176" height="208" rx="14" fill="#e3efee" stroke="#1f625e" stroke-width="2"/>
-    <rect x="439" y="34" width="82" height="26" rx="13" fill="#e3efee" stroke="#1f625e" stroke-width="1.5"/>
-    <text x="480" y="51" fill="#1f625e" font-size="13" font-weight="600">your call</text>
+  <g font-family="-apple-system, Segoe UI, Helvetica, Arial, sans-serif">
+    <text x="480" y="29" text-anchor="middle" fill="#1d2733" font-size="18" font-weight="600">You define what done means. The agent proves it, and the proof is kept.</text>
 
-    <!-- Quiet arrows keep the reading direction clear. -->
-    <g fill="none" stroke="#9aa3b0" stroke-width="1.5" stroke-linecap="round" marker-end="url(#arrow)">
-      <path d="M188 178 H196"/>
-      <path d="M380 178 H388"/>
-      <path d="M572 178 H580"/>
-      <path d="M764 178 H772"/>
-    </g>
-
-    <!-- You, with a speech bubble. -->
-    <g transform="translate(64 112)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <g fill="#e3efee" stroke="#1f625e">
-        <circle cx="19" cy="27" r="9"/>
-        <path d="M4 60 V54 C4 45 10 41 19 41 C28 41 34 45 34 54 V60 Z"/>
-      </g>
-      <path d="M37 3 H56 A7 7 0 0 1 63 10 V21 A7 7 0 0 1 56 28 H43 L35 35 V28 A7 7 0 0 1 30 21 V10 A7 7 0 0 1 37 3 Z" fill="#f4f6f9" stroke="#3b4654"/>
-      <path d="M39 12 H54 M39 19 H49" fill="none" stroke="#3b4654"/>
-    </g>
-
-    <!-- A curious, friendly robot. The question mark is drawn, too. -->
-    <g transform="translate(256 112)" fill="none" stroke="#3b4654" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M22 18 V12 M6 32 H2 V44 H6 M42 33 H46 V44 H42"/>
-      <circle cx="22" cy="9" r="3" fill="#f4f6f9"/>
-      <rect x="6" y="18" width="36" height="33" rx="10" fill="#f4f6f9"/>
-      <path d="M15 31 V34 M32 31 V34 M17 41 Q23 46 29 41 M14 60 V56 H34 V60"/>
-      <path d="M49 9 C49 1 61 1 61 9 C61 14 55 14 55 19"/>
-      <circle cx="55" cy="25" r="1" fill="#3b4654" stroke="none"/>
-    </g>
-
-    <!-- The only approval: a generous, unmistakable check. -->
-    <g transform="translate(448 112)" fill="none" stroke="#1f625e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="32" cy="32" r="28" fill="#e3efee"/>
-      <path d="M18 32 L28 42 L47 22"/>
-    </g>
-
-    <!-- The same robot, now building and inspecting. -->
-    <g transform="translate(640 112)" fill="none" stroke="#3b4654" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M22 18 V12 M6 32 H2 V44 H6 M42 33 H46 M14 60 V56 H34 V60"/>
-      <circle cx="22" cy="9" r="3" fill="#f4f6f9"/>
-      <rect x="6" y="18" width="36" height="33" rx="10" fill="#f4f6f9"/>
-      <path d="M15 31 V34 M32 31 V34 M17 41 Q23 46 29 41"/>
-      <path d="M50 5 L55 0 L63 8 L58 13 L55 10 L46 19 L42 15 L51 6 Z" fill="#f4f6f9"/>
-      <circle cx="52" cy="45" r="8" fill="#f4f6f9"/>
-      <path d="M58 51 L64 57"/>
-    </g>
-
-    <!-- Two branches join beside the teammate who merges them. -->
-    <g transform="translate(832 112)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <g fill="none" stroke="#3b4654">
-        <path d="M9 48 V14 M28 48 V41 C28 28 9 35 9 21 M4 19 L9 14 L14 19"/>
-        <circle cx="9" cy="53" r="4" fill="#f4f6f9"/>
-        <circle cx="28" cy="53" r="4" fill="#f4f6f9"/>
-      </g>
-      <g fill="#e3efee" stroke="#1f625e">
-        <circle cx="49" cy="25" r="9"/>
-        <path d="M36 60 V53 C36 45 41 41 49 41 C57 41 62 45 62 53 V60 Z"/>
-      </g>
-    </g>
-
-    <g fill="#1d2733" font-size="17" font-weight="600">
-      <text x="96" y="211">You ask</text>
-      <text x="288" y="211">It asks back</text>
-      <text x="480" y="211">You approve once</text>
-      <text x="672" y="211">It builds and checks</text>
-      <text x="864" y="211">A teammate merges</text>
-    </g>
-    <g fill="#5b6573" font-size="13">
-      <text x="96" y="239">&quot;Add login.&quot;</text>
-      <text x="288" y="239"><tspan x="288">Only what changes</tspan><tspan x="288" dy="18">the result</tspan></text>
-      <text x="480" y="239"><tspan x="480">What it builds, and how</tspan><tspan x="480" dy="18">you'll know it's done</tspan></text>
-      <text x="672" y="239"><tspan x="672">Plans, builds, gets</tspan><tspan x="672" dy="18">a review, tests</tspan></text>
-      <text x="864" y="239">Shipped</text>
-    </g>
-
-    <!-- The shared board records questions, approval, and the work. -->
+    <!-- Each promise connects to its observation, behind the agent. -->
     <g fill="none" stroke="#9aa3b0" stroke-width="1.5" stroke-dasharray="1 6" stroke-linecap="round">
-      <path d="M288 283 V332"/>
-      <path d="M480 283 V332"/>
-      <path d="M672 283 V332"/>
+      <path d="M284 180 H568"/>
+      <path d="M284 220 H568"/>
+      <path d="M284 260 H568"/>
+      <path d="M164 322 V359"/>
+      <path d="M670 322 V359"/>
     </g>
-    <rect x="48" y="332" width="864" height="62" rx="14" fill="#f4f6f9" stroke="#d8dde5" stroke-width="1.5"/>
-    <g transform="translate(71 348)" fill="none" stroke="#3b4654" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <rect width="34" height="30" rx="5"/>
-      <path d="M1 8 H33 M12 9 V29 M23 9 V29 M5 14 H8 M16 14 H19 M16 20 H19 M27 14 H30"/>
+
+    <!-- The human defines the finish line before building starts. -->
+    <rect x="24" y="88" width="280" height="234" rx="14" fill="#e3efee" stroke="#1f625e" stroke-width="1.5"/>
+    <rect x="24" y="51" width="106" height="25" rx="12.5" fill="#e3efee" stroke="#1f625e" stroke-width="1.5"/>
+    <text x="77" y="68" text-anchor="middle" fill="#1f625e" font-size="12" font-weight="600">you write this</text>
+    <text x="44" y="126" fill="#1d2733" font-size="18" font-weight="600">Done when</text>
+    <g transform="translate(242 103)" fill="none" stroke="#1f625e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="10" cy="9" r="7"/>
+      <path d="M0 37 V31 C0 24 4 21 10 21 C15 21 18 23 20 27 M5 37 V31 M14 26 L21 32 L29 26"/>
+      <rect x="23" y="15" width="20" height="27" rx="3" fill="#e3efee"/>
+      <path d="M29 15 V12 H37 V15 M29 23 H37 M29 29 H34 M35 36 L42 27"/>
     </g>
-    <text x="125" y="368" text-anchor="start" fill="#5b6573" font-size="15">The board keeps every decision, the promise, and what was checked.</text>
+    <path d="M44 151 H284" fill="none" stroke="#1f625e" stroke-width="1" stroke-opacity="0.25"/>
+    <g fill="none" stroke="#1f625e" stroke-width="2">
+      <rect x="44" y="173" width="14" height="14" rx="3"/>
+      <rect x="44" y="213" width="14" height="14" rx="3"/>
+      <rect x="44" y="253" width="14" height="14" rx="3"/>
+    </g>
+    <g fill="#1d2733" font-size="14">
+      <text x="70" y="185">No token → 401</text>
+      <text x="70" y="225">Wrong password → 401</text>
+      <text x="70" y="265">Right password → works</text>
+    </g>
+
+    <!-- A friendly builder; the card masks the dotted lines behind it. -->
+    <rect x="362" y="126" width="140" height="151" rx="14" fill="#f4f6f9" stroke="#d8dde5" stroke-width="1.5"/>
+    <g transform="translate(392 151)" fill="none" stroke="#3b4654" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M30 23 V15 M9 38 H3 V53 H9 M51 38 H57 M19 66 V84 M41 66 V84 M14 84 H24 M36 84 H46"/>
+      <circle cx="30" cy="11" r="4" fill="#f4f6f9"/>
+      <rect x="9" y="23" width="42" height="38" rx="11" fill="#f4f6f9"/>
+      <path d="M20 37 V41 M40 37 V41 M23 49 Q30 56 37 49"/>
+      <rect x="17" y="66" width="26" height="13" rx="4" fill="#f4f6f9"/>
+      <path d="M57 46 L64 39 M61 35 L68 28 C66 24 67 19 71 16 L72 23 L78 24 L82 20 C84 27 79 33 73 32 L66 39 Z" fill="#f4f6f9"/>
+    </g>
+    <text x="432" y="300" text-anchor="middle" fill="#5b6573" font-size="13"><tspan x="432">builds, then checks each line</tspan></text>
+
+    <!-- Direction arrows sit above the three row-to-row connectors. -->
+    <g fill="none" stroke="#9aa3b0" stroke-width="1.5" stroke-linecap="round" marker-end="url(#arrow)">
+      <path d="M314 145 H350"/>
+      <path d="M512 145 H536"/>
+      <path d="M802 220 H814"/>
+    </g>
+
+    <!-- Evidence records observed results, including a limit of the checks. -->
+    <rect x="548" y="88" width="244" height="234" rx="14" fill="#f4f6f9" stroke="#d8dde5" stroke-width="1.5"/>
+    <rect x="548" y="51" width="151" height="25" rx="12.5" fill="#f4f6f9" stroke="#d8dde5" stroke-width="1.5"/>
+    <text x="623.5" y="68" text-anchor="middle" fill="#5b6573" font-size="12" font-weight="600">the agent writes this</text>
+    <text x="568" y="126" fill="#1d2733" font-size="18" font-weight="600">Evidence</text>
+    <g transform="translate(731 102)" fill="none" stroke="#3b4654" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 1 H23 L33 11 V38 H4 Z M23 1 V11 H33 M11 16 H24 M11 23 H19 M11 30 H16"/>
+      <circle cx="31" cy="30" r="9" fill="#f4f6f9"/>
+      <path d="M37 37 L43 43"/>
+    </g>
+    <path d="M568 151 H772" fill="none" stroke="#d8dde5" stroke-width="1"/>
+    <g fill="#1f625e">
+      <rect x="568" y="173" width="14" height="14" rx="3"/>
+      <rect x="568" y="213" width="14" height="14" rx="3"/>
+      <rect x="568" y="253" width="14" height="14" rx="3"/>
+    </g>
+    <g fill="none" stroke="#e3efee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M571 180 L574 183 L579 177"/>
+      <path d="M571 220 L574 223 L579 217"/>
+      <path d="M571 260 L574 263 L579 257"/>
+    </g>
+    <g fill="#1d2733" font-size="14">
+      <text x="594" y="185">401 seen <tspan fill="#1f625e">✓</tspan></text>
+      <text x="594" y="225">401 seen <tspan fill="#1f625e">✓</tspan></text>
+      <text x="594" y="265">token worked <tspan fill="#1f625e">✓</tspan></text>
+    </g>
+    <text x="568" y="301" fill="#5b6573" font-size="14">not checked: Safari</text>
+
+    <!-- A match opens the shipping gate. -->
+    <rect x="824" y="165" width="128" height="110" rx="14" fill="#f4f6f9" stroke="#d8dde5" stroke-width="1.5"/>
+    <g transform="translate(870 184)" fill="none" stroke="#3b4654" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M0 29 V3 H36 V29 M0 10 H36 M6 29 H0 M30 29 H36"/>
+      <path d="M10 20 L16 26 L27 15" stroke="#1f625e"/>
+    </g>
+    <text x="888" y="248" text-anchor="middle" fill="#1d2733" font-size="13" font-weight="600">matches → ships</text>
+
+    <!-- Both artifacts stay together for later inspection. -->
+    <rect x="24" y="359" width="920" height="57" rx="14" fill="#f4f6f9" stroke="#d8dde5" stroke-width="1.5"/>
+    <g transform="translate(44 373)" fill="none" stroke="#3b4654" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect width="34" height="29" rx="5"/>
+      <path d="M1 8 H33 M12 9 V28 M23 9 V28 M5 14 H8 M16 14 H19 M16 20 H19 M27 14 H30"/>
+    </g>
+    <text x="95" y="392" fill="#5b6573" font-size="13">Both stay on the board, so anyone can check later what was promised and what was seen.</text>
   </g>
 </svg>
