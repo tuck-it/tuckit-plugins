@@ -1,108 +1,80 @@
 ---
 name: reviewing-a-change
-description: "Use when a change needs a reviewer before it goes further — a whole branch before its pull request, or any range someone asks about — and when review feedback arrives from a reviewer subagent, a teammate, or a PR comment. Dispatches a reviewer with only the change and the requirements, then checks each finding against the code and routes every one so none is lost in the chat log."
+description: "Use when a change needs a reviewer before it goes further (your own branch before its pull request, or any range someone asks about), when review feedback arrives from a reviewer subagent, a teammate or a PR comment, and when a person wants help reviewing a teammate's pull request. Reviews against the slice's promise and routes every finding so none is lost in the chat log."
 ---
 
 # Reviewing a Change
 
-Two halves: getting a review, and acting on one. Both apply whether the
-reviewer is a subagent you dispatched or a teammate commenting on the PR.
+Three cases: getting a review of your own change, acting on a review, and
+helping a person review someone else's pull request.
 
-Vocabulary: `~/.gemini/config/plugins/tuckit/content/domain.md`.
+Reference: `~/.gemini/config/plugins/tuckit/content/domain.md`.
 
 ## Getting a review
 
-A review is a subagent you dispatch, not a pass over your own diff. Give it the
-change and the requirements, and **never your session history**: a reviewer who
-can see how you got here reviews your reasoning instead of the change.
+A review is a separate reviewer (a subagent you dispatch), not a pass over your
+own diff. Give it the change and the requirements, **never your session
+history**: a reviewer who can see how you got here reviews your reasoning
+instead of the change.
 
-Write the diff to a file first, so it never passes through your context:
+Dispatch with [reviewer-prompt.md](reviewer-prompt.md). Hand it the base and
+head of the change (the base is where the branch forked, not the previous
+commit), the slice ref, and the slice's `constraints` verbatim. Do not
+pre-judge: never tell a reviewer to ignore something or cap a severity. Pick a
+capable model for a whole branch and a cheaper one for a small fix round.
 
-```bash
-BASE=$(git merge-base <base-branch> HEAD)   # never HEAD~1
-OUT="$WORK/review-$(git rev-parse --short "$BASE")..$(git rev-parse --short HEAD).diff"
-{ echo "## Commits";       git log --oneline "$BASE"..HEAD
-  echo; echo "## Files changed"; git diff --stat "$BASE"..HEAD
-  echo; echo "## Diff";     git diff -U10 "$BASE"..HEAD
-} > "$OUT"
-```
-
-`$WORK` is any ignored scratch path. For uncommitted work, use
-`git diff -U10 HEAD` and leave the head blank.
-
-Dispatch with [reviewer-prompt.md](reviewer-prompt.md). Hand it the diff path,
-the slice ref (it reads the spec and done_when itself), and the slice's
-`constraints` copied verbatim. Do not pre-judge: never tell a reviewer to ignore
-something or cap a severity.
-
-Name the model. A branch review gets the most capable one available; a small
-fix round gets a cheaper one. An omitted model silently inherits the session's.
-
-The verdict is information, not an instruction. What happens to the branch is
-decided by you and the people you work with.
+The verdict is information, not an instruction.
 
 ## Acting on a review
 
-Read the whole review before acting on any item; item 4 can change item 2.
-Then for each finding:
+Read the whole review before acting on any item. Then for each finding:
 
-1. **Check it against the code.** The reviewer read a diff; you can read the
-   repository. Is it true here? Does fixing it break something? Was there a
-   reason for the current code?
-2. **If any item is unclear, ask about all the unclear ones in one message
-   before fixing anything.** Findings interlock.
-3. **Fix, push back, or route it** — see below.
+1. **Check it against the code.** Is it true here? Does fixing it break
+   something? Was there a reason for the current code?
+2. **If anything is unclear, ask about all of it in one message** before fixing.
+3. **Fix it, push back with evidence, or route it** (below).
 
-No performative agreement ("You're absolutely right!", thanks). Restate the
-point technically, push back with evidence, or just fix it. When your pushback
-turns out wrong, say so in one sentence and fix it.
-
-Fix blocking items first (breakage, security, data loss), then simple ones,
-then complex ones, testing after each. Before building out something a finding
-calls incomplete, check whether anything calls it.
-
-When a disagreement is about direction rather than code, it belongs to the
-person who owns the slice's promise. Bring them in.
+Restate the point technically or just fix it; no performative agreement. When
+your pushback turns out wrong, say so in one sentence and fix it. A
+disagreement about direction rather than code belongs to the person who
+approved the promise.
 
 ### Where each finding goes
 
-Every finding leaves through one of four doors. A finding that only appears in
-your closing message has gone nowhere.
+A finding that only appears in your closing message has gone nowhere.
 
-1. **Fix it on this branch** — it is Critical or Important and inside this
-   change, or it is inside this change and fixing it is smaller than writing it
-   down.
-2. **Push back** — you checked and it does not hold here. If the next reviewer
-   would raise it again, it also goes in the note below.
-3. **One line in a note** — true, but nobody will act on it. All of these go in
-   a single `add_note` on the slice, not one each.
-4. **Propose a capture** — someone will actually pick it up later. Collect these
-   for the end-of-session batch; nothing is created until the person approves.
+1. **Fix it on this branch**: it is serious and inside this change, or fixing
+   it is smaller than writing it down.
+2. **Push back**: you checked and it does not hold here.
+3. **One line in a note**: true, but nobody will act on it. All of these go in
+   a single `add_note` on the slice.
+4. **Propose a capture**: someone will actually pick it up. Collect these for
+   the end-of-session batch in **`reconciling-the-board`**.
 
 Choose between 3 and 4 by asking whether anyone **will** do it, not whether
-someone should. Read `get_project_state` before you answer: when
-`inbox.open_count` is 20 or more, or `totals.drop_ratio` is 0.5 or higher, a
-finding only becomes a capture if you can name who will do it and when. A board
-once reached 140 open slices this way and 78% of them were closed unread.
+someone should. A rule the next person must not break also goes in
+`constraints`.
 
-A rule the next person must not break goes in `constraints` as well.
+Reply to a PR comment inside its thread, not as a new top-level comment. If
+the fixes change what the recorded evidence describes, record it again.
 
-With no slice behind the review, door 3 has nowhere to land: send those items
-to door 4 or put them to the person.
+## Reviewing a teammate's pull request
 
-### PR comments
+The person is the reviewer; you help them see it. Their approval is the
+confirmation, so you never approve or merge on their behalf.
 
-Reply inside the comment's thread, not as a new top-level comment:
-
-```bash
-gh api repos/{owner}/{repo}/pulls/{pr}/comments/{id}/replies -f body="…"
-```
-
-If the fixes change what the recorded evidence describes, record the evidence
-again before asking for another look.
+1. Find the slice from the PR (its ref in the title, body or commits) and read
+   it with `get_slice`. Review against its spec, done_when and decisions. If
+   there is no slice, review against what the PR says it does, and say so.
+2. Dispatch a reviewer as above, or read the diff yourself if you cannot.
+3. Give the person a short verdict first: does the change keep the promise,
+   and does the evidence actually show it? Then the findings that matter, each
+   with file and line, worst first. Leave out style the repository's tools
+   already enforce.
+4. Post review comments only when the person asks, in their words.
 
 ---
 
-Forked from superpowers (MIT, © 2025 Jesse Vincent) — `requesting-code-review`
+Forked from superpowers (MIT, © 2025 Jesse Vincent): `requesting-code-review`
 and `receiving-code-review`, merged and rewritten so every finding lands on the
 board or in the code.

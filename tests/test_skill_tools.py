@@ -32,6 +32,7 @@ SKILL_TOOLS = {
     "save_slice",
     "append_decision",
     "record_verification",
+    "approve_promise",
     "add_note",
     "append_priority_policy",
     "create_capture",

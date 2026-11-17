@@ -1,144 +1,102 @@
 ---
 name: designing-a-slice
-description: "Use before building anything in a tuckit-tracked workspace that has no agreed promise yet — a new feature, a behavior change, a vague request like 'build login'. Questions the request until it can be written as a spec (what and why) and a done_when, gets the designer's one approval on that promise, then designs the work itself and records each choice as a decision."
+description: "Use before building anything in a tuckit-tracked workspace that has no approved promise yet (stage needs_design, needs_done_when or needs_approval): a new feature, a behavior change, a vague request like 'build login'. Questions the request until it can be written as a spec and a done_when, records the designer's approval, then designs the work and records each choice as a decision."
 ---
 
 # Designing a Slice
 
 The person agrees **what** and **how anyone would know it is done**. You decide
-**how**. This skill gets the first two out of them with as few questions as
-possible, puts them in front of them once, and then gets out of their way.
+**how**. Get the first two out of them with as few questions as possible, put
+them in front of them once, record their yes, and then get out of their way.
 
-Vocabulary: `${CLAUDE_PLUGIN_ROOT}/content/domain.md`.
-
-Nothing is built before the work exists on the board and its promise is
-approved. The small lane below is the one exception to the approval, never to
-the board.
+Reference: `${CLAUDE_PLUGIN_ROOT}/content/domain.md`, including how to write for the board.
 
 ## 1. Find or take the slice
 
-Search before creating: `list_slices(query=…)` for slices and `list_captures()`
-for the Inbox, which is a different set. The idea may already be on the board.
+Search first: `list_slices(query=…)` for slices and `list_captures()` for the
+Inbox, which is a different set.
 
-- **A slice covers it.** Read who holds it: the `Assignee:` line of
-  `get_slice`. If someone else does, say who and stop: it is theirs. Otherwise take it with `save_slice(assignee="me")`.
+- **A slice covers it.** If `get_slice` shows someone else on the `Assignee:`
+  line, say who and stop. Otherwise take it with `save_slice(assignee="me")`.
 - **A capture covers it.** `triage_capture(<capture_id>, "promote",
   area_id=<area>)`, then take the new slice.
-- **Nothing covers it.** `save_slice(title=…, area_id=…, assignee="me")` with
-  an empty spec. Pick the Area from `list_areas()`; it is a reversible choice,
-  so do not stall on it.
-
-Name the slice to the person by ref and title.
+- **Nothing covers it.** `save_slice(title=…, area_id=…, assignee="me")` with an
+  empty spec. Pick the Area from `list_areas()`; it is reversible, so do not
+  stall on it.
 
 ## 2. Look before you ask
 
-`get_project_state`, then the code the work would touch, its recent commits and
-any slice that already owns part of it. Many questions answer themselves here,
-and the rest get sharper. Investigation is not design and needs nobody's yes.
-
-If the request covers several independent pieces, say so now and split it into
-sibling slices; design the first one.
+Read `get_project_state`, the code the work would touch, and any slice that
+already owns part of it. Many questions answer themselves, and the rest get
+sharper. If the request is really several independent pieces, say so and split
+it into sibling slices; design the first one.
 
 ## 3. Question the request until it is a promise
 
-A vague request ("build login", "make the board faster") cannot be written as a
-done_when, so it has to be questioned first. Ask only what would change the
-promise:
+Ask only what would change the promise:
 
-- **Scope** — what is in, what is explicitly out.
-- **Who it is for** — which user, in which situation.
-- **What success looks like** — the observation that would settle it, on which
-  surface (browser, terminal, production).
+- **Scope**: what is in, and what is explicitly out.
+- **Who it is for**: which user, in which situation.
+- **What success looks like**: the observation that would settle it, and where.
 
-Do not ask how to build it. Which library, which table, which component split:
-those are yours.
+Do not ask how to build it. Ask one or two questions at a time with your best
+guess attached, so a "yes" is a full answer. Stop as soon as you can write both
+halves. A specific request may need no questions.
 
-Ask one or two questions at a time, with your best guess attached so a "yes" is
-a full answer. Stop as soon as you can write both halves of the promise. A
-request that is already specific may need no questions at all.
+## 4. Get the promise approved
 
-## 4. Get the promise approved, then write it
+Write both halves with `save_slice(spec=…, done_when=…)`. The stage reads
+`needs_approval`, which is the truth: written, not agreed. Then show both in the
+conversation, written the way the board needs them (a teammate who never saw
+this conversation should understand them), and ask for one approval. This is
+the only place this skill waits.
 
-Draft both halves:
+On a yes, `approve_promise(slice_id, kind="designer")`. It records who approved
+and when, and moves the stage to `executing`. Never call it to get past the
+gate without that yes.
 
-- `spec` — what is being built and why, including what is out of scope. No
-  implementation detail.
-- `done_when` — the observation that settles it. Good ones can fail, name the
-  surface, and say what would NOT settle it when there is an obvious wrong
-  answer waiting:
+If they change the wording, save the new text and ask again. If the promise has
+to change after approval, editing it clears the approval on its own; ask again.
 
-  ```
-  An expired token returns HTTP 401, not a tool error inside a 200 --
-  that status code is the only thing that makes a client refresh.
-  ```
-
-Show both in the conversation and ask for one approval. This is the only place
-this skill waits for an answer. The person who approves it owns the promise.
-
-On approval, write exactly what they approved with `save_slice(spec=…,
-done_when=…)`. Not before: a done_when on the board moves the stage to
-`executing`, and the board would then report an unapproved promise as agreed.
-If the session ends while you wait, `add_note` the draft instead.
-
-After approval the spec is not edited again. If the promise has to change
-later, that is a new approval, not a quiet edit.
+If someone else will build it, stop here: leave the slice unassigned (or hand
+it to them) and say so. The approval tells the builder whom to ask.
 
 ## 5. Design it, show it, keep going
 
-Read the code and decide how to build it. For each real choice,
-`append_decision(slice_id, body)`:
+Read the code and decide how to build it. Record each real choice as you reach
+it with `append_decision(slice_id, body)`:
 
 ```
 **Chose a text field on Slice.**
 
-One field, no new vocabulary; a migration is the whole cost.
-
-Turned down: a separate model -- queryable, but a fourth noun on the board,
-and nobody has asked to query it.
-
-**Leans on** nobody needing to search decisions across slices.
+One field and one migration. Turned down a separate model: queryable, but a
+new noun on the board that nobody has asked to query.
+Leans on nobody needing to search decisions across slices.
 ```
 
-Record decisions as you reach them, not as a summary afterwards.
+Then send the design summary as its own message (the shape of the change, the
+files it touches, the close calls) and start **`building-a-slice`** without
+waiting for a reply. The summary is there so the person can object while it is
+cheap. If they object, follow them and append a decision saying what they
+overrode and why.
 
-Then, in this order:
-
-1. **Send the design summary as its own message**: the shape of the change, the
-   files it touches, the close calls. Decisions on the board do not count as
-   showing it; the person is reading the conversation, not the board.
-2. **Only then start `building-a-slice`, without waiting for a reply.** The
-   summary is there so the person can object while objecting is still cheap. A
-   summary that arrives with the finished work is a report, not a chance to
-   object.
-
-If they object at any point, stop, follow them, and append a decision that says
-what they overrode and why. That disagreement is the most useful entry in the
-record.
-
-Landmines and invariants you found go in `constraints`.
-
-## 6. Dependencies
-
-If this slice cannot meet its own done_when until another one ships, record it:
-`link_slices([{"from": <blocker>, "to": <this>, "kind": "blocks", "note":
-"why"}])`. "It would be more natural first" and "they touch the same files" are
-not blocks.
+Landmines and invariants go in `constraints`. If this slice cannot meet its own
+done_when until another ships, `link_slices` with a `blocks` note that says
+why; "it would be more natural first" is not a block.
 
 ## The small lane
 
 A typo, a version bump, a copy fix, a one-line change with one obvious way to
-do it. Create and take the slice, write a one-line spec and a done_when
-yourself, say in one line which slice it is and that you are taking the small
-lane, and build it. No approval; the pull request review is the human step.
-
-If you can name a choice you would be making on the person's behalf, it is not
-the small lane.
+do it. Create and take the slice, write a one-line spec and done_when,
+`approve_promise(slice_id, kind="self")`, say in one line which slice it is and
+that you took the small lane, and build it. If you can name a choice you would
+be making on the person's behalf, it is not the small lane.
 
 ## Resuming
 
-A slice at `needs_design` or `needs_done_when` that you hold is a design that
-stopped part way. Pick it up where it stopped; do not create a second slice.
+A slice you hold at `needs_design`, `needs_done_when` or `needs_approval` is a
+design that stopped part way. Pick it up where it stopped.
 
 ---
 
-Forked from superpowers (MIT, © 2025 Jesse Vincent) — `brainstorming`, rewritten so the person approves the promise and the agent owns the design.
+Forked from superpowers (MIT, © 2025 Jesse Vincent): `brainstorming`, rewritten so the person approves the promise and the agent owns the design.

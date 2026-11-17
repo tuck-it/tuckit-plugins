@@ -140,7 +140,8 @@ Create in dependency order:
 1. `create_area(name, description)` for each approved Area. Describe the
    responsibility in the human's language, not as a directory inventory.
 2. `save_slice(title, area_id=...)` for each approved piece of work, with the
-   spec left empty so its stage is truthfully `needs_design`.
+   spec left empty so its stage is truthfully `needs_design`. Titles follow the
+   domain reference: one plain point a teammate gets at a glance.
 3. `add_note(...)` to an in-flight Slice with its branch, PR, or working-tree
    evidence. Observations belong in notes; design never comes from commit
    messages.

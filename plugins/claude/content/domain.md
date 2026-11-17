@@ -2,124 +2,124 @@
 
 tuckit is where a product's decisions, roadmap and deferred work live. The
 codebase is the truth about what the software IS today; tuckit is the record of
-what was decided, when, and what is still owed — the reasoning that touched no
-files, which is exactly the part git cannot reconstruct.
+what was decided, when, and what is still owed: the reasoning that touched no
+files, which git cannot reconstruct.
 
-Every record here is a snapshot of the moment it was written. When a spec and
-the code disagree, neither is simply wrong — the code is what shipped, the spec
-is what someone agreed to. Say that and ask which one is out of date, rather
-than quietly editing either to match the other.
+Every record is a snapshot of the moment it was written. When a spec and the
+code disagree, neither is simply wrong: the code is what shipped, the spec is
+what someone agreed to. Say so and ask which one is out of date.
 
-People read and write the board on the web; agents read and write the same
-board over MCP. One database, no sync step.
+People use the board on the web; agents use the same board over MCP. The tool
+descriptions the server gives you are the reference for each field and
+parameter. This file covers what they cannot: who decides what, and how work
+moves.
 
 ## Who decides what
 
-As models get better, the person's job narrows to three things, and the
-workflow is built so those are the only places it stops for one:
+People decide three things. The workflow stops for a person only at these:
 
-- **Direction** — which work exists and how much it matters: slices, captures,
-  priorities. People set it, mostly on the web.
-- **The promise** — what a slice will deliver and how anyone would know it did:
-  its `spec` and its `done_when`. The developer who designs the slice approves
-  both, once, and owns that promise.
-- **Confirmation** — a teammate reviews the pull request. The merge is the
-  confirmation; the slice is shipped once it has landed.
+- **Direction**: which work exists and how much it matters (captures, slices,
+  priorities).
+- **The promise**: what a slice will deliver (`spec`) and how anyone would know
+  it did (`done_when`). The developer who designs the slice approves both
+  together, and the approval is recorded with their name. They own it.
+- **Confirmation**: a teammate reviews the pull request. The merge is the
+  confirmation.
 
-Everything between the promise and the pull request — how to build it — is the
+Everything between the promise and the pull request, how to build it, is the
 agent's call. It is recorded as decisions, shown before the code is written,
-and open to challenge at any point, but it does not wait for a yes.
+and open to challenge, but it does not wait for a yes.
 
-## Vocabulary
+## Stages
 
-- **Area** — a long-lived responsibility (billing, the public site, …). Areas
-  rarely change; they hold slices.
-- **Slice** — the one unit of work. It carries:
-  - `spec` — **what** is being built and **why**, as the slice's designer
-    agreed it. Not how. Empty means nobody has agreed a promise yet.
-  - `done_when` — the other half of the promise: the observation that would
-    settle it. An OBSERVATION, never a command. "pytest -q" is a method and
-    says nothing; "an expired token returns HTTP 401 rather than a tool error
-    inside a 200" can be wrong in a way somebody notices.
-  - `decisions` — the append-only record of how it was decided and how it is
-    being built: what was chosen, why, what was turned down, and what the
-    choice leans on. The design lives here.
-  - `constraints` — what a later agent must not get wrong: landmines and
-    invariants. Read this before you touch anything.
-  - `evidence` — what somebody actually saw. It is what opens the ship gate.
-  - `assignee` — who holds the slice right now. On a shared board this is how
-    two agents avoid building the same thing.
-  - `area` — required. A slice always lives in an Area.
-- **Capture** — an unjudged note: a title and prose, nothing else. The Inbox
-  holds captures. A capture has two exits that cost the same: promote it into
-  an Area, where it becomes a Slice **keeping its number**, or dismiss it. Both
-  are reversible and neither deletes anything. Roughly two in five captures are
-  dismissed on a board somebody tends; that is the ordinary path.
-- **Relations** — one slice can block another. Record that A blocks B only when
-  B cannot meet its **own done_when** until A ships, and always say why. While
-  the blocker is open, B is listed apart from the roadmap, and shipping B is
-  refused.
+`stage` is derived on every read and says what a slice needs next. `status` is
+only a person's decision (open, shipped, dropped). Read progress from `stage`.
 
-A slice has two axes, and conflating them is a bug:
+- `needs_design`: no spec yet.
+- `needs_done_when`: a spec but no done_when.
+- `needs_approval`: the promise is written; nobody has approved it.
+- `executing`: approved, and nothing has met it yet.
+- `ready_to_ship`: evidence recorded.
+- `shipped` / `dropped`: done.
 
-- `status` — what a person decided: `open`, `shipped`, `dropped`.
-- `stage` — what the slice needs next, derived on every read:
-  - `needs_design` — no spec yet: the promise has not been agreed.
-  - `needs_done_when` — a spec but no done_when: half a promise.
-  - `executing` — the promise is set and nothing has met it yet.
-  - `ready_to_ship` — evidence recorded.
-  - `shipped` / `dropped` — terminal.
+Editing the spec or done_when of an approved slice clears the approval. The
+slice goes back to `needs_approval` and the change is recorded as a decision.
 
-Read progress from `stage`, never from `status`.
+## The workflow
+
+1. **Capture**: something noticed becomes a capture, a title and what you saw.
+   It claims nothing.
+2. **Direction**: someone promotes it into an Area, dismisses it, or leaves it.
+   **`tending-the-board`** proposes that in one batch.
+3. **Promise, then design**: **`designing-a-slice`**. A vague request is
+   questioned until it can be written as a spec and a done_when, the designer
+   approves both, and the agent designs and records its decisions.
+4. **Build, verify, open the PR**: **`building-a-slice`**, with
+   **`reviewing-a-change`** before the evidence is written.
+5. **Confirm**: a teammate reviews the PR (**`reviewing-a-change`** helps with
+   that too). Once it is merged, anyone may mark the slice shipped.
+
+At the end of a session, **`reconciling-the-board`** closes what became untrue.
+
+**The small lane.** A typo, a version bump, a one-line fix with one obvious way
+to do it: it still gets a slice, but the agent writes the one-line promise,
+approves it as `self`, and does not stop to ask. The board shows it as
+self-approved. The pull request review is the human step.
+
+## Working on a shared board
+
+- Designing and building can be two people. An approved slice can wait with no
+  assignee until someone takes it. If its done_when looks wrong, ask the person
+  on its `Approved:` line, not the person who asked you to build it.
+- Take a slice by assigning it to yourself before you build it.
+- A slice someone else holds is theirs: read it freely, but do not build it,
+  change its promise or close it. Say who holds it. If it has to move (they
+  asked, or it has sat still for weeks), hand it over with a reason; the reason
+  is kept on the slice.
+- A merged pull request is a fact anyone can act on: whoever sees it may mark
+  that slice shipped.
+
+## Writing for the board
+
+A person opening the board sees many cards at once, and the pile itself is
+pressure. Each card has to undo that: read on its own, it should be understood
+at a glance and make the reader want to fix it. That is the standard for
+everything you write here.
+
+- **Title**: one plain sentence about one thing, the problem or the outcome, in
+  words a person would say out loud. No code names, refs or abbreviations a
+  teammate would have to look up. No second clause after a dash or a
+  semicolon. At most 60 characters; the server refuses longer ones from agents.
+- **Spec**: two to five short sentences for a teammate who never saw your
+  conversation. Why it matters first, then what is in and what is out. No how.
+- **done_when**: one observation, what someone would see and where, that could
+  turn out false.
+- **Capture**: what you saw and where, and what you expected instead.
+- **Notes and decisions**: short sentences. Lead with the point. Spell out
+  anything only you would know.
+- Write in the language the board is already written in.
+
+| Hard to read | Easy to read |
+|---|---|
+| `Session restore — hydrate order regression causes empty initial render (cache key mismatch)` | `Home screen is blank after logging in` |
+| `세션 복원 시 hydrate 순서 문제로 초기 렌더가 비어 있음 — 캐시 키 불일치 …` | `로그인 후 첫 화면이 비어 보임` |
+| `query_slices icontains path skips NFC normalization for CJK` | `Search misses Korean words` |
+| spec: `Refactor the token refresh path to use the shared retry helper and add backoff.` | spec: `People get logged out mid-task when their session expires. They should stay signed in while they are active. Out of scope: changing how long a session lasts.` |
+| done_when: `tests pass` | done_when: `An expired token gets HTTP 401, not an error inside a 200, and the client signs in again without a prompt.` |
+
+## Asking a person something
+
+A message asking a person to decide is finished only when they can answer it
+without leaving the message:
+
+- Give every ref its title.
+- Options say what changes for them, not what you would build.
+- Spell out any identifier they did not introduce.
+
+Reversible decisions get one line each, batched. Irreversible ones lead with
+what breaks and what cannot be undone.
 
 ## Reading state
 
 Start every "where are we" question with `get_project_state`, not with git or
 markdown files.
-
-## The workflow
-
-1. **Capture** — something noticed becomes a capture: a title in the words you
-   would say it, and what you saw. It claims nothing.
-2. **Direction** — someone promotes it into an Area, dismisses it, or leaves it
-   for later. **`tending-the-board`** proposes all of that in one batch, and
-   proposes what to close when the roadmap is fuller than anyone reads.
-3. **Promise, then design** — **`designing-a-slice`**. A vague request is
-   questioned until it can be written as a spec and a done_when; the designer
-   approves both; the agent designs and records its decisions.
-4. **Build, verify, open the PR** — **`building-a-slice`**, with
-   **`reviewing-a-change`** before the evidence is written.
-5. **Confirm** — a teammate reviews the PR. Once it is merged, the slice is
-   shipped.
-
-At the end of a session, **`reconciling-the-board`** closes what became untrue
-on the slices you hold.
-
-**The small lane.** A typo, a version bump, a one-line fix: it still gets a
-slice, but the agent writes the one-line spec and the done_when itself and does
-not stop to ask. The pull request review is the only human step.
-
-## Working on a shared board
-
-- Take a slice by assigning it to yourself before you build it.
-- A slice someone else holds is theirs. Read it freely; do not build it, change
-  its promise, or close it. Say who holds it and stop.
-- Reconcile only what you hold. Proposals about someone else's slice name them.
-
-## Asking a person something
-
-Their judgement is the scarce thing in the session. A message asking them to
-decide is finished only when they can answer it without leaving the message:
-
-- **A ref never travels alone.** Give it its title.
-- **Options say what changes for them**, not what you would build.
-- **Spell out any identifier they did not introduce.**
-
-Length follows what is at stake. Reversible decisions get one line each,
-batched. Irreversible ones lead with what breaks and what cannot be undone.
-
-## Tools
-
-The exact MCP tool names are whatever the tuckit server exposes in this
-session. This document names only `get_project_state`, the stable entry point,
-so it cannot fall out of date.

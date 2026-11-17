@@ -172,8 +172,9 @@ workspace.
 
 **Codex CLI**
 - A self-hosted server: edit `url` in `plugins/codex/.mcp.json`.
-- Codex has no session-end hook that can reach the model, so the session-start
-  text asks it to tidy the board when it finishes.
+- At the end of a session that worked on the board, Codex is asked once to
+  tidy it. Codex can only do that by taking one more turn, so a session that
+  never touched the board is left alone.
 - The hooks were checked against codex-cli 0.154.0; the bundled `.mcp.json` has
   not been checked the same way.
 
@@ -216,14 +217,15 @@ The agent picks the right one on its own. You can also call any of them by name.
 | **`starting-with-tuckit`** | Once, when your board is empty. Proposes the first Areas and work for you to approve. |
 | **`designing-a-slice`** | Steps 1–2 above: turns a request into a promise you approve. |
 | **`building-a-slice`** | Steps 3–5: builds what you approved, checks it, opens the PR, marks it shipped after the merge. |
-| **`reviewing-a-change`** | The second-agent review in step 4, and handling review comments on the PR. |
+| **`reviewing-a-change`** | The second-agent review in step 4, handling review comments, and helping you review a teammate's PR. |
 | **`reconciling-the-board`** | End of a session. Tidies the work you hold and asks before adding anything new. |
-| **`tending-the-board`** | When the Inbox or the board has piled up. Proposes what to file or close, in one list. |
-| **`tuckit-domain`** | Reference for how the board works. |
+| **`tending-the-board`** | When the Inbox or the board has piled up. Proposes what to file, close or retitle, in one list. |
+| **`tuckit-domain`** | Reference for how the board works and how to write for it. |
 
 The plugin also adds short hooks: a note at the start of each session that this
-project is tracked in tuckit, and a one-line reminder on each request to put
-work on the board before changing code.
+project is tracked in tuckit, a one-line reminder on each request to put work
+on the board before changing code, and a reminder at the end of a session that
+worked on the board to tidy it.
 
 ## Contributing
 
