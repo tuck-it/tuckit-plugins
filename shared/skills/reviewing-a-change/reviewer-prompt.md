@@ -26,12 +26,10 @@ Subagent (general-purpose):
 
     ## The change
 
-    Base: [BASE_SHA]   Head: [HEAD_SHA]
-    Diff file: [DIFF_FILE]
+    Base: [BASE]   Head: [HEAD]
 
-    Read the diff file once; its context lines are the changed files. Look
-    outside the diff only to check a risk you can name, and name it in the
-    report. Do not re-run the full suite; run a focused test only for a
+    Read the diff between them once. Look outside the diff only to check a
+    risk you can name, and name it in the report. Do not re-run the full suite; run a focused test only for a
     specific doubt. Do not modify the checkout and do not write to the board.
 
     ## What to look for
@@ -74,7 +72,7 @@ Subagent (general-purpose):
 ```
 
 **For a fix round**, dispatch the same template with the previous Critical and
-Important findings pasted under a `## Findings to verify` heading, the diff
-taken from the head the first review saw, and this instruction: verdict each
+Important findings pasted under a `## Findings to verify` heading, the base
+set to the head the first review saw, and this instruction: verdict each
 finding ADDRESSED or NOT ADDRESSED with file:line, report anything the fix
 itself broke, and do not re-review code the fix did not touch.

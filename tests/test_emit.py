@@ -47,25 +47,33 @@ def test_build_stop_payload_per_agent():
     assert emit.build_stop_payload("WB", "antigravity") == {"decision": "continue", "reason": "WB"}
 
 
-def test_codex_has_no_stop_payload():
-    """Codex ships no Stop hook, so asking for its payload is a bug, not a case.
+def test_codex_stop_blocks_with_the_reminder_as_reason():
+    """Stop is the one Codex event with no `additionalContext`; the only field
+    that reaches the model is `decision: "block"` with a `reason`. Measured
+    against codex-cli 0.154.0: `block` yields `hook: Stop Blocked` and one more
+    model turn. That turn is paid only by sessions that used the board -- see
+    test_stop_stays_quiet_when_the_session_never_used_the_board."""
+    assert emit.build_stop_payload("WB", "codex") == {"decision": "block", "reason": "WB"}
 
-    The branch this replaces returned {"continue": True, "systemMessage": ...}.
-    Codex accepts that and shows the text to the human; the model never sees
-    it. Stop is the one Codex event with no `additionalContext`, and the only
-    field on it that reaches the model is `decision: "block"` with a `reason`.
-    Measured against codex-cli 0.154.0: `block` yields `hook: Stop Blocked` and
-    one more model turn, `systemMessage` yields `hook: Stop Completed` and the
-    turn ends.
 
-    Blocking was the available fix and was turned down -- it costs a model turn
-    every session, and a session that changed nothing follows the write-back
-    text's own instruction to say nothing, which lands as an empty assistant
-    turn and an empty --output-last-message. The primer already tells Codex to
-    reconcile when the session ends.
-    """
-    with pytest.raises(ValueError, match="primer"):
-        emit.build_stop_payload("WB", "codex")
+def test_stop_stays_quiet_when_the_session_never_used_the_board(monkeypatch, tmp_path):
+    transcript = tmp_path / "t.jsonl"
+    transcript.write_text('{"role":"user","content":"fix the typo"}\n', encoding="utf-8")
+    stdin = json.dumps({"session_id": "Q1", "transcript_path": str(transcript)})
+    for agent in ("claude-code", "codex"):
+        _, out = _run(monkeypatch, tmp_path,
+                      ["--agent", agent, "--event", "stop", "--content", "writeback"], stdin)
+        assert out == {}
+
+
+def test_stop_reminds_when_the_transcript_shows_the_board(monkeypatch, tmp_path):
+    transcript = tmp_path / "t.jsonl"
+    transcript.write_text('{"tool":"mcp__tuckit__save_slice"}\n', encoding="utf-8")
+    stdin = json.dumps({"session_id": "Q2", "transcript_path": str(transcript)})
+    _, out = _run(monkeypatch, tmp_path,
+                  ["--agent", "codex", "--event", "stop", "--content", "writeback"], stdin)
+    assert out["decision"] == "block"
+
 
 def test_allow_stop_payload_is_empty():
     for agent in emit.AGENTS:

@@ -102,12 +102,14 @@ def build_stop_payload(text: str, agent: str) -> dict:
                                        "additionalContext": text}}
     if agent == "codex":
         # Codex's Stop wire has no `additionalContext` -- unlike SessionStart
-        # and UserPromptSubmit, which have one and are why the primer and the
-        # door work. The only Stop field that reaches the model is
-        # `decision: "block"` with a `reason`, and blocking costs a model turn
-        # every session. Codex is reminded by the primer sentence instead, so
-        # nothing calls this.
-        raise ValueError("codex has no stop hook; the primer carries the reminder")
+        # and UserPromptSubmit. The only Stop field that reaches the model is
+        # `decision: "block"` with a `reason`, which costs one more model turn.
+        # That cost used to be the reason Codex had no Stop hook at all, which
+        # left Codex sessions never reminded to reconcile. It is paid only
+        # when the session actually used the board (see used_the_board), so a
+        # session that never touched tuckit ends exactly as it would without
+        # the plugin -- no empty extra turn, no empty --output-last-message.
+        return {"decision": "block", "reason": text}
     if agent == "antigravity":
         return {"decision": "continue", "reason": text}
     raise ValueError(f"unknown agent: {agent}")
@@ -115,6 +117,35 @@ def build_stop_payload(text: str, agent: str) -> dict:
 
 def allow_stop_payload(agent: str) -> dict:
     return {}
+
+
+# Tools whose appearance in a transcript means the session worked on the board.
+# The hook content (primer, door, writeback) is forbidden from naming any tool
+# but get_project_state (tests/test_content.py), and both agents write hook
+# output into the transcript -- so "tuckit" or get_project_state would match
+# every session, while these only match one that took or changed a slice.
+BOARD_WORK_TOOLS = (
+    "get_slice", "save_slice", "add_note", "append_decision", "approve_promise",
+    "record_verification", "create_capture", "triage_capture", "link_slices",
+)
+
+
+def used_the_board(hook_input: dict) -> bool:
+    """Whether this session worked on the board, read off its transcript.
+
+    Both Claude Code and Codex hand the Stop hook a `transcript_path`. A
+    session that never took or changed a slice has nothing to reconcile, and
+    reminding it anyway costs a model turn that ends in nothing. When there is
+    no transcript to read, say yes: one unneeded reminder is the behaviour this
+    replaces, and a missed one is worse."""
+    path = hook_input.get("transcript_path") or hook_input.get("transcriptPath")
+    if not path:
+        return True
+    try:
+        text = Path(path).read_text(encoding="utf-8", errors="ignore")
+    except OSError:
+        return True
+    return any(name in text for name in BOARD_WORK_TOOLS)
 
 
 def session_folder(hook_input: dict) -> Path:
@@ -195,8 +226,9 @@ def main(argv=None, stdin_text: str = "") -> int:
         print(json.dumps(build_prompt_payload(text, args.agent)))
         return 0
 
-    # event == "stop": remind exactly once per session, then allow stopping.
-    if first_time(session_id, "writeback"):
+    # event == "stop": remind exactly once per session, and only a session
+    # that used the board, then allow stopping.
+    if used_the_board(hook_input) and first_time(session_id, "writeback"):
         print(json.dumps(build_stop_payload(text, args.agent)))
     else:
         print(json.dumps(allow_stop_payload(args.agent)))

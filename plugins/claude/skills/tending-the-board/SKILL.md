@@ -1,6 +1,6 @@
 ---
 name: tending-the-board
-description: "Use when a tuckit board needs judging rather than building — captures are waiting in the Inbox, an Area's roadmap holds more open slices than anyone reads, rows have sat for weeks, or nobody can say what is next. Reads the board's own numbers, proposes in one batch what to promote, leave, dismiss or close and why, and applies only what the person approves."
+description: "Use when a tuckit board needs judging rather than building: captures are waiting in the Inbox, an Area holds more open slices than anyone reads, rows have sat for weeks, titles are hard to read, or nobody can say what is next. Reads the board's own numbers, proposes in one batch what to promote, leave, dismiss, close or retitle and why, and applies only what the person approves."
 ---
 
 # Tending the Board
@@ -9,7 +9,7 @@ Capturing costs an agent nothing and closing costs a person a decision, so a
 board left alone fills until nobody reads it. This pass is where the person
 sets direction in bulk: one list, one approval.
 
-Vocabulary: `${CLAUDE_PLUGIN_ROOT}/content/domain.md`.
+Reference: `${CLAUDE_PLUGIN_ROOT}/content/domain.md`, including how to write for the board.
 
 **Propose, never apply on your own. And say why something should go, never how
 old it is.**
@@ -26,7 +26,8 @@ old it is.**
 | `workspace.priority_policy` | what counts as urgent here, in a person's words |
 
 A high `drop_ratio` says the capture side is too eager. Say so; closing more
-does not fix it.
+does not fix it. When `inbox.open_count` is 20 or more, or `drop_ratio` is 0.5
+or higher, a new capture is only worth it if someone can be named to do it.
 
 ## 2. Read both piles
 
@@ -66,6 +67,12 @@ the row. It is their call as much as the approver's.
 Do not create a new Area for one capture. An Area with one slice is a tag
 pretending to be a boundary.
 
+**Titles** — a title a person cannot take in at a glance (jargon, a ref or
+code name, two clauses joined by a dash, or simply long) makes the whole board
+heavier. Propose a plain rewrite for each one you pass, following the domain
+reference. Retitling changes no promise; it is the cheapest thing in this
+pass.
+
 ## 4. One message, one approval
 
 State the numbers from step 1, then the lists. Every row carries its title.
@@ -82,6 +89,8 @@ rows so they can be vetoed in blocks.
 > **Close (5 of 31 open)** — TP-212 "Dark mode for the docs" (held by Mina):
 > the docs moved to the theme that ships it. …
 > **Ask (1)** — TP-198 "Export as CSV", priority 1, idle 30 days: still urgent?
+> **Retitle (2)** — TP-240 "Session restore — hydrate order regression …" →
+> "Home screen is blank after logging in". …
 >
 > Shall I apply this?"
 
@@ -95,6 +104,7 @@ Silence is not approval. Wait.
   approved set. Dropped, never deleted.
 - Priorities the person set while approving: `save_slice` takes a list of ids
   and `priority` may ride in the batch.
+- Retitle: `save_slice(slice_id, title=…)`, one slice at a time.
 
 Record what was closed and why in **one** `add_note` on one slice, not on each.
 Then report the counts in one line.
